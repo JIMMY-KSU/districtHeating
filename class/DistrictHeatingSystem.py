@@ -10,6 +10,7 @@ import os
 import inspect
 
 sys.path.append(os.getcwd() + os.sep + 'class')
+print(sys.path.append(os.getcwd() + os.sep + 'class'))
 
 from DataIO import DataIO
 from HeatGrid import HeatGrid

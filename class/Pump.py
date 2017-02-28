@@ -14,3 +14,4 @@ class Pump():
         self.end_node_name = pumpValues['end_node_name']
         self.githubtest = 0
         self.wellDoneJo =1
+        dashier kommt von JPelda und nicht JohPel

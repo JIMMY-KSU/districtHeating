@@ -12,3 +12,7 @@ class Pump():
         self.profil = pumpValues['profil']
         self.start_node_name = pumpValues['start_node_name']
         self.end_node_name = pumpValues['end_node_name']
+        
+        
+        
+        dashier kommt von JPelda und nicht JohPel

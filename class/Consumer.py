@@ -24,6 +24,8 @@ class Consumer():
             consumerValues['heat_consumptionProfile']
         self.heat_consumptionAverage = \
             consumerValues['heat_consumptionAverage']
+        self.massflow = 100 # t/h
+        # TODO implement function for massflow
 
 
     def heat_consumptionProfiles(self, i=slice(None,None)):

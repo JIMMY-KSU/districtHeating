@@ -5,6 +5,7 @@ Created on Sun Feb 26 11:03:13 2017
 @author: jpelda
 """
 
+
 HeatGrid_pipe_dtype =    {'names':(
                                 'index',
                                 'start_x',
@@ -29,7 +30,7 @@ HeatGrid_pipe_dtype =    {'names':(
                                 'diameter_2',
                                 'diameter_3',
                                 'SP_RP'),
-                       'formats':(
+                       'formats': (
                                 'i',
                                 'f',
                                 'f',
@@ -56,7 +57,7 @@ HeatGrid_pipe_dtype =    {'names':(
                                 )
                                }
 
-HeatGrid_node_dtype =    {'names':(
+HeatGrid_node_dtype =    {'names': (
                                 'index',
                                 'x',
                                 'y',
@@ -64,7 +65,7 @@ HeatGrid_node_dtype =    {'names':(
                                 'height',
                                 'SP_RP'
                                 ),
-                       'formats':(
+                       'formats': (
                                 'i',
                                 'f',
                                 'f',
@@ -73,8 +74,8 @@ HeatGrid_node_dtype =    {'names':(
                                 'U2',
                                 )
                                }
-                               
-HeatSink_consumer_dtype ={'names':(
+
+HeatSink_consumer_dtype ={'names': (
                                 'index',
                                 'heat_exchangerModel',
                                 'start_node_name',
@@ -86,7 +87,7 @@ HeatSink_consumer_dtype ={'names':(
                                 'heat_consumptionProfile',
                                 'heat_consumptionAverage'
                                 ),
-                       'formats':(
+                       'formats': (
                                 'i',
                                 'U30',
                                 'U10',
@@ -99,7 +100,7 @@ HeatSink_consumer_dtype ={'names':(
                                 'U30',
                                 )
                                }
-                           
+
 HeatGrid_pump_dtype =    {'names': (
                                 'index',
                                 'profil',
@@ -136,26 +137,26 @@ HeatSource_producer_dtype = {'names': (
                                         )
                             }
 
-STANET_nodes =          {'names':(
+STANET_nodes =          {'names': (
                                 'x',
                                 'y',
                                 'name'
                                 ),
-                       'formats':(
+                       'formats': (
                                 'f',
                                 'f',
                                 'U10'
                                 )
                                }
-                               
-STANET_pipes =          {'names':(
+
+STANET_pipes =          {'names': (
                                 'start_node_name',
                                 'end_node_name',
                                 'length',
                                 'heatTransitionCoefficient',
                                 'roughness'
                                 ),
-                       'formats':(
+                       'formats': (
                                 'U10',
                                 'U10',
                                 'f',
@@ -163,13 +164,13 @@ STANET_pipes =          {'names':(
                                 'f'
                                 )
                                }
-                               
-STANET_consumer =       {'names':(
+
+STANET_consumer =       {'names': (
                                 'index',
                                 'start_node_name',
                                 'end_node_name',
                                 ),
-                       'formats':(
+                       'formats': (
                                 'i',
                                 'U10',
                                 'U10'

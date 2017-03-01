@@ -44,11 +44,14 @@ heatsink = DataIO.importDBF('TestNetz' + os.sep + 'WTestNetz.DBF',
 
 heatsource = DataIO.importCSV('TestNetz' + os.sep + 'WTestNetz.csv',
                               dtype = Dictionary.HeatSource_producer_dtype,
+                              dtypeSource= Dictionary.STANET_producer,
+                              dtypeAllocation =
+                              Dictionary.HeatSource_STANET_producer_allocation,
                               startrow=1,
                               columnofdate=None,
                               dateformat='None')
 
-
+print(heatsource)
 DHS1= DistrictHeatingSystem(heatgrid_pipes, heatgrid_nodes, heatsink, heatsource)
 
 

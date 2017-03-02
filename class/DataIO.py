@@ -248,7 +248,6 @@ class DataIO():
         return:
         numpy.array(dataArray, dtype=dtype)
         '''
-        
         returnArray = np.empty(len(dataArray), dtype=dtype)
         for index, record in enumerate(dataArray):
             for item in dtype['names']:

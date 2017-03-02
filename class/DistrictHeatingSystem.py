@@ -7,7 +7,9 @@ Created on Sat Jan  7 16:22:28 2017
 
 import sys
 import os
-import inspect
+
+#from numpy import matrix
+#from numpy import linalg
 
 sys.path.append(os.getcwd() + os.sep + 'class')
 print(sys.path.append(os.getcwd() + os.sep + 'function'))

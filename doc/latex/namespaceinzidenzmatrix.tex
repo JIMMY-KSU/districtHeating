@@ -1,0 +1,33 @@
+\hypertarget{namespaceinzidenzmatrix}{}\section{inzidenzmatrix Namespace Reference}
+\label{namespaceinzidenzmatrix}\index{inzidenzmatrix@{inzidenzmatrix}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{namespaceinzidenzmatrix_ad398eea62599230217b3179258dc262c}{inzidenzmatrix} (rows, cols)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{namespaceinzidenzmatrix_ad398eea62599230217b3179258dc262c}\label{namespaceinzidenzmatrix_ad398eea62599230217b3179258dc262c}} 
+\index{inzidenzmatrix@{inzidenzmatrix}!inzidenzmatrix@{inzidenzmatrix}}
+\index{inzidenzmatrix@{inzidenzmatrix}!inzidenzmatrix@{inzidenzmatrix}}
+\subsubsection{\texorpdfstring{inzidenzmatrix()}{inzidenzmatrix()}}
+{\footnotesize\ttfamily def inzidenzmatrix.\+inzidenzmatrix (\begin{DoxyParamCaption}\item[{}]{rows,  }\item[{}]{cols }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}arranges an inzidenzmatrix for a directed graph for further
+calculations:
+            pipes
+            f_0  f_1  f_2  f_3
+    node 0   1    0    -1   0
+    node 1   0    0    1   -1
+Flows towards a node are -1. Flows away from node are 1.
+
+input:
+    rows = []
+    cols = [[,],[,]] # cols[0] is away from row value -> 1,\
+                        cols[1] is towards row value -> -1
+\end{DoxyVerb}
+ 
+
+Definition at line 9 of file inzidenzmatrix.\+py.
+

@@ -1,0 +1,114 @@
+\hypertarget{namespace_main}{}\section{Main Namespace Reference}
+\label{namespace_main}\index{Main@{Main}}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{namespace_main_af67e28bb0eb3894f81f4168deb0f836e}{Data\+IO}
+\item 
+\hyperlink{namespace_main_a00b04001dec555db32f5905617e3b61f}{heatgrid\+\_\+nodes}
+\item 
+\hyperlink{namespace_main_aae2f2616b49aa0f1f27a99ce2525470f}{heatgrid\+\_\+pipes}
+\item 
+\hyperlink{namespace_main_a26af29b8548cf87e8d31234213cde312}{heatsink}
+\item 
+\hyperlink{namespace_main_a1dbfe33a196057c1fc788403424dea4c}{heatsource}
+\item 
+\hyperlink{namespace_main_ae4535ead940864814690c97070dd4438}{D\+H\+S1} = \hyperlink{class_district_heating_system_1_1_district_heating_system}{District\+Heating\+System}(\hyperlink{namespace_main_aae2f2616b49aa0f1f27a99ce2525470f}{heatgrid\+\_\+pipes}, \hyperlink{namespace_main_a00b04001dec555db32f5905617e3b61f}{heatgrid\+\_\+nodes}, \hyperlink{namespace_main_a26af29b8548cf87e8d31234213cde312}{heatsink}, \hyperlink{namespace_main_a1dbfe33a196057c1fc788403424dea4c}{heatsource})
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\mbox{\Hypertarget{namespace_main_af67e28bb0eb3894f81f4168deb0f836e}\label{namespace_main_af67e28bb0eb3894f81f4168deb0f836e}} 
+\index{Main@{Main}!Data\+IO@{Data\+IO}}
+\index{Data\+IO@{Data\+IO}!Main@{Main}}
+\subsubsection{\texorpdfstring{Data\+IO}{DataIO}}
+{\footnotesize\ttfamily \hyperlink{class_data_i_o_1_1_data_i_o}{Main.\+Data\+IO}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+1 =  \hyperlink{namespace_data_i_o}{DataIO}(os.getcwd() + os.sep + \textcolor{stringliteral}{'input'},
+2                     os.getcwd() + os.sep + \textcolor{stringliteral}{'output'})
+\end{DoxyCode}
+
+
+Definition at line 20 of file Main.\+py.
+
+\mbox{\Hypertarget{namespace_main_ae4535ead940864814690c97070dd4438}\label{namespace_main_ae4535ead940864814690c97070dd4438}} 
+\index{Main@{Main}!D\+H\+S1@{D\+H\+S1}}
+\index{D\+H\+S1@{D\+H\+S1}!Main@{Main}}
+\subsubsection{\texorpdfstring{D\+H\+S1}{DHS1}}
+{\footnotesize\ttfamily Main.\+D\+H\+S1 = \hyperlink{class_district_heating_system_1_1_district_heating_system}{District\+Heating\+System}(\hyperlink{namespace_main_aae2f2616b49aa0f1f27a99ce2525470f}{heatgrid\+\_\+pipes}, \hyperlink{namespace_main_a00b04001dec555db32f5905617e3b61f}{heatgrid\+\_\+nodes}, \hyperlink{namespace_main_a26af29b8548cf87e8d31234213cde312}{heatsink}, \hyperlink{namespace_main_a1dbfe33a196057c1fc788403424dea4c}{heatsource})}
+
+
+
+Definition at line 56 of file Main.\+py.
+
+\mbox{\Hypertarget{namespace_main_a00b04001dec555db32f5905617e3b61f}\label{namespace_main_a00b04001dec555db32f5905617e3b61f}} 
+\index{Main@{Main}!heatgrid\+\_\+nodes@{heatgrid\+\_\+nodes}}
+\index{heatgrid\+\_\+nodes@{heatgrid\+\_\+nodes}!Main@{Main}}
+\subsubsection{\texorpdfstring{heatgrid\+\_\+nodes}{heatgrid\_nodes}}
+{\footnotesize\ttfamily Main.\+heatgrid\+\_\+nodes}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+1 =  DataIO.importDBF(\textcolor{stringliteral}{'TestNetz'} + os.sep + \textcolor{stringliteral}{'KTestNetz.DBF'},
+2                                   Dictionary.HeatGrid\_node\_dtype,
+3                                   Dictionary.HeatGrid\_STANET\_nodes\_allocation)
+\end{DoxyCode}
+
+
+Definition at line 34 of file Main.\+py.
+
+\mbox{\Hypertarget{namespace_main_aae2f2616b49aa0f1f27a99ce2525470f}\label{namespace_main_aae2f2616b49aa0f1f27a99ce2525470f}} 
+\index{Main@{Main}!heatgrid\+\_\+pipes@{heatgrid\+\_\+pipes}}
+\index{heatgrid\+\_\+pipes@{heatgrid\+\_\+pipes}!Main@{Main}}
+\subsubsection{\texorpdfstring{heatgrid\+\_\+pipes}{heatgrid\_pipes}}
+{\footnotesize\ttfamily Main.\+heatgrid\+\_\+pipes}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+1 =  DataIO.importDBF(\textcolor{stringliteral}{'TestNetz'} + os.sep + \textcolor{stringliteral}{'STestNetz.DBF'},
+2                                   Dictionary.HeatGrid\_pipe\_dtype,
+3                                   Dictionary.HeatGrid\_STANET\_pipes\_allocation)
+\end{DoxyCode}
+
+
+Definition at line 37 of file Main.\+py.
+
+\mbox{\Hypertarget{namespace_main_a26af29b8548cf87e8d31234213cde312}\label{namespace_main_a26af29b8548cf87e8d31234213cde312}} 
+\index{Main@{Main}!heatsink@{heatsink}}
+\index{heatsink@{heatsink}!Main@{Main}}
+\subsubsection{\texorpdfstring{heatsink}{heatsink}}
+{\footnotesize\ttfamily Main.\+heatsink}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+1 =  DataIO.importDBF(\textcolor{stringliteral}{'TestNetz'} + os.sep + \textcolor{stringliteral}{'WTestNetz.DBF'},
+2                                Dictionary.HeatSink\_consumer\_dtype,
+3                                Dictionary.HeatSink\_STANET\_consumer\_allocation)
+\end{DoxyCode}
+
+
+Definition at line 41 of file Main.\+py.
+
+\mbox{\Hypertarget{namespace_main_a1dbfe33a196057c1fc788403424dea4c}\label{namespace_main_a1dbfe33a196057c1fc788403424dea4c}} 
+\index{Main@{Main}!heatsource@{heatsource}}
+\index{heatsource@{heatsource}!Main@{Main}}
+\subsubsection{\texorpdfstring{heatsource}{heatsource}}
+{\footnotesize\ttfamily Main.\+heatsource}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+1 =  DataIO.importCSV(\textcolor{stringliteral}{'TestNetz'} + os.sep + \textcolor{stringliteral}{'WTestNetz.csv'},
+2                               dtype = Dictionary.HeatSource\_producer\_dtype,
+3                               dtypeSource= Dictionary.STANET\_producer,
+4                               dtypeAllocation =
+5                               Dictionary.HeatSource\_STANET\_producer\_allocation,
+6                               startrow=1,
+7                               columnofdate=\textcolor{keywordtype}{None},
+8                               dateformat=\textcolor{stringliteral}{'None'})
+\end{DoxyCode}
+
+
+Definition at line 45 of file Main.\+py.
+

@@ -40,7 +40,6 @@ class DistrictHeatingSystem():
         array_col = []
 
         for item in self.heatgrid.pipes():
-            print(item.start_node_name)
             array_col.append(
                              [item.start_node_name,
                               item.end_node_name])
@@ -67,7 +66,7 @@ class DistrictHeatingSystem():
             array_col.append([item.start_node_name,
                               item.end_node_name])
 
-        return inzidenzmatrix(self.heatsource.nodes_name, array_col)
+        return inzidenzmatrix(self.heatgrid.nodes_name, array_col)
     
     def calculateDHS(self):
         array_col = []

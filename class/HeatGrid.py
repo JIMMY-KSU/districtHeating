@@ -45,7 +45,7 @@ class HeatGrid():
         return self._instancesNode[i]
 
     def __nodes_name(self):
-        returnArray = [len(self.nodes())]
-        for item in self.nodes():
-            returnArray.append(item.name)
+        returnArray = [0]*len(self.nodes())
+        for index, item in enumerate(self.nodes()):
+            returnArray[index] = item.name
         return returnArray

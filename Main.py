@@ -55,7 +55,10 @@ heatsource = DataIO.importCSV('TestNetz' + os.sep + 'WTestNetz.csv',
 DHS1= DistrictHeatingSystem(heatgrid_pipes, heatgrid_nodes, heatsink, heatsource)
 
 
-DHS1.calculateDHS()
+for i in DHS1.heatgrid.pipes():
+    print(i.start_node_name)
+
+print (DHS1.calculateDHS())
 
 
 

@@ -56,7 +56,8 @@ class DistrictHeatingSystem():
         return inzidenzmatrix(self.heatgrid.nodes_name, array_col)
 
     def __inzidenzmatrix_HeatSource(self):
-
+        # TODO implement Try and error in case of no loaded\
+        # self.heatgrid.nodes_name
         array_col = []
 
         for item in self.heatsource.producer():

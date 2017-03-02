@@ -130,7 +130,7 @@ HeatSource_producer_dtype = {'names': (
                                      'end_node_name',
                                      ),
                             'formats': (
-                                        'U10',
+                                        'U30',
                                         'f',
                                         'U10',
                                         'U10'
@@ -168,7 +168,7 @@ STANET_pipes =          {'names': (
 STANET_consumer =       {'names': (
                                 'index',
                                 'start_node_name',
-                                'end_node_name',
+                                'end_node_name'
                                 ),
                        'formats': (
                                 'i',
@@ -176,6 +176,20 @@ STANET_consumer =       {'names': (
                                 'U10'
                                 )
                                }
+
+STANET_producer = {'names': (
+                            'ANFNAM',
+                            'ENDNAM',
+                            'NAME',
+                            'Power'
+                            ),
+                    'formats': (
+                                'U10',
+                                'U10',
+                                'U30',
+                                'f'
+                                )
+                    }
 
 HeatGrid_STANET_nodes_allocation = {
                                 'x': 'XRECHTS',

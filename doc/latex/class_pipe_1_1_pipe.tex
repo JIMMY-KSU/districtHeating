@@ -1,0 +1,409 @@
+\hypertarget{class_pipe_1_1_pipe}{}\section{Pipe.\+Pipe Class Reference}
+\label{class_pipe_1_1_pipe}\index{Pipe.\+Pipe@{Pipe.\+Pipe}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{class_pipe_1_1_pipe_af59d40a027d25c62e41d11a08f14729f}{\+\_\+\+\_\+init\+\_\+\+\_\+} (self, pipe\+Values)
+\item 
+def \hyperlink{class_pipe_1_1_pipe_a628661bc972aee1bc2f84623fcfaed91}{set\+Heatflow} (self, heat\+Flow)
+\item 
+def \hyperlink{class_pipe_1_1_pipe_afbd372f6badcea91558e723eb0c81712}{get\+Heatflow} (self)
+\item 
+def \hyperlink{class_pipe_1_1_pipe_a184f926c3aee89e94c19b003d6cc9416}{start\+\_\+flowspeed} (self)
+\item 
+def \hyperlink{class_pipe_1_1_pipe_afec35167b5ad4acf26ea2db36292d135}{reynold} (self)
+\item 
+def \hyperlink{class_pipe_1_1_pipe_a6cda251ee7a5bb112b2dbe8db6a76448}{heat\+\_\+transfer\+Coefficient} (self, transfer\+Coefficients, layer\+\_\+heat\+\_\+conductivities, layer\+\_\+thicknesses)
+\item 
+def \hyperlink{class_pipe_1_1_pipe_a51bf5b3d3334c008e8cb92c8e8e2e9d1}{heatloss} (self)
+\item 
+def \hyperlink{class_pipe_1_1_pipe_aa09f88a2a098f433547773dcee75da6c}{pipe\+\_\+lambda} (self)
+\item 
+def \hyperlink{class_pipe_1_1_pipe_a69d6c5c5204633f84cc45801adf17aed}{pressure\+\_\+difference} (self)
+\item 
+def \hyperlink{class_pipe_1_1_pipe_a93aa9c0dd790f2014d2c403b23164646}{end\+\_\+pressure} (self, start\+\_\+pressure)
+\item 
+def \hyperlink{class_pipe_1_1_pipe_ae2b6ac79c8416e15bb8846739e90d0f6}{end\+\_\+volume\+Stream} (self)
+\item 
+def \hyperlink{class_pipe_1_1_pipe_abab09825864d4997d16ffc1dcdbfcf97}{end\+\_\+flowspeed} (self)
+\item 
+def \hyperlink{class_pipe_1_1_pipe_a2fdfff20143b09a5c32f335bf55edebc}{volume} (self)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_pipe_1_1_pipe_a721626d39e9fa569ff1bea20d43d6891}{ambient\+\_\+temp}
+\item 
+\hyperlink{class_pipe_1_1_pipe_a9ac4eaff0763b3dffd827858c02166bd}{fluid\+\_\+temp}
+\item 
+\hyperlink{class_pipe_1_1_pipe_a1fb5c94ac5e6dac7b415a170524a75f5}{index}
+\item 
+\hyperlink{class_pipe_1_1_pipe_a99b713a0d71ea921e5fdd7665a294598}{start\+\_\+x}
+\item 
+\hyperlink{class_pipe_1_1_pipe_a9104dacc2e9f3541a8171c7d7bbf8a2e}{start\+\_\+y}
+\item 
+\hyperlink{class_pipe_1_1_pipe_a3c89ac40d76fd166fb08ebb585ef220e}{end\+\_\+x}
+\item 
+\hyperlink{class_pipe_1_1_pipe_a8ea1c50334527d53a3c83b26f2c41dfa}{end\+\_\+y}
+\item 
+\hyperlink{class_pipe_1_1_pipe_ad604bcf622bea20a2e6089515e793700}{start\+\_\+node\+\_\+name}
+\item 
+\hyperlink{class_pipe_1_1_pipe_ae09a8821336f622e4215d22bdead0952}{end\+\_\+node\+\_\+name}
+\item 
+\hyperlink{class_pipe_1_1_pipe_aed39cdfd26dab2d8aa176fbcc8ee0eac}{length}
+\item 
+\hyperlink{class_pipe_1_1_pipe_a498f8ef080ca2ef5533d4bb239c02e84}{diameter\+\_\+inner}
+\item 
+\hyperlink{class_pipe_1_1_pipe_ad4a6c940a7986e70a34f4d7dc5659a19}{diameter\+\_\+outer}
+\item 
+\hyperlink{class_pipe_1_1_pipe_acdfc6a6bdd70105a3342553a03ad9277}{start\+\_\+height}
+\item 
+\hyperlink{class_pipe_1_1_pipe_a8c66a7b6c464b5c48d567c19be7e72ca}{end\+\_\+height}
+\item 
+\hyperlink{class_pipe_1_1_pipe_ae5cec5540b37294ed43fad9d9f187d4b}{roughness}
+\item 
+\hyperlink{class_pipe_1_1_pipe_a94e84282ca30ec24343eb219f67e783b}{S\+P\+\_\+\+RP}
+\item 
+\hyperlink{class_pipe_1_1_pipe_ad75af1651b56fe12e4cff8d1254afa98}{heat\+Transition\+Coefficient}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 12 of file Pipe.\+py.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_pipe_1_1_pipe_af59d40a027d25c62e41d11a08f14729f}\label{class_pipe_1_1_pipe_af59d40a027d25c62e41d11a08f14729f}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!\+\_\+\+\_\+init\+\_\+\+\_\+@{\+\_\+\+\_\+init\+\_\+\+\_\+}}
+\index{\+\_\+\+\_\+init\+\_\+\+\_\+@{\+\_\+\+\_\+init\+\_\+\+\_\+}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{\+\_\+\+\_\+init\+\_\+\+\_\+()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily def Pipe.\+Pipe.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{pipe\+Values }\end{DoxyParamCaption})}
+
+
+
+Definition at line 13 of file Pipe.\+py.
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_pipe_1_1_pipe_abab09825864d4997d16ffc1dcdbfcf97}\label{class_pipe_1_1_pipe_abab09825864d4997d16ffc1dcdbfcf97}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!end\+\_\+flowspeed@{end\+\_\+flowspeed}}
+\index{end\+\_\+flowspeed@{end\+\_\+flowspeed}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{end\+\_\+flowspeed()}{end\_flowspeed()}}
+{\footnotesize\ttfamily def Pipe.\+Pipe.\+end\+\_\+flowspeed (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Definition at line 209 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a93aa9c0dd790f2014d2c403b23164646}\label{class_pipe_1_1_pipe_a93aa9c0dd790f2014d2c403b23164646}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!end\+\_\+pressure@{end\+\_\+pressure}}
+\index{end\+\_\+pressure@{end\+\_\+pressure}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{end\+\_\+pressure()}{end\_pressure()}}
+{\footnotesize\ttfamily def Pipe.\+Pipe.\+end\+\_\+pressure (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{start\+\_\+pressure }\end{DoxyParamCaption})}
+
+
+
+Definition at line 200 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_ae2b6ac79c8416e15bb8846739e90d0f6}\label{class_pipe_1_1_pipe_ae2b6ac79c8416e15bb8846739e90d0f6}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!end\+\_\+volume\+Stream@{end\+\_\+volume\+Stream}}
+\index{end\+\_\+volume\+Stream@{end\+\_\+volume\+Stream}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{end\+\_\+volume\+Stream()}{end\_volumeStream()}}
+{\footnotesize\ttfamily def Pipe.\+Pipe.\+end\+\_\+volume\+Stream (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Definition at line 204 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_afbd372f6badcea91558e723eb0c81712}\label{class_pipe_1_1_pipe_afbd372f6badcea91558e723eb0c81712}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!get\+Heatflow@{get\+Heatflow}}
+\index{get\+Heatflow@{get\+Heatflow}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{get\+Heatflow()}{getHeatflow()}}
+{\footnotesize\ttfamily def Pipe.\+Pipe.\+get\+Heatflow (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Definition at line 81 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a6cda251ee7a5bb112b2dbe8db6a76448}\label{class_pipe_1_1_pipe_a6cda251ee7a5bb112b2dbe8db6a76448}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!heat\+\_\+transfer\+Coefficient@{heat\+\_\+transfer\+Coefficient}}
+\index{heat\+\_\+transfer\+Coefficient@{heat\+\_\+transfer\+Coefficient}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{heat\+\_\+transfer\+Coefficient()}{heat\_transferCoefficient()}}
+{\footnotesize\ttfamily def Pipe.\+Pipe.\+heat\+\_\+transfer\+Coefficient (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{transfer\+Coefficients,  }\item[{}]{layer\+\_\+heat\+\_\+conductivities,  }\item[{}]{layer\+\_\+thicknesses }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}array of transferCoefficients = alpha [W / m²*K]
+array of heat_conductivities = lamda [W / m*K]
+\end{DoxyVerb}
+ 
+
+Definition at line 114 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a51bf5b3d3334c008e8cb92c8e8e2e9d1}\label{class_pipe_1_1_pipe_a51bf5b3d3334c008e8cb92c8e8e2e9d1}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!heatloss@{heatloss}}
+\index{heatloss@{heatloss}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{heatloss()}{heatloss()}}
+{\footnotesize\ttfamily def Pipe.\+Pipe.\+heatloss (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Definition at line 126 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_aa09f88a2a098f433547773dcee75da6c}\label{class_pipe_1_1_pipe_aa09f88a2a098f433547773dcee75da6c}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!pipe\+\_\+lambda@{pipe\+\_\+lambda}}
+\index{pipe\+\_\+lambda@{pipe\+\_\+lambda}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{pipe\+\_\+lambda()}{pipe\_lambda()}}
+{\footnotesize\ttfamily def Pipe.\+Pipe.\+pipe\+\_\+lambda (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Calculation of lambda
+If the flow is laminar...
+else if the flow is turbulent...
+\end{DoxyVerb}
+ 
+
+Definition at line 153 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a69d6c5c5204633f84cc45801adf17aed}\label{class_pipe_1_1_pipe_a69d6c5c5204633f84cc45801adf17aed}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!pressure\+\_\+difference@{pressure\+\_\+difference}}
+\index{pressure\+\_\+difference@{pressure\+\_\+difference}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{pressure\+\_\+difference()}{pressure\_difference()}}
+{\footnotesize\ttfamily def Pipe.\+Pipe.\+pressure\+\_\+difference (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Difference between PressureStart and PressureEnd
+calculated by Darcy-Law
+\end{DoxyVerb}
+ 
+
+Definition at line 184 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_afec35167b5ad4acf26ea2db36292d135}\label{class_pipe_1_1_pipe_afec35167b5ad4acf26ea2db36292d135}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!reynold@{reynold}}
+\index{reynold@{reynold}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{reynold()}{reynold()}}
+{\footnotesize\ttfamily def Pipe.\+Pipe.\+reynold (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}calculation of reynold number
+
+Re = (w * d) / kinvis
+\end{DoxyVerb}
+ 
+
+Definition at line 100 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a628661bc972aee1bc2f84623fcfaed91}\label{class_pipe_1_1_pipe_a628661bc972aee1bc2f84623fcfaed91}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!set\+Heatflow@{set\+Heatflow}}
+\index{set\+Heatflow@{set\+Heatflow}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{set\+Heatflow()}{setHeatflow()}}
+{\footnotesize\ttfamily def Pipe.\+Pipe.\+set\+Heatflow (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{heat\+Flow }\end{DoxyParamCaption})}
+
+
+
+Definition at line 78 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a184f926c3aee89e94c19b003d6cc9416}\label{class_pipe_1_1_pipe_a184f926c3aee89e94c19b003d6cc9416}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!start\+\_\+flowspeed@{start\+\_\+flowspeed}}
+\index{start\+\_\+flowspeed@{start\+\_\+flowspeed}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{start\+\_\+flowspeed()}{start\_flowspeed()}}
+{\footnotesize\ttfamily def Pipe.\+Pipe.\+start\+\_\+flowspeed (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}calculation of flow speed
+
+((m^3)/h) / 3600 = ((m^3)/s)
+
+w = VolumeStream (in (m^3)/s) / A (in m^2)
+\end{DoxyVerb}
+ 
+
+Definition at line 86 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a2fdfff20143b09a5c32f335bf55edebc}\label{class_pipe_1_1_pipe_a2fdfff20143b09a5c32f335bf55edebc}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!volume@{volume}}
+\index{volume@{volume}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{volume()}{volume()}}
+{\footnotesize\ttfamily def Pipe.\+Pipe.\+volume (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Definition at line 214 of file Pipe.\+py.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a721626d39e9fa569ff1bea20d43d6891}\label{class_pipe_1_1_pipe_a721626d39e9fa569ff1bea20d43d6891}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!ambient\+\_\+temp@{ambient\+\_\+temp}}
+\index{ambient\+\_\+temp@{ambient\+\_\+temp}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{ambient\+\_\+temp}{ambient\_temp}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+ambient\+\_\+temp}
+
+
+
+Definition at line 15 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a498f8ef080ca2ef5533d4bb239c02e84}\label{class_pipe_1_1_pipe_a498f8ef080ca2ef5533d4bb239c02e84}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!diameter\+\_\+inner@{diameter\+\_\+inner}}
+\index{diameter\+\_\+inner@{diameter\+\_\+inner}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{diameter\+\_\+inner}{diameter\_inner}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+diameter\+\_\+inner}
+
+
+
+Definition at line 35 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_ad4a6c940a7986e70a34f4d7dc5659a19}\label{class_pipe_1_1_pipe_ad4a6c940a7986e70a34f4d7dc5659a19}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!diameter\+\_\+outer@{diameter\+\_\+outer}}
+\index{diameter\+\_\+outer@{diameter\+\_\+outer}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{diameter\+\_\+outer}{diameter\_outer}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+diameter\+\_\+outer}
+
+
+
+Definition at line 36 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a8c66a7b6c464b5c48d567c19be7e72ca}\label{class_pipe_1_1_pipe_a8c66a7b6c464b5c48d567c19be7e72ca}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!end\+\_\+height@{end\+\_\+height}}
+\index{end\+\_\+height@{end\+\_\+height}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{end\+\_\+height}{end\_height}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+end\+\_\+height}
+
+
+
+Definition at line 38 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_ae09a8821336f622e4215d22bdead0952}\label{class_pipe_1_1_pipe_ae09a8821336f622e4215d22bdead0952}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!end\+\_\+node\+\_\+name@{end\+\_\+node\+\_\+name}}
+\index{end\+\_\+node\+\_\+name@{end\+\_\+node\+\_\+name}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{end\+\_\+node\+\_\+name}{end\_node\_name}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+end\+\_\+node\+\_\+name}
+
+
+
+Definition at line 33 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a3c89ac40d76fd166fb08ebb585ef220e}\label{class_pipe_1_1_pipe_a3c89ac40d76fd166fb08ebb585ef220e}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!end\+\_\+x@{end\+\_\+x}}
+\index{end\+\_\+x@{end\+\_\+x}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{end\+\_\+x}{end\_x}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+end\+\_\+x}
+
+
+
+Definition at line 30 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a8ea1c50334527d53a3c83b26f2c41dfa}\label{class_pipe_1_1_pipe_a8ea1c50334527d53a3c83b26f2c41dfa}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!end\+\_\+y@{end\+\_\+y}}
+\index{end\+\_\+y@{end\+\_\+y}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{end\+\_\+y}{end\_y}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+end\+\_\+y}
+
+
+
+Definition at line 31 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a9ac4eaff0763b3dffd827858c02166bd}\label{class_pipe_1_1_pipe_a9ac4eaff0763b3dffd827858c02166bd}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!fluid\+\_\+temp@{fluid\+\_\+temp}}
+\index{fluid\+\_\+temp@{fluid\+\_\+temp}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{fluid\+\_\+temp}{fluid\_temp}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+fluid\+\_\+temp}
+
+
+
+Definition at line 16 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_ad75af1651b56fe12e4cff8d1254afa98}\label{class_pipe_1_1_pipe_ad75af1651b56fe12e4cff8d1254afa98}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!heat\+Transition\+Coefficient@{heat\+Transition\+Coefficient}}
+\index{heat\+Transition\+Coefficient@{heat\+Transition\+Coefficient}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{heat\+Transition\+Coefficient}{heatTransitionCoefficient}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+heat\+Transition\+Coefficient}
+
+
+
+Definition at line 43 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a1fb5c94ac5e6dac7b415a170524a75f5}\label{class_pipe_1_1_pipe_a1fb5c94ac5e6dac7b415a170524a75f5}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!index@{index}}
+\index{index@{index}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{index}{index}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+index}
+
+
+
+Definition at line 27 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_aed39cdfd26dab2d8aa176fbcc8ee0eac}\label{class_pipe_1_1_pipe_aed39cdfd26dab2d8aa176fbcc8ee0eac}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!length@{length}}
+\index{length@{length}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{length}{length}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+length}
+
+
+
+Definition at line 34 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_ae5cec5540b37294ed43fad9d9f187d4b}\label{class_pipe_1_1_pipe_ae5cec5540b37294ed43fad9d9f187d4b}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!roughness@{roughness}}
+\index{roughness@{roughness}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{roughness}{roughness}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+roughness}
+
+
+
+Definition at line 39 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a94e84282ca30ec24343eb219f67e783b}\label{class_pipe_1_1_pipe_a94e84282ca30ec24343eb219f67e783b}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!S\+P\+\_\+\+RP@{S\+P\+\_\+\+RP}}
+\index{S\+P\+\_\+\+RP@{S\+P\+\_\+\+RP}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{S\+P\+\_\+\+RP}{SP\_RP}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+S\+P\+\_\+\+RP}
+
+
+
+Definition at line 40 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_acdfc6a6bdd70105a3342553a03ad9277}\label{class_pipe_1_1_pipe_acdfc6a6bdd70105a3342553a03ad9277}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!start\+\_\+height@{start\+\_\+height}}
+\index{start\+\_\+height@{start\+\_\+height}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{start\+\_\+height}{start\_height}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+start\+\_\+height}
+
+
+
+Definition at line 37 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_ad604bcf622bea20a2e6089515e793700}\label{class_pipe_1_1_pipe_ad604bcf622bea20a2e6089515e793700}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!start\+\_\+node\+\_\+name@{start\+\_\+node\+\_\+name}}
+\index{start\+\_\+node\+\_\+name@{start\+\_\+node\+\_\+name}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{start\+\_\+node\+\_\+name}{start\_node\_name}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+start\+\_\+node\+\_\+name}
+
+
+
+Definition at line 32 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a99b713a0d71ea921e5fdd7665a294598}\label{class_pipe_1_1_pipe_a99b713a0d71ea921e5fdd7665a294598}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!start\+\_\+x@{start\+\_\+x}}
+\index{start\+\_\+x@{start\+\_\+x}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{start\+\_\+x}{start\_x}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+start\+\_\+x}
+
+
+
+Definition at line 28 of file Pipe.\+py.
+
+\mbox{\Hypertarget{class_pipe_1_1_pipe_a9104dacc2e9f3541a8171c7d7bbf8a2e}\label{class_pipe_1_1_pipe_a9104dacc2e9f3541a8171c7d7bbf8a2e}} 
+\index{Pipe\+::\+Pipe@{Pipe\+::\+Pipe}!start\+\_\+y@{start\+\_\+y}}
+\index{start\+\_\+y@{start\+\_\+y}!Pipe\+::\+Pipe@{Pipe\+::\+Pipe}}
+\subsubsection{\texorpdfstring{start\+\_\+y}{start\_y}}
+{\footnotesize\ttfamily Pipe.\+Pipe.\+start\+\_\+y}
+
+
+
+Definition at line 29 of file Pipe.\+py.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/jpelda/\+Documents/\+Git\+Hub/district\+Heating/class/\hyperlink{_pipe_8py}{Pipe.\+py}\end{DoxyCompactItemize}

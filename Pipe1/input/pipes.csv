@@ -1,6 +1,0 @@
-number;pipe_x0;pipe_y0;pipe_x1;pipe_y1;pipe_length;pipe_diamter;pipe_roughness;pipe_heattransmission
-1;1;1;3;1;20;4;1;0.24
-2;3;1;3;2;10;2;2;0.25
-3;3;1;3;0;10;2;3;0.26
-4;3;2;4;1;20;4;4;0.27
-5;3;0;4;1;30;4;5;0.28

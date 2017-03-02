@@ -31,54 +31,55 @@ class Pipe():
         self.end_y = pipeValues['end_y']
         self.start_node_name = pipeValues['start_node_name']
         self.end_node_name = pipeValues['end_node_name']
-        self.length = pipeValues['length'] * 1000  # [mm]
+        self.length = pipeValues['length'] #[mm]
         self.diameter_inner = pipeValues['diameter_inner']
         self.diameter_outer = pipeValues['diameter_outer']
         self.start_height = pipeValues['start_height']
         self.end_height = pipeValues['end_height']
-        self.heatTransitionCoefficient = pipeValues['heatTransitionCoefficient']  # [W/m]
         self.roughness = pipeValues['roughness']
         self.SP_RP = pipeValues['SP_RP']
 
-        self.__heat_transferCoefficient_inner = pipeValues['heat_transferCoefficient_inner']
-        self.__heat_transferCoefficient_outer = pipeValues['heat_transferCoefficient_outer']
-        
-#        if self.__heat_transferCoefficient_inner in ('', 0, None):
-#            print('yes')
+        if 'heatTransitionCoefficient' in pipeValues:    
+            self.heatTransitionCoefficient = pipeValues['heatTransitionCoefficient'] #[W/m]
+        else:
+            if ('heat_transferCoefficient_inner' in pipeValues and
+                'heat_transferCoefficient_outer' in pipeValues and
+                'heat_conductivity_1'            in pipeValues and 
+                'heat_conductivity_2'            in pipeValues and 
+                'heat_conductivity_3'            in pipeValues): 
+                self.__heat_transferCoefficient_inner = pipeValues['heat_transferCoefficient_inner']
+                self.__heat_transferCoefficient_outer = pipeValues['heat_transferCoefficient_outer']
+                self.__heat_conductivity_1 = pipeValues['heat_conductivity_1']
+                self.__heat_conductivity_2 = pipeValues['heat_conductivity_2']
+                self.__heat_conductivity_3 = pipeValues['heat_conductivity_3']
+            else:
+                print('No heat transfer coefficient or parameter for pipe', self.index , '!')
+
 
 # TODO bring def heat_transferCoefficient in correct form, take care of possibility that pipeValues['heat_transferCoefficient_inner'] etc. is empty or not defined..
 # TODO implement @property
-
-        self.__heat_conductivity_1 = pipeValues['heat_conductivity_1']
-        self.__heat_conductivity_2 = pipeValues['heat_conductivity_2']
-        self.__heat_conductivity_3 = pipeValues['heat_conductivity_3']
-
-        self.__heat_transferCoefficients = [
-                                            self.__heat_transferCoefficient_inner,# steel
-                                            self.__heat_transferCoefficient_outer # average heat transition in soil ["W/m*K]
-                                            ]
-        self.__heat_conductivities = [
-                                      self.__heat_conductivity_1,
-                                      self.__heat_conductivity_2,
-                                      self.__heat_conductivity_3
-                                      ]
-
+                
+#        self.__heat_transferCoefficients = [
+#                                            self.__heat_transferCoefficient_inner,# steel
+#                                            self.__heat_transferCoefficient_outer # average heat transition in soil ["W/m*K]
+#                                            ]
+#        self.__heat_conductivities = [
+#                                      self.__heat_conductivity_1,
+#                                      self.__heat_conductivity_2,
+#                                      self.__heat_conductivity_3
+#                                      ]
         self.__diameters = [
                             pipeValues['diameter_1'],
                             pipeValues['diameter_2'],
                             pipeValues['diameter_3']
                             ]
-
-
-
         self.__heatflow = 0
 
     def setHeatflow(self, heatFlow):
-        self.__heatflow += heatFlow
+        self.__heatflow = heatFlow
 
     def getHeatflow(self):
         return self.__heatflow
-
 
 # CALCULATIONS:
 
@@ -123,6 +124,7 @@ class Pipe():
         return h_tC
 
     def heatloss(self):
+# TODO Berechungen überprüfen
         var = 0
 
         var += 1 / (self.__heat_transferCoefficients[0] * (self.diameter_inner / 2 ))
@@ -208,7 +210,6 @@ class Pipe():
 #        #end_flowspeed =  # m/s
 #        return flowspeed_end
         pass
-    
     
     def volume(self):
 #        #volume =  # m^3

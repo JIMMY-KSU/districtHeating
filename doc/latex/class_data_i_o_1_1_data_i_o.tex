@@ -1,0 +1,166 @@
+\hypertarget{class_data_i_o_1_1_data_i_o}{}\section{Data\+I\+O.\+Data\+IO Class Reference}
+\label{class_data_i_o_1_1_data_i_o}\index{Data\+I\+O.\+Data\+IO@{Data\+I\+O.\+Data\+IO}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{class_data_i_o_1_1_data_i_o_a98bdded980e8bfc4ddaa1cd12a8392fe}{\+\_\+\+\_\+init\+\_\+\+\_\+} (self, filepath\+\_\+import, filepath\+\_\+export)
+\item 
+def \hyperlink{class_data_i_o_1_1_data_i_o_aa79466ed985916b447e97c1b501ff30c}{import\+C\+SV} (self, filename\+\_\+import, dtype=None, dtype\+Source=None, dtype\+Allocation=None, startrow=0, delimiter=\char`\"{};\char`\"{}, columnofdate=None, dateformat=None)
+\item 
+def \hyperlink{class_data_i_o_1_1_data_i_o_a232251f90f75e5e8e307a035f191d1c4}{import\+T\+RY} (self, location, year, season, quarter\+Hour, startrow, dtype)
+\item 
+def \hyperlink{class_data_i_o_1_1_data_i_o_a6c56e9c0444c5bfd36093fcd966053b0}{import\+D\+BF} (self, filename\+\_\+import, dtype=None, dtype\+Allocation=None)
+\item 
+def \hyperlink{class_data_i_o_1_1_data_i_o_a57bc5372c9aa1d722c0d8e0cf1b749dd}{import\+Dict} (self, filename, delimiter=\char`\"{};\char`\"{})
+\item 
+def \hyperlink{class_data_i_o_1_1_data_i_o_a945b9f613d7eb68756a1483c8d8d7419}{export\+C\+SV} (self, filename, results, delimiter=\char`\"{};\char`\"{})
+\item 
+def \hyperlink{class_data_i_o_1_1_data_i_o_a4929b9de8bce15ad8e1fc432eb5167f9}{export\+Fig} (self, filename, fig)
+\item 
+def \hyperlink{class_data_i_o_1_1_data_i_o_a59071592ed63d8d505677035fd5ebda1}{str2date} (self, columnofdate=None, dateformat=None)
+\item 
+def \hyperlink{class_data_i_o_1_1_data_i_o_ae42c01ae3b0f343c292cb199327106f5}{str2num} (self, column)
+\item 
+def \hyperlink{class_data_i_o_1_1_data_i_o_a14e038023e1dd43e8c0a18842b4b73fb}{strpdate2num} (self, column)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 25 of file Data\+I\+O.\+py.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_data_i_o_1_1_data_i_o_a98bdded980e8bfc4ddaa1cd12a8392fe}\label{class_data_i_o_1_1_data_i_o_a98bdded980e8bfc4ddaa1cd12a8392fe}} 
+\index{Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}!\+\_\+\+\_\+init\+\_\+\+\_\+@{\+\_\+\+\_\+init\+\_\+\+\_\+}}
+\index{\+\_\+\+\_\+init\+\_\+\+\_\+@{\+\_\+\+\_\+init\+\_\+\+\_\+}!Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}}
+\subsubsection{\texorpdfstring{\+\_\+\+\_\+init\+\_\+\+\_\+()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily def Data\+I\+O.\+Data\+I\+O.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{filepath\+\_\+import,  }\item[{}]{filepath\+\_\+export }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}DataIO for Import and Export of data
+\end{DoxyVerb}
+ 
+
+Definition at line 27 of file Data\+I\+O.\+py.
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_data_i_o_1_1_data_i_o_a945b9f613d7eb68756a1483c8d8d7419}\label{class_data_i_o_1_1_data_i_o_a945b9f613d7eb68756a1483c8d8d7419}} 
+\index{Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}!export\+C\+SV@{export\+C\+SV}}
+\index{export\+C\+SV@{export\+C\+SV}!Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}}
+\subsubsection{\texorpdfstring{export\+C\+S\+V()}{exportCSV()}}
+{\footnotesize\ttfamily def Data\+I\+O.\+Data\+I\+O.\+export\+C\+SV (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{filename,  }\item[{}]{results,  }\item[{}]{delimiter = {\ttfamily \char`\"{};\char`\"{}} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}exports results as CSV with "," as decimal seperator
+filename = string without '.csv'
+results = []
+\end{DoxyVerb}
+ 
+
+Definition at line 185 of file Data\+I\+O.\+py.
+
+\mbox{\Hypertarget{class_data_i_o_1_1_data_i_o_a4929b9de8bce15ad8e1fc432eb5167f9}\label{class_data_i_o_1_1_data_i_o_a4929b9de8bce15ad8e1fc432eb5167f9}} 
+\index{Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}!export\+Fig@{export\+Fig}}
+\index{export\+Fig@{export\+Fig}!Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}}
+\subsubsection{\texorpdfstring{export\+Fig()}{exportFig()}}
+{\footnotesize\ttfamily def Data\+I\+O.\+Data\+I\+O.\+export\+Fig (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{filename,  }\item[{}]{fig }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}exports matplotlib grafik as pdf and png\n
+#######\n
+return:\n
+    pp.close()
+\end{DoxyVerb}
+ 
+
+Definition at line 207 of file Data\+I\+O.\+py.
+
+\mbox{\Hypertarget{class_data_i_o_1_1_data_i_o_aa79466ed985916b447e97c1b501ff30c}\label{class_data_i_o_1_1_data_i_o_aa79466ed985916b447e97c1b501ff30c}} 
+\index{Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}!import\+C\+SV@{import\+C\+SV}}
+\index{import\+C\+SV@{import\+C\+SV}!Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}}
+\subsubsection{\texorpdfstring{import\+C\+S\+V()}{importCSV()}}
+{\footnotesize\ttfamily def Data\+I\+O.\+Data\+I\+O.\+import\+C\+SV (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{filename\+\_\+import,  }\item[{}]{dtype = {\ttfamily None},  }\item[{}]{dtype\+Source = {\ttfamily None},  }\item[{}]{dtype\+Allocation = {\ttfamily None},  }\item[{}]{startrow = {\ttfamily 0},  }\item[{}]{delimiter = {\ttfamily \char`\"{};\char`\"{}},  }\item[{}]{columnofdate = {\ttfamily None},  }\item[{}]{dateformat = {\ttfamily None} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}imports CSV and replaces first comma start counting from right
+#######
+return:
+    array with dtype
+\end{DoxyVerb}
+ 
+
+Definition at line 36 of file Data\+I\+O.\+py.
+
+\mbox{\Hypertarget{class_data_i_o_1_1_data_i_o_a6c56e9c0444c5bfd36093fcd966053b0}\label{class_data_i_o_1_1_data_i_o_a6c56e9c0444c5bfd36093fcd966053b0}} 
+\index{Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}!import\+D\+BF@{import\+D\+BF}}
+\index{import\+D\+BF@{import\+D\+BF}!Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}}
+\subsubsection{\texorpdfstring{import\+D\+B\+F()}{importDBF()}}
+{\footnotesize\ttfamily def Data\+I\+O.\+Data\+I\+O.\+import\+D\+BF (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{filename\+\_\+import,  }\item[{}]{dtype = {\ttfamily None},  }\item[{}]{dtype\+Allocation = {\ttfamily None} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}imports dBASE and allocates values to dtype of returnArray. Allocation
+of values of dBASE to dtype of returnArray must be given in 
+dtypeAllocation.
+#######
+return:
+   array with dtype
+\end{DoxyVerb}
+ 
+
+Definition at line 159 of file Data\+I\+O.\+py.
+
+\mbox{\Hypertarget{class_data_i_o_1_1_data_i_o_a57bc5372c9aa1d722c0d8e0cf1b749dd}\label{class_data_i_o_1_1_data_i_o_a57bc5372c9aa1d722c0d8e0cf1b749dd}} 
+\index{Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}!import\+Dict@{import\+Dict}}
+\index{import\+Dict@{import\+Dict}!Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}}
+\subsubsection{\texorpdfstring{import\+Dict()}{importDict()}}
+{\footnotesize\ttfamily def Data\+I\+O.\+Data\+I\+O.\+import\+Dict (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{filename,  }\item[{}]{delimiter = {\ttfamily \char`\"{};\char`\"{}} }\end{DoxyParamCaption})}
+
+
+
+Definition at line 180 of file Data\+I\+O.\+py.
+
+\mbox{\Hypertarget{class_data_i_o_1_1_data_i_o_a232251f90f75e5e8e307a035f191d1c4}\label{class_data_i_o_1_1_data_i_o_a232251f90f75e5e8e307a035f191d1c4}} 
+\index{Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}!import\+T\+RY@{import\+T\+RY}}
+\index{import\+T\+RY@{import\+T\+RY}!Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}}
+\subsubsection{\texorpdfstring{import\+T\+R\+Y()}{importTRY()}}
+{\footnotesize\ttfamily def Data\+I\+O.\+Data\+I\+O.\+import\+T\+RY (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{location,  }\item[{}]{year,  }\item[{}]{season,  }\item[{}]{quarter\+Hour,  }\item[{}]{startrow,  }\item[{}]{dtype }\end{DoxyParamCaption})}
+
+
+
+Definition at line 116 of file Data\+I\+O.\+py.
+
+\mbox{\Hypertarget{class_data_i_o_1_1_data_i_o_a59071592ed63d8d505677035fd5ebda1}\label{class_data_i_o_1_1_data_i_o_a59071592ed63d8d505677035fd5ebda1}} 
+\index{Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}!str2date@{str2date}}
+\index{str2date@{str2date}!Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}}
+\subsubsection{\texorpdfstring{str2date()}{str2date()}}
+{\footnotesize\ttfamily def Data\+I\+O.\+Data\+I\+O.\+str2date (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{columnofdate = {\ttfamily None},  }\item[{}]{dateformat = {\ttfamily None} }\end{DoxyParamCaption})}
+
+
+
+Definition at line 224 of file Data\+I\+O.\+py.
+
+\mbox{\Hypertarget{class_data_i_o_1_1_data_i_o_ae42c01ae3b0f343c292cb199327106f5}\label{class_data_i_o_1_1_data_i_o_ae42c01ae3b0f343c292cb199327106f5}} 
+\index{Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}!str2num@{str2num}}
+\index{str2num@{str2num}!Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}}
+\subsubsection{\texorpdfstring{str2num()}{str2num()}}
+{\footnotesize\ttfamily def Data\+I\+O.\+Data\+I\+O.\+str2num (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{column }\end{DoxyParamCaption})}
+
+
+
+Definition at line 233 of file Data\+I\+O.\+py.
+
+\mbox{\Hypertarget{class_data_i_o_1_1_data_i_o_a14e038023e1dd43e8c0a18842b4b73fb}\label{class_data_i_o_1_1_data_i_o_a14e038023e1dd43e8c0a18842b4b73fb}} 
+\index{Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}!strpdate2num@{strpdate2num}}
+\index{strpdate2num@{strpdate2num}!Data\+I\+O\+::\+Data\+IO@{Data\+I\+O\+::\+Data\+IO}}
+\subsubsection{\texorpdfstring{strpdate2num()}{strpdate2num()}}
+{\footnotesize\ttfamily def Data\+I\+O.\+Data\+I\+O.\+strpdate2num (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{column }\end{DoxyParamCaption})}
+
+
+
+Definition at line 236 of file Data\+I\+O.\+py.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/jpelda/\+Documents/\+Git\+Hub/district\+Heating/class/\hyperlink{_data_i_o_8py}{Data\+I\+O.\+py}\end{DoxyCompactItemize}

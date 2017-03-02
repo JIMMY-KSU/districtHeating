@@ -66,13 +66,9 @@ class DistrictHeatingSystem():
         return inzidenzmatrix(self.heatgrid.nodes_name, array_col)
     
     def calculateDHS(self):
-        array_consumer = np.zeros([len(self.__inzidenzmatrix_HeatSink), 1])
-       # print(self.heatsink.consumer.heat_demand)
-    
-        print(self.__inzidenzmatrix_HeatSink, '\n')
+        array_consumer = np.zeros([len(self.__inzidenzmatrix_HeatSink),1])
         
+        for i in range(len(self.heatsink.consumer())):
+            array_consumer += self.__inzidenzmatrix_HeatSink[0:len(self.__inzidenzmatrix_HeatSink),i:(i+1)]*self.heatsink.consumer(i).flow
         
-        #print(np.linalg.inv(np.concatenate((self.__inzidenzmatrix_HeatGrid, self.__inzidenzmatrix_HeatSource), axis=1)))
-        #print(np.linalg.inv(array_col.append([self.__inzidenzmatrix_HeatSink, self.__inzidenzmatrix_HeatSource])*matrix_consumer))
-        
-        return #(np.linalg.lstsq(np.concatenate((self.__inzidenzmatrix_HeatGrid, self.__inzidenzmatrix_HeatSource), axis=1), matrix_consumer))
+        return np.dot(np.linalg.pinv(np.concatenate((self.__inzidenzmatrix_HeatGrid, self.__inzidenzmatrix_HeatSource), axis=1)) , array_consumer)

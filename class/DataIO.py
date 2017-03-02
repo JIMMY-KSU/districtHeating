@@ -7,13 +7,12 @@ Created on Fri Aug 19 20:30:03 2016
 
 import csv
 import os
-import io
 import numpy as np
-import time
 from datetime import datetime
 from datetime import timedelta
 from copy import copy
 from dbfread import DBF
+import json
 # from Dictionaries import Dictionaries
 # from TRY_Dictionary import TRY_Dictionary
 
@@ -33,7 +32,7 @@ class DataIO():
         self.__filepath_export = filepath_export
 
     def importCSV(self, filename_import,
-                  dtype=None, startrow=0,
+                  dtype=None, dtypeSource = None, dtypeAllocation=None, startrow=0,
                   delimiter=";", columnofdate=None, dateformat=None):
         '''
         imports CSV and replaces first comma start counting from right
@@ -41,54 +40,77 @@ class DataIO():
         return:
             array with dtype
         '''
-        if os.path.isfile(self.__filepath_import + os.sep + os.path.splitext(filename_import)[0] + "_pointAsDec" + os.path.splitext(filename_import)[1]):
-            '''opens file and reads it into memory'''
-            start_time = time.clock()
-            self.__dataArray = np.genfromtxt(self.__filepath_import + os.sep + os.path.splitext(filename_import)[0] + "_pointAsDec" + os.path.splitext(filename_import)[1],
-                                             dtype = dtype,
-                                             delimiter = delimiter,
-                                             skip_header = startrow,
-                                             converters = self.str2date(columnofdate = columnofdate, dateformat = dateformat))
 
+        file_import_withDecPoint = (self.__filepath_import + os.sep +
+                                    os.path.splitext(filename_import)[0] +
+                                    "_pointAsDec" +
+                                    os.path.splitext(filename_import)[1])
 
-        else:
-            '''opens file and changes decimal seperator to point, delets all other points or commas: except of date --> saves file into input/<filename>+_pointAsDec'''
+        if not os.path.isfile(file_import_withDecPoint):
+            '''opens file and changes decimal seperator to point,\n
+            delets all other points or commas: except of date\n
+            --> saves file into input/<filename>+_pointAsDec'''
+
+            print(filename_import + '_pointAsDec will be generated')
+
             self.__dataArray = ''
             self.__dataArrayHeader = ''
-            with open(self.__filepath_import + os.sep + filename_import, encoding = 'utf-8-sig') as csvfile:
-                readCSV = csv.reader(csvfile, delimiter = delimiter)
 
-                start_time = time.clock()
-                index = 0
-                for row in readCSV:
-                    '''saves the header of csv-file into self.__dataArrayHeader'''
-                    self.__dataArrayHeader = self.__dataArrayHeader + delimiter.join(x for x in row) + '\n'
-                    if   startrow - 2 < index:
-                        break
-                    index += 1
+            with open(self.__filepath_import + os.sep + filename_import,
+                      encoding='utf-8-sig') as file:
 
+                reader = csv.reader(file, delimiter=delimiter)
+                reader_list = list(reader)
 
-               # print(self.__dataArrayHeader)
-                for row0 in readCSV:
-                    row1 = []
-                    for (index,item) in enumerate(row0):
-                        if index == columnofdate:
-                            row1.append(item)
-                        else:
-                            item = item.replace(",", ".")
-                            item = item.replace(".","", item.count(".") - 1)
-                            row1.append(item)
-                    self.__dataArray = self.__dataArray +  delimiter.join(x for x in row1) + '\n'
-                print(time.clock() - start_time)
-                csvfile.close
-                with open(self.__filepath_import + os.sep + os.path.splitext(filename_import)[0] + "_pointAsDec" + os.path.splitext(filename_import)[1], "w") as text_file:
-                    text_file.write(self.__dataArrayHeader + self.__dataArray)
-                    text_file.close()
+                for index, row in enumerate(reader_list):
+                    '''saves the header of csv-file\
+                    into self.__dataArrayHeader'''
+                    print(index, row)
+                    if index < startrow:
+                        self.__dataArrayHeader = self.__dataArrayHeader\
+                            + delimiter.join(x for x in row) + '\n'
+                    else:
+                        row1 = ['']*(len(row))
+                        for (index, item) in enumerate(row):
+                            if index == columnofdate:
+                                row1[index] = item
+                                print(item)
+                            else:
+                                item = item.replace(",", ".")
+                                item = item.replace(".", "", item.count(".") - 1)
+                                row1[index] = item
+                                print(item)
+                        self.__dataArray = self.__dataArray +\
+                                delimiter.join(x for x in row1) + '\n'
+                file.close
 
-                self.__dataArray = np.genfromtxt(io.BytesIO(self.__dataArray.encode('utf-8')),
-                                             dtype = dtype,
-                                             delimiter = delimiter,
-                                             converters = self.str2date(columnofdate = columnofdate, dateformat = dateformat))
+            with open(file_import_withDecPoint,
+                      "w") as csvfile:
+                '''saves the file with Point as Decimal into\
+                input/<filename>+_pointAsDec'''
+
+                csvfile.write(self.__dataArrayHeader + self.__dataArray)
+                csvfile.close()
+        else:
+            '''opens file and reads it into memory\
+            if filename_pointAsDec exists'''
+            with open(file_import_withDecPoint, "r",
+                                    encoding='utf-8-sig') as file:
+
+                reader = csv.reader(file, delimiter=delimiter)
+                reader_list = list(reader)
+                dataArray=np.zeros(len(reader_list)-startrow, dtype=dtypeSource)
+                
+                for index, row in enumerate(reader_list):
+                    if index < startrow:
+                        pass
+                    else:
+                        dataArray[index-startrow]= np.asarray(tuple(row), dtype=dtypeSource)
+
+            self.__dataArray = self.__allocation(dataArray,
+                                                     dtype,
+                                                     dtypeAllocation)
+
         return self.__dataArray
 
     def importTRY(self, location, year, season, quarterHour, startrow, dtype):
@@ -145,7 +167,6 @@ class DataIO():
         '''
         dataArray = DBF(self.__filepath_import +
                         os.sep + filename_import, encoding='cp437', load=True)
-
         returnArray = np.empty(len(dataArray), dtype=dtype)
         for index, record in enumerate(dataArray):
             for item in dtype['names']:
@@ -156,6 +177,10 @@ class DataIO():
 
         return returnArray
 
+    def importDict(self, filename, delimiter = ";"):
+        reader = csv.DictReader(file, delimiter = delimiter)
+        rows = list(reader)
+        pass
 
     def exportCSV(self, filename, results, delimiter = ";"):
         '''
@@ -211,6 +236,28 @@ class DataIO():
     def strpdate2num(self,column):
         func_strpdate2num = {column: dates.strpdate2num('%d.%m.%Y %H:%M')}
         return func_strpdate2num
+
+
+
+    def __allocation(self, dataArray, dtype, dtypeAllocation):
+        '''Input:\n
+        dataArray = numpy.array([], dtype=dtypeAllocation)
+        dtype = {}
+        dtypeAllocation = {}
+        
+        return:
+        numpy.array(dataArray, dtype=dtype)
+        '''
+        
+        returnArray = np.empty(len(dataArray), dtype=dtype)
+        for index, record in enumerate(dataArray):
+            for item in dtype['names']:
+                try:
+                    returnArray[index][item] = record[dtypeAllocation[item]]
+                except:
+                    pass
+        return returnArray
+
 #    def writeColHeader(self, filepathAndfilename, tableHeadername):
 #        self.__filepathAndfilename = filepathAndfilename
 #        with open(self.__filepathAndfilename, "r") as text_file:

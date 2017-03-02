@@ -7,10 +7,7 @@ Created on Sat Jan  7 16:22:28 2017
 
 import sys
 import os
-
-
-#from numpy import matrix
-#from numpy import linalg
+import numpy as np
 
 sys.path.append(os.getcwd() + os.sep + 'class')
 print(sys.path.append(os.getcwd() + os.sep + 'function'))
@@ -69,8 +66,13 @@ class DistrictHeatingSystem():
         return inzidenzmatrix(self.heatgrid.nodes_name, array_col)
     
     def calculateDHS(self):
-        array_col = []
-        matrix_consumer = self.__inzidenzmatrix_HeatSource()
-        print(np.linalg.inv(array_col.append(self.__inzidenzmatrix_HeatSink(), self.__inzidenzmatrix_HeatSource()))*matrix_consumer)
+        array_consumer = np.zeros([len(self.__inzidenzmatrix_HeatSink), 1])
+       # print(self.heatsink.consumer.heat_demand)
+    
+        print(self.__inzidenzmatrix_HeatSink, '\n')
         
-        return
+        
+        #print(np.linalg.inv(np.concatenate((self.__inzidenzmatrix_HeatGrid, self.__inzidenzmatrix_HeatSource), axis=1)))
+        #print(np.linalg.inv(array_col.append([self.__inzidenzmatrix_HeatSink, self.__inzidenzmatrix_HeatSource])*matrix_consumer))
+        
+        return #(np.linalg.lstsq(np.concatenate((self.__inzidenzmatrix_HeatGrid, self.__inzidenzmatrix_HeatSource), axis=1), matrix_consumer))

@@ -40,6 +40,7 @@ class DistrictHeatingSystem():
         array_col = []
 
         for item in self.heatgrid.pipes():
+            print(item.start_node_name)
             array_col.append(
                              [item.start_node_name,
                               item.end_node_name])

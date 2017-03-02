@@ -8,6 +8,7 @@ Created on Sat Jan  7 16:22:28 2017
 import sys
 import os
 import inspect
+import numpy as np
 
 sys.path.append(os.getcwd() + os.sep + 'class')
 print(sys.path.append(os.getcwd() + os.sep + 'function'))
@@ -31,9 +32,6 @@ class DistrictHeatingSystem():
         self.__inzidenzmatrix_HeatGrid = self.__inzidenzmatrix_HeatGrid()
         self.__inzidenzmatrix_HeatSink = self.__inzidenzmatrix_HeatSink()
         self.__inzidenzmatrix_HeatSource = self.__inzidenzmatrix_HeatSource()
-
-    def calculateDHS():
-        pass
 
     def __inzidenzmatrix_HeatGrid(self):
 
@@ -66,4 +64,11 @@ class DistrictHeatingSystem():
             array_col.append([item.start_node_name,
                               item.end_node_name])
 
-        return inzidenzmatrix(self.heatgrid.nodes_name, array_col)
+        return inzidenzmatrix(self.heatsource.nodes_name, array_col)
+    
+    def calculateDHS(self):
+        array_col = []
+        matrix_consumer = self.__inzidenzmatrix_HeatSource()
+        print(np.linalg.inv(array_col.append(self.__inzidenzmatrix_HeatSink(), self.__inzidenzmatrix_HeatSource()))*matrix_consumer)
+        
+        return

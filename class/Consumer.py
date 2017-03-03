@@ -26,6 +26,7 @@ class Consumer():
             consumerValues['heat_consumptionAverage']
         self.massflow = 100 # t/h
         self.heat_demand = consumerValues['heat_demand']
+        self.flow = consumerValues['flow']
         # TODO implement function for massflow
 
 

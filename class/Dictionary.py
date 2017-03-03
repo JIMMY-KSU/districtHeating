@@ -84,6 +84,7 @@ HeatSink_consumer_dtype ={'names': (
                                 'start_y',
                                 'end_x',
                                 'end_y',
+                                'heat_demand',
                                 'heat_consumptionProfile',
                                 'heat_consumptionAverage'
                                 ),
@@ -92,6 +93,7 @@ HeatSink_consumer_dtype ={'names': (
                                 'U30',
                                 'U10',
                                 'U10',
+                                'f',
                                 'f',
                                 'f',
                                 'f',
@@ -227,7 +229,7 @@ HeatSink_STANET_consumer_allocation = {
                                 'index': 0,
                                 'start_node_name': 'ANFNAM',
                                 'end_node_name': 'ENDNAM',
-                                'performance': 'WAERMEMENG'
+                                'heat_demand': 'WAERMEMENG'
                                 }
 
 Pump_STANET_consumer_allocation = {

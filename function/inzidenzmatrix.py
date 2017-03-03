@@ -30,6 +30,6 @@ def inzidenzmatrix(rows, cols):
                 returnMatrix[index_rows][index_cols] = 1
             if item_rows == item_cols[1]:
                 returnMatrix[index_rows][index_cols] = -1
-    for item in returnMatrix:
-        print(item)
+#    for item in returnMatrix:
+#        print(item)
     return returnMatrix

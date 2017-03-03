@@ -3,8 +3,6 @@ var searchData=
   ['setheatflow',['setHeatflow',['../class_pipe_1_1_pipe.html#a628661bc972aee1bc2f84623fcfaed91',1,'Pipe::Pipe']]],
   ['sp_5frp',['SP_RP',['../class_node_1_1_node.html#a036a86db86d1899d2dff6915f6092328',1,'Node.Node.SP_RP()'],['../class_pipe_1_1_pipe.html#a94e84282ca30ec24343eb219f67e783b',1,'Pipe.Pipe.SP_RP()']]],
   ['stanet_5fconsumer',['STANET_consumer',['../namespace_dictionary.html#a4d548616b60c21d9481e34dc5f56ff6d',1,'Dictionary']]],
-  ['stanet_5fdbftoclass',['STANET_DBFtoClass',['../namespace_s_t_a_n_e_t___d_b_fto_class.html',1,'']]],
-  ['stanet_5fdbftoclass_2epy',['STANET_DBFtoClass.py',['../_s_t_a_n_e_t___d_b_fto_class_8py.html',1,'']]],
   ['stanet_5fnodes',['STANET_nodes',['../namespace_dictionary.html#a716974bfb5b5b6f527f42b336c7d8a78',1,'Dictionary']]],
   ['stanet_5fpipes',['STANET_pipes',['../namespace_dictionary.html#a57c00cf376cd84145639bfb65b4e155c',1,'Dictionary']]],
   ['stanet_5fproducer',['STANET_producer',['../namespace_dictionary.html#aeea7b54a3132a64d164394f80e275ee1',1,'Dictionary']]],

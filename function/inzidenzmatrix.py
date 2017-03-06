@@ -18,8 +18,8 @@ def inzidenzmatrix(rows, cols):
     
     input:
         rows = []
-        cols = [[,],[,]] # cols[0] is away from row value -> 1,\
-                            cols[1] is towards row value -> -1
+        cols = [[,],[,]] # cols[0] is away from value of row -> 1,\
+                            cols[1] is towards value of row-> -1
     '''
     returnMatrix = np.array(len(rows) * [len(cols)*[0]])
     for index_rows, item_rows in enumerate(rows):
@@ -30,6 +30,8 @@ def inzidenzmatrix(rows, cols):
                 returnMatrix[index_rows][index_cols] = 1
             if item_rows == item_cols[1]:
                 returnMatrix[index_rows][index_cols] = -1
-#    for item in returnMatrix:
-#        print(item)
+
+    for item, row in zip(returnMatrix, rows):
+        print(str(row) + '|   ' + str(item))
+
     return returnMatrix

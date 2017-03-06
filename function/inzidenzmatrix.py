@@ -6,7 +6,7 @@ Created on Mon Feb 27 14:30:59 2017
 """
 import numpy as np
 
-def inzidenzmatrix(rows, cols):
+def inzidenzmatrix(rows, cols, inzidenzmatrix_name):
     '''
     arranges an inzidenzmatrix for a directed graph for further
     calculations:
@@ -32,6 +32,7 @@ def inzidenzmatrix(rows, cols):
                 returnMatrix[index_rows][index_cols] = -1
 
     for item, row in zip(returnMatrix, rows):
-        print(str(row) + '|   ' + str(item))
+        print(str(inzidenzmatrix_name), str(row), str(item), sep = "  |  ", flush = True)
+
 
     return returnMatrix

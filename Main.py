@@ -15,7 +15,8 @@ sys.path.append(os.getcwd() + os.sep + 'class')
 from DataIO import DataIO
 from DistrictHeatingSystem import DistrictHeatingSystem
 import Dictionary
-import Plotter
+from Plotter import Plotter
+from matplotlib import pyplot as plt
 
 
 DataIO = DataIO(os.getcwd() + os.sep + 'input',
@@ -56,12 +57,36 @@ heatsource = DataIO.importCSV('TestNetz' + os.sep + 'WTestNetz.csv',
 DHS1= DistrictHeatingSystem(heatgrid_pipes, heatgrid_nodes, heatsink, heatsource)
 
 
-for i in DHS1.heatgrid.pipes():
-    print(i.start_node_name)
-
 print (DHS1.calculateDHS())
 
-plotter = Plotter()
-
-
+#plotter = Plotter()
+#
+#nodes_x = []
+#nodes_y = []
+#for item in DHS1.heatgrid.nodes():
+#
+#    nodes_x.append(item.x)
+#    nodes_y.append(item.y)
+#
+#
+#pipes_x = []
+#pipes_y= []
+#
+#for pipe in DHS1.heatgrid.pipes():
+#    for node in DHS1.heatgrid.nodes():
+#        if pipe.start_node_name == node.name:
+#            pipes_x.append(node.x)
+#            pipes_y.append(node.y)
+#        if pipe.end_node_name == node.name:
+#            pipes_x.append(node.x)
+#            pipes_y.append(node.x)
+#
+#
+#
+#plt.plot(pipes_y, pipes_y)
+#
+#plotter.scatter(nodes_x, nodes_y, s = 30)
+#print(pipes_x)
+#
+#plt.plot([1,2,3],[[2,4,2],[3,2,3]])
 

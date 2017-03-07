@@ -32,7 +32,6 @@ def inzidenzmatrix(rows, cols, inzidenzmatrix_name):
                 returnMatrix[index_rows][index_cols] = -1
 
     for item, row in zip(returnMatrix, rows):
-        print(str(inzidenzmatrix_name), str(row), str(item), sep = "  |  ", flush = True)
-
+        print(str(inzidenzmatrix_name), str(row), str(item), sep="  |  ")
 
     return returnMatrix

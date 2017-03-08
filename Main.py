@@ -15,6 +15,7 @@ sys.path.append(os.getcwd() + os.sep + 'class')
 from DataIO import DataIO
 from DistrictHeatingSystem import DistrictHeatingSystem
 import Dictionary
+import Plotter
 
 
 DataIO = DataIO(os.getcwd() + os.sep + 'input',
@@ -60,6 +61,7 @@ for i in DHS1.heatgrid.pipes():
 
 print (DHS1.calculateDHS())
 
+plotter = Plotter()
 
 
 

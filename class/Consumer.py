@@ -34,8 +34,8 @@ class Consumer():
         return self.__dataArray['heat_consumptionProfile'][i]
 
     def heat_consumption(self, heatExProfile, i = slice(None,None)):
-        heat_consumption=self.__heat_consumption.consumptionProfile(heatExProfile,i)
+        heat_consumption=consumptionProfile(heatExProfile,i)
         return heat_consumption
 
     def heat_consumptionAverage(self, i = slice(None,None)):
-              return self.__dataArray['heat_consumptionAverage'][i]
+        return self.__dataArray['heat_consumptionAverage'][i]

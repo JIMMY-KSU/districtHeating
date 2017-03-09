@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 sys.path.append(os.getcwd() + os.sep + 'class')
-print(sys.path.append(os.getcwd() + os.sep + 'function'))
+sys.path.append(os.getcwd() + os.sep + 'function')
 
 from DataIO import DataIO
 from HeatGrid import HeatGrid
@@ -37,7 +37,6 @@ class DistrictHeatingSystem():
         array_col = []
 
         for item in self.heatgrid.pipes():
-            print(item)
             array_col.append(
                              [item.start_node_name,
                               item.end_node_name])

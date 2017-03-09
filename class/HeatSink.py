@@ -22,7 +22,6 @@ class HeatSink():
     def __importConsumer(self):
 
         for item in self.__tableOfConsumer:
-
             self._instancesConsumer.append(Consumer(item))
 
 

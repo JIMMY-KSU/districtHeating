@@ -52,8 +52,10 @@ class Pipe():
                 self.__heat_conductivity_1 = pipeValues['heat_conductivity_1']
                 self.__heat_conductivity_2 = pipeValues['heat_conductivity_2']
                 self.__heat_conductivity_3 = pipeValues['heat_conductivity_3']
-            else:
-                print('No heat transfer coefficient or parameter for pipe', self.index , '!')
+#            else:
+#                print('No heat transfer coefficient or parameter for pipe', self.index , '!')
+
+
 
 
 # TODO bring def heat_transferCoefficient in correct form, take care of possibility that pipeValues['heat_transferCoefficient_inner'] etc. is empty or not defined..
@@ -128,21 +130,21 @@ class Pipe():
         var = 0
 
         var += 1 / (self.__heat_transferCoefficients[0] * (self.diameter_inner / 2 ))
-        print(str(self.__heat_transferCoefficients[0]) + '|' + str(self.diameter_inner) + '| var0= ' +str(var))
+#        print(str(self.__heat_transferCoefficients[0]) + '|' + str(self.diameter_inner) + '| var0= ' +str(var))
         var += 1 / (self.__heat_transferCoefficients[1] * (self.diameter_outer / 2))
-        print(str(self.__heat_transferCoefficients[1]) + '|' + str(self.diameter_outer) + '| var1= ' +str(var))
+#        print(str(self.__heat_transferCoefficients[1]) + '|' + str(self.diameter_outer) + '| var1= ' +str(var))
         var += ((1 / self.__heat_conductivities[0]) *
                 (math.log((self.__diameters[0] / 2) /
                           (self.diameter_inner / 2))))
-        print(str(self.__heat_conductivities[0]) + '|' + str(self.__diameters[0]) + '| var2= ' +str(var))
+#        print(str(self.__heat_conductivities[0]) + '|' + str(self.__diameters[0]) + '| var2= ' +str(var))
         var += ((1 / self.__heat_conductivities[1]) *
                 (math.log((self.__diameters[1] / 2) /
                  (self.__diameters[1 - 1] / 2))))
-        print(str(self.__heat_conductivities[1]) + '|' + str(self.__diameters[1]) + '| var3= ' +str(var))
+#        print(str(self.__heat_conductivities[1]) + '|' + str(self.__diameters[1]) + '| var3= ' +str(var))
         var += ((1 / self.__heat_conductivities[2]) *
                 (math.log((self.__diameters[2] / 2) /
                  (self.__diameters[2 - 1] / 2))))
-        print(str(self.__heat_conductivities[2]) + '|' + str(self.__diameters[2]) + '| var4= ' +str(var))
+#        print(str(self.__heat_conductivities[2]) + '|' + str(self.__diameters[2]) + '| var4= ' +str(var))
         heatloss = (
                     (2 * math.pi * self.length *
                      (self.fluid_temp - self.ambient_temp)) /

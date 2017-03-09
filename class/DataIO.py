@@ -104,7 +104,7 @@ class DataIO():
                 dataArray=np.zeros(len(reader_list)-startrow, dtype=dtypeSource)
                 
                 for index, row in enumerate(reader_list):
-#                    print(tuple(row))
+                    print(tuple(row))
                     if index < startrow:
                         pass
                     else:

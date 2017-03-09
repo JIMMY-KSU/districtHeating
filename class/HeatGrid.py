@@ -25,7 +25,7 @@ class HeatGrid():
         self.__importPipes()
         self.__importNodes()
 
-        self.nodes_name = self.__nodes_name()
+        self.nodes_names = self.__nodes_names()
 
     def __importPipes(self):
 
@@ -40,11 +40,11 @@ class HeatGrid():
 
     def pipes(self, i=slice(None, None)):
         return self._instancesPipe[i]
-
+    
     def nodes(self, i=slice(None, None)):
         return self._instancesNode[i]
 
-    def __nodes_name(self):
+    def __nodes_names(self):
         returnArray = [0]*len(self.nodes())
         for index, item in enumerate(self.nodes()):
             returnArray[index] = item.name

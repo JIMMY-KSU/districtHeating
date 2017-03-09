@@ -4,7 +4,7 @@ Created on Wed Jan 18 11:23:57 2017
 
 @author: jpelda
 """
-
+import numpy as np
 
 def inzidenzmatrix_nodePipe_VL(row, column):
     '''
@@ -21,5 +21,6 @@ def inzidenzmatrix_nodePipe_VL(row, column):
                     conMatrix_VL[index][i] = -1
                 i = i + 1
     print(conMatrix_VL)
+    conMatrix_VL = np.asarray(conMatrix_VL)
     return print('matrix working')
 

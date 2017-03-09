@@ -13,9 +13,16 @@ class HeatSource():
         self._instancesProducer = []
         self.__importProducer(tableOfProducer)
         
+        self.nodes_names = self.__nodes_names()
+        
     def __importProducer(self, tableOfProducer):
         self._instancesProducer.append(Producer(tableOfProducer))
 
     def producer(self, i=slice(None,None)):
         return self._instancesProducer[i]
-
+    
+    def __nodes_names(self):
+        returnArray = [0]*len(self.producer())
+        for index, item in enumerate(self.producer()):
+            returnArray[index] = item.start_node_name
+        return returnArray

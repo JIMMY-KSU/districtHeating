@@ -8,7 +8,7 @@ Created on Sat Jan  7 16:22:28 2017
 import sys
 import os
 import numpy as np
-
+from scipy.optimize import fsolve
 sys.path.append(os.getcwd() + os.sep + 'class')
 sys.path.append(os.getcwd() + os.sep + 'function')
 
@@ -18,6 +18,7 @@ from HeatSink import HeatSink
 from HeatSource import HeatSource
 from inzidenzmatrix import inzidenzmatrix
 import Dictionary
+from Dependencies import Dependencies as dpdc
 
 
 class DistrictHeatingSystem():
@@ -102,9 +103,11 @@ class DistrictHeatingSystem():
                         self.__inzidenzmatrix_HeatSource),
                         axis=1)) , array_consumer)
     def simulateDHS(self):
-
-        VMass = np.asarray()
-
+        M = np.linalg.solve()
+#        dp = dpdc()
+#        tau_initial_guess = 5
+#        tau_solution = fsolve(dp.func(), tau_initial_guess)
+#        print('#############' + str(tau_solution))
     def __consumersLocationinMatrix(self):
         i = 0
         consumerLocationinMatrix = [0]*len(self.heatgrid.nodes_names)

@@ -247,3 +247,7 @@ class Pipe():
 #        return self.__dataArray['heatTransitionCoefficient'][i]
 #    def roughness(self, i = slice(None,None)):
 #        return self.__dataArray['roughness'][i]
+if __name__=="__main__":
+    print('pipe is being run directly')
+else:
+    print('pipe is being imported into another module')

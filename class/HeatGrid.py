@@ -49,3 +49,8 @@ class HeatGrid():
         for index, item in enumerate(self.nodes()):
             returnArray[index] = item.name
         return returnArray
+    
+if __name__=="__main__":
+    print('HeatGrid is being run directly')
+else:
+    print('HeatGrid is being imported into another module')

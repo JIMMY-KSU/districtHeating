@@ -50,8 +50,6 @@ class DistrictHeatingSystem():
         self.__momentumbalancePa = self.__momentumbalancePa(self.VPa)
         self.__momentumbalancePb = self.__momentumbalancePb(self.VPb)
 
-
-
     def __inzidenzmatrix_HeatGrid(self):
         '''returns an inzidenzmatrix where all elements are displayed 
             (producer, consumer, pipes)'''
@@ -102,12 +100,7 @@ class DistrictHeatingSystem():
                         self.__inzidenzmatrix_HeatGrid,
                         self.__inzidenzmatrix_HeatSource),
                         axis=1)) , array_consumer)
-    def simulateDHS(self):
-        M = np.linalg.solve()
-#        dp = dpdc()
-#        tau_initial_guess = 5
-#        tau_solution = fsolve(dp.func(), tau_initial_guess)
-#        print('#############' + str(tau_solution))
+
     def __consumersLocationinMatrix(self):
         i = 0
         consumerLocationinMatrix = [0]*len(self.heatgrid.nodes_names)
@@ -214,3 +207,7 @@ class DistrictHeatingSystem():
 
         momentumbalance = operation1 - P
         return momentumbalance
+if __name__=="__main__":
+    print('DistrictHeatingSystem is being run directly')
+else:
+    print('DistrictHeatingSystem is being imported into another module')

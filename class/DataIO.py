@@ -50,8 +50,10 @@ class DataIO():
             '''opens file and changes decimal seperator to point,\n
             delets all other points or commas: except of date\n
             --> saves file into input/<filename>+_pointAsDec'''
-
-            print(filename_import + '_pointAsDec will be generated')
+# TODO put generation of _pointAsDec in a seperate function to get a different
+# and prevent an error exit!!!
+            print(filename_import + '_pointAsDec will be generated firstly,\
+                                      please rerun sim again')
 
             self.__dataArray = ''
             self.__dataArrayHeader = ''
@@ -65,7 +67,7 @@ class DataIO():
                 for index, row in enumerate(reader_list):
                     '''saves the header of csv-file\
                     into self.__dataArrayHeader'''
-                    print(index, row)
+#                    print(index, row)
                     if index < startrow:
                         self.__dataArrayHeader = self.__dataArrayHeader\
                             + delimiter.join(x for x in row) + '\n'
@@ -102,12 +104,15 @@ class DataIO():
                 dataArray=np.zeros(len(reader_list)-startrow, dtype=dtypeSource)
                 
                 for index, row in enumerate(reader_list):
+#                    print(tuple(row))
                     if index < startrow:
                         pass
                     else:
                         dataArray[index-startrow]= np.asarray(tuple(row), dtype=dtypeSource)
-
-            self.__dataArray = self.__allocation(dataArray,
+            if dtype == None:
+                self.__dataArray = dataArray
+            else:
+                self.__dataArray = self.__allocation(dataArray,
                                                      dtype,
                                                      dtypeAllocation)
 

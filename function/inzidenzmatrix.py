@@ -6,7 +6,7 @@ Created on Mon Feb 27 14:30:59 2017
 """
 import numpy as np
 
-def inzidenzmatrix(rows, cols):
+def inzidenzmatrix(rows, cols, inzidenzmatrix_name):
     '''
     arranges an inzidenzmatrix for a directed graph for further
     calculations:
@@ -18,18 +18,22 @@ def inzidenzmatrix(rows, cols):
     
     input:
         rows = []
-        cols = [[,],[,]] # cols[0] is away from row value -> 1,\
-                            cols[1] is towards row value -> -1
+        cols = [[,],[,]] # cols[0] is away from value of row -> -1,\
+                            cols[1] is towards value of row-> 1
     '''
     returnMatrix = np.array(len(rows) * [len(cols)*[0]])
-    for index_rows, item_rows in enumerate(rows):
 
+    for index, item in enumerate(rows):
         for index_cols, item_cols in enumerate(cols):
+            if item_cols[0] == item:
+                returnMatrix[index][index_cols] = -1
+        for index_cols, item_cols in enumerate(cols):
+            if item_cols[1] == item:
+                returnMatrix[index][index_cols] = 1
 
-            if item_rows == item_cols[0]:
-                returnMatrix[index_rows][index_cols] = 1
-            if item_rows == item_cols[1]:
-                returnMatrix[index_rows][index_cols] = -1
-#    for item in returnMatrix:
-#        print(item)
+    print(str(inzidenzmatrix_name))
+    for row, item in zip(rows, returnMatrix):
+        print(str(row), str(item), sep='  |  ')
+    print('\n')
+
     return returnMatrix

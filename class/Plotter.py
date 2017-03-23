@@ -36,6 +36,23 @@ class Plotter():
         
         
         
+    def color(self, i):
+     self.__color = [
+                ['black',                '#000000'],
+                ['hawk_red',             '#C24C43'],
+                ['hawk_blue',            '#43B9C2'],
+                ['hawk_green',           '#B9C243'],
+                ['orange',               '#FFA500'],
+                ['blue',                 '#0000FF'],
+                ['hawk_magenta',         '#C243B9'],                        
+                ['olive',                '#808000'],
+                ]
+     return self.__color[i][1]
+     
+    def scatter(self, x, y, s = 2  # 0 to 15 point radii
+                , c = 'blue', alha = 0.5):
+        plt.scatter(x, y, s, c, alpha =0.5)
+        plt.show()
     def plot_xyLine(self,
                     xAxis, yAxis,
                     lineStyle = "-",
@@ -329,15 +346,3 @@ class Plotter():
         
         return fig
         
-        def color(self, i):
-             self.__color = [
-                        ['black',                '#000000'],
-                        ['hawk_red',             '#C24C43'],
-                        ['hawk_blue',            '#43B9C2'],
-                        ['hawk_green',           '#B9C243'],
-                        ['orange',               '#FFA500'],
-                        ['blue',                 '#0000FF'],
-                        ['hawk_magenta',         '#C243B9'],                        
-                        ['olive',                '#808000'],
-                        ]
-             return self.__color[i][1]

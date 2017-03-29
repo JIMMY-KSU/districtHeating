@@ -27,25 +27,18 @@ heatgrid_nodes = DataIO.importCSV('Hannover_workshopNet1'  + os.sep + 'heatnet_n
                                  startrow=1,
                                  columnofdate=None,
                                  dateformat='None')
-#print(heatgrid_nodes['name'])
 
 heatgrid_pipes = DataIO.importCSV('Hannover_workshopNet1' + os.sep + 'heatnet_pipes.csv',
                                   dtypeSource = Dictionary.HeatGrid_pipe_dtype,
                                   startrow=1,
                                   columnofdate=None,
                                   dateformat='None')
-#print(heatgrid_pipes['index'])
 
 heatsink_consumer = DataIO.importCSV('Hannover_workshopNet1' + os.sep + 'consumer.csv',
                                dtypeSource=Dictionary.HeatSink_consumer_dtype,
                                startrow=1,
                                columnofdate=None,
                                dateformat='None')
-
-#print('Consumer:  ' +
-#      'start node: ' + str(heatsink_consumer['start_node_name']) +
-#      'end node: ' + str(heatsink_consumer['end_node_name']))
-
 
 heatsource = DataIO.importCSV('Hannover_workshopNet1' + os.sep + 'producer.csv',
                               dtypeSource=Dictionary.HeatSource_producer_dtype,
@@ -54,7 +47,7 @@ heatsource = DataIO.importCSV('Hannover_workshopNet1' + os.sep + 'producer.csv',
                               dateformat='None')
 
 DHS1 = DistrictHeatingSystem(heatgrid_pipes, heatgrid_nodes, heatsink_consumer, heatsource)
-
+DHS1.calculateDHS()
 
 
 

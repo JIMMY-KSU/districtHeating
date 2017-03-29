@@ -248,6 +248,6 @@ class Pipe():
 #    def roughness(self, i = slice(None,None)):
 #        return self.__dataArray['roughness'][i]
 if __name__=="__main__":
-    print('pipe is being run directly')
+    print('pipe run directly')
 else:
-    print('pipe is being imported into another module')
+    print('pipe was imported into another module')

@@ -18,39 +18,57 @@ class HeatGrid():
             SP = '' # name in imported tables for supply line
             RP = '' # name in imported tables for return line
         '''
-        self.__tableOfPipes = tableOfPipes
-        self.__tableOfNodes = tableOfNodes
+
         self._instancesPipe = []
         self._instancesNode = []
-        self.__importPipes()
-        self.__importNodes()
+        self.__importPipes(tableOfPipes)
+        self.__importNodes(tableOfNodes)
 
         self.nodes_names = self.__nodes_names()
 
-    def __importPipes(self):
-
-        for item in self.__tableOfPipes:
-
-            self._instancesPipe.append(Pipe(item))
-
-    def __importNodes(self):
-        for item in self.__tableOfNodes:
-
-            self._instancesNode.append(Node(item))
-
     def pipes(self, i=slice(None, None)):
         return self._instancesPipe[i]
-    
+
     def nodes(self, i=slice(None, None)):
         return self._instancesNode[i]
+
+    def __importPipes(self, arr):
+        for item in arr:
+            self._instancesPipe.append(Pipe(item))
+
+    def __importNodes(self, arr):
+        for item in arr:
+            self._instancesNode.append(Node(item))
 
     def __nodes_names(self):
         returnArray = [0]*len(self.nodes())
         for index, item in enumerate(self.nodes()):
             returnArray[index] = item.name
         return returnArray
-    
-if __name__=="__main__":
-    print('HeatGrid is being run directly')
+
+if __name__ == "__main__":
+    print('HeatGrid run directly')
+    from DataIO import DataIO
+    import Dictionary
+    import os
+
+    DataIO = DataIO(os.path.dirname(os.getcwd()) + os.sep + 'input',
+                    os.path.dirname(os.getcwd()) + os.sep + 'output')
+
+    heatgrid_nodes = DataIO.importCSV(
+            'heatnet_nodes.csv',
+            dtypeSource=Dictionary.HeatGrid_node_dtype,
+            startrow=1,
+            columnofdate=None,
+            dateformat='None')
+    #  print(heatgrid_nodes['name'])
+
+    heatgrid_pipes = DataIO.importCSV(
+            'heatnet_pipes.csv',
+            dtypeSource=Dictionary.HeatGrid_pipe_dtype,
+            startrow=1,
+            columnofdate=None,
+            dateformat='None')
+    heatgrid = HeatGrid(heatgrid_pipes, heatgrid_nodes)
 else:
-    print('HeatGrid is being imported into another module')
+    print('HeatGrid was imported into another module')

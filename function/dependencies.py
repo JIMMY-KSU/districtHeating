@@ -6,42 +6,63 @@ Created on Thu Mar  9 14:11:03 2017
 """
 import math
 
-cp = 4.182
-
-def dependencies_producer_mass(VMass, VTa, VTb, Qproducer):
-
-    return VMass * cp * (VTa - VTb) + Qproducer
+cp = 4182
 
 
-def dependencies_producer_press(VPress, Pproducer):
-    VPress = Psupply
+def producer_massflow(m, Ta, Tb, Q, cp=cp):
+    res = m * cp * (Ta - Tb) + Q
+    return res
 
-    return VPress
+
+#def producer_heatflow(m, Ta, Tb, cp=cp):
+#    res = m * cp * (Ta - Tb) - Q
+#    return res
 
 
-def dependencies_pipe_mass(VMass, VTa, VTb, kA):
+def producer_press(Pb_set, Pb):
+    res = Pb_set - Pb
+    return res
 
-    return VMass * cp * (VTa - VTb) - kA * ((VTa * VTb) / 2)
 
-def dependencies_pipe_press(VPa, VPb, VMass, VHa, VHb):
+def producer_temp(Tb_set, Tb):
+    res = Tb_set - Tb
+    return res
 
-    Zeta = 1
+
+def pipe_massflow(m, Ta, Tb, Q, cp=cp):
+    res = m * cp * (Ta - Tb) - Q
+    return res
+
+
+def pipe_heatflow(Q, Ta, Tb, A=1, k=1, Tamb=273.15 + 10):
+    res = (k*A)*((Ta + Tb)/2 - Tamb) - Q
+    return res
+
+
+def pipe_press(Pa, Pb, m, Ha=0, Hb=0):
+    Zeta = 0
     rho = 1
     g = 9.81
-    return (VPa - VPb) - Zeta * math.pow(VMass, 2) + rho * g * (VHa - VHb)
+    res = (Pa - Pb) - Zeta * math.pow(m, 2) + rho * g * (Ha - Hb)
+    return res
 
 
-def dependencies_consumer_mass(VMass, VTa, VTb, Qproducer):
-    
-    
-    return VMass * cp * (VTa - VTb) - Qconsumer
+def consumer_mass(m, Ta, Tb, Q, cp=cp):
+    res = m * cp * (Ta - Tb) - Q
+    return res
 
-def dependencies_consumer_temp(VTb_set, VTb):
-    VTb = VTb_set
-    return VTb
 
-def dependencies_consumer_press(VPa, VPb, VMass):
+def consumer_temp(Tb_set, Tb):
+    res = Tb_set - Tb
+    return res
 
-    Zeta = 1
-    
-    return (VPa - VPb) - zeta * math.pow(VMass, 2)
+
+def consumer_press(Pa, Pb, m):
+    zeta = 0
+    res = (Pa - Pb) - zeta * math.pow(m, 2)
+    return res
+
+
+def consumer_heatflow(Q_set, Q):
+    res = Q_set - Q
+    return res

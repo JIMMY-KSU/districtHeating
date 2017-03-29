@@ -12,13 +12,13 @@ from scipy.optimize import fsolve
 sys.path.append(os.getcwd() + os.sep + 'class')
 sys.path.append(os.getcwd() + os.sep + 'function')
 
+
 from DataIO import DataIO
 from HeatGrid import HeatGrid
 from HeatSink import HeatSink
 from HeatSource import HeatSource
 from inzidenzmatrix import inzidenzmatrix
-import Dictionary
-from Dependencies import Dependencies as dpdc
+from Solver import Solver
 
 
 class DistrictHeatingSystem():
@@ -88,18 +88,9 @@ class DistrictHeatingSystem():
                                inzidenzmatrix_name = "heatSource")
 
     def calculateDHS(self):
-        array_consumer = np.zeros([len(self.__inzidenzmatrix_HeatSink), 1])
-
-        for i in range(len(self.heatsink.consumer())):
-            array_consumer += self.__inzidenzmatrix_HeatSink[0:len(
-                                self.__inzidenzmatrix_HeatSink), i:(i + 1)] * \
-                                self.heatsink.consumer(i).flow
-
-        return np.dot(np.linalg.pinv(
-                np.concatenate((
-                        self.__inzidenzmatrix_HeatGrid,
-                        self.__inzidenzmatrix_HeatSource),
-                        axis=1)) , array_consumer)
+        
+        result = Solver()
+        return result
 
     def __consumersLocationinMatrix(self):
         i = 0
@@ -208,6 +199,6 @@ class DistrictHeatingSystem():
         momentumbalance = operation1 - P
         return momentumbalance
 if __name__=="__main__":
-    print('DistrictHeatingSystem is being run directly')
+    print('DistrictHeatingSystem run directly')
 else:
-    print('DistrictHeatingSystem is being imported into another module')
+    print('DistrictHeatingSystem was imported into another module')

@@ -21,7 +21,7 @@ class Dependencies():
         Q = (k * A) * ((Ta + Tb)/2 - Tamb)
         return Q
 
-    def dependencies_producer_mass(m, Ta, Tb, Q, cp=4100):
+    def dependencies_producer_massflow(m, Ta, Tb, Q, cp=4100):
         res = m * cp * (Ta - Tb) + Q
         return res
 
@@ -33,7 +33,7 @@ class Dependencies():
         res = Pb_set - Pb
         return res
 
-    def dependencies_pipe_mass(m, Ta, Tb, Q, kA=1, cp=4100):
+    def dependencies_pipe_massflow(m, Ta, Tb, Q, kA=1, cp=4100):
         res = m * cp * (Ta - Tb) - Q
         return res
 
@@ -48,7 +48,7 @@ class Dependencies():
         res = (k * A) * ((Ta + Tb)/2 - Tamb) - Q
         return res
 
-    def dependencies_consumer_mass(m, Ta, Tb, Q, cp=4100):
+    def dependencies_consumer_massflow(m, Ta, Tb, Q, cp=4100):
         res = m * cp * (Ta - Tb) - Q
         return res
 

@@ -9,106 +9,194 @@ import numpy as np
 from scipy.optimize import fsolve
 from scipy.optimize import root
 import math
-import dependencies as dp
+from Dependencies import Dependencies as dp
 
 Tamb = 5+273.15
-
+v_Pb_set = 5
+v_Tb_set = 80+273.15
+Tconsumer = 273.15 + 30
+Qconsumer = 273.15 + 80
 class Solver():
-    def __init__(self):
+    def __init__(self,nodes_amount, elements_amount,
+                 inzidenzmatrix,
+                 inzidensmatrix_grid,
+                 inzidenzmatrix_sink,
+                 inzidenzmatrix_source,
+                 v_massflow, v_Q,
+                 v_T, v_Ta, v_Tb,
+                 v_P, v_Pa, v_Pb):
+
+        self.__nodes_amount = nodes_amount
+        self.__elements_amount = elements_amount
+
+        self.__inzidenzmatrix = inzidenzmatrix
+        self.__inzidenzmatrix_minus = self.__inzidenzmatrix.clip(max=0)
+        self.__inzidenzmatrix_plus = self.__inzidenzmatrix.clip(min=0)
+
+        self.__inzidenzmatrix_grid = inzidenzmatrix_grid
+        self.__elements_location_grid = np.arange(len(inzidenzmatrix_grid))
+
+        self.__inzidenzmatrix_sink = inzidenzmatrix_sink
+        self.__elements_location_sink = np.arange(len(inzidenzmatrix_grid) + 1,
+                                  len(inzidenzmatrix_grid) + 1 +
+                                  len(inzidenzmatrix_sink))
+
+        self.__inzidenzmatrix_source = inzidenzmatrix_source
+        self.__elements_location_source = np.arange(len(inzidenzmatrix_grid)+
+                                             len(inzidenzmatrix_sink) + 1,
+                                             len(inzidenzmatrix_grid) +
+                                             len(inzidenzmatrix_sink) + 1 +
+                                             len(inzidenzmatrix_source))
+
+        self.v_massflow = np.asarray(v_massflow)
+        self.v_Q = np.asarray(v_Q)
+        self.v_T = np.asarray(v_T)
+        self.v_Ta = np.asarray(v_Ta)
+        self.v_Tb = np.asarray(v_Tb)
+        self.v_P = np.asarray(v_P)
+        self.v_Pa = np.asarray(v_Pa)
+        self.v_Pb = np.asarray(v_Pb)
+        
         pass
     
-    def gridCalculation_thermical(x, args):
-    
+    def gridCalculation_thermical(self, x, args):
+
         i = 0
-        arrM = [0] * args['massflow']  # length of entities of pipes
-        arrP = [0] * args['pressure']  # length of entities of nodes
-        arrPa = [0] * args['Pa']  # length of entities of pipes
-        arrPb = [0] * args['Pb']  # length of entities of pipes
-        arrT = [0] * args['T']  # length of entities of nodes
-        arrTa = [0] * args['Ta']  # length of entities of pipes
-        arrTb = [0] * args['Tb']  # length of entities of pipes
-        arrQ = [0] * args['heatflow']  # length of entities of nodes
+        v_massflow = x[i: i + len(self.v_massflow)]
+        i = i + len(self.v_massflow)
+        v_P = x[i: i + len(self.v_P)]
+        i = i + len(self.v_P)
+        v_Pa = x[i: i + len(self.v_Pa)]
+        i = i + len(self.v_Pa)
+        v_Pb = x[i: i + len(self.v_Pb)]
+        i = i + len(self.v_Pb)
+        v_T = x[i: i + len(self.v_T)]
+        i = i + len(self.v_T)
+        v_Ta = x[i: i + len(self.v_Ta)]
+        i = i + len(self.v_Tb)
+        v_Tb = x[i: i + len(self.v_Tb)]
+        i = i + len(self.v_Tb)
+        v_Q = x[i: i + len(self.v_Q)]
     
+        F = np.zeros(2 * self.nodes + 6 * self.elements)
+
         i = 0
-        arrM = x[i: i + len(arrM)]
-        i = i + len(arrM)
-        arrP = x[i: i + len(arrP)]
-        i = i + len(arrP)
-        arrPa = x[i: i + len(arrPa)]
-        i = i + len(arrPa)
-        arrPb = x[i: i + len(arrPb)]
-        i = i + len(arrPb)
-        arrT = x[i: i + len(arrT)]
-        i = i + len(arrT)
-        arrTa = x[i: i + len(arrTa)]
-        i = i + len(arrTa)
-        arrTb = x[i: i + len(arrTb)]
-        i = i + len(arrTb)
-        arrQ = x[i: i + len(arrQ)]
-    
-        F = np.zeros(32)
-    
         # mass balance M/M
-        F[0] = arrM[0] - arrM[1]
-        F[1] = arrM[1] - arrM[2]
-        F[2] = arrM[2] - arrM[3]
-    #    F[3] = -arrM[0] + arrM[3]
-        # energy balance T/Ta
-        F[4] = arrT[3] - arrTa[0]
-        F[5] = arrT[0] - arrTa[1]
-        F[6] = arrT[1] - arrTa[2]
-        F[7] = arrT[2] - arrTa[3]
-        # impulse balance P/Pb
-        F[8] = arrP[0] - arrPb[0]
-        F[9] = arrP[1] - arrPb[1]
-        F[10] = arrP[2] - arrPb[2]
-        F[11] = arrP[3] - arrPb[3]
-        # impulse balance P/Pa
-        F[12] = arrP[3] - arrPa[0]
-        F[13] = arrP[0] - arrPa[1]
-        F[14] = arrP[1] - arrPa[2]
-        F[15] = arrP[2] - arrPa[3]
+        j = self.nodes
+        F[i:i+j] = np.dot(self.inzidenzmatrix, v_massflow)
+        i = i+j-1
+
         # temperature balance TbM/TaM
-        F[16] = arrTb[0]*arrM[0] - arrTa[1]*arrM[1]
-        F[17] = arrTb[1]*arrM[1] - arrTa[2]*arrM[2]
-        F[18] = arrTb[2]*arrM[2] - arrTa[3]*arrM[3]
-        F[19] = arrTb[3]*arrM[3] - arrTa[0]*arrM[0]
-    
-        F[20] = dp.producer_massflow(arrM[0], arrTa[0], arrTb[0], arrQ[0])
-        F[21] = dp.pipe_press(arrPa[1], arrPb[1], arrM[1])
-        F[22] = dp.pipe_press(arrPa[3], arrPb[3], arrM[3])
-        F[23] = dp.consumer_temp(30+273.15, arrTb[2])
-    
-        F[24] = dp.consumer_mass(arrM[2], arrTa[2], arrTb[2], arrQ[2])
-        F[25] = dp.consumer_press(arrPa[2], arrPb[2], arrM[2])
-        F[26] = dp.pipe_heatflow(arrQ[1], arrTa[1], arrTb[1], Tamb=273.15 + 10)
-        F[27] = dp.pipe_heatflow(arrQ[3], arrTa[3], arrTb[3], Tamb=273.15 + 10)
-        F[28] = dp.pipe_massflow(arrM[1], arrTa[1], arrTb[1], arrQ[1])
-        F[29] = dp.pipe_massflow(arrM[3], arrTa[3], arrTb[3], arrQ[3])
-        F[30] = dp.producer_press(7, arrPb[0])
-        F[31] = dp.producer_temp(80+273.15, arrTb[0])
-        F[3] = dp.consumer_heatflow(args['initialValues_heatflow'][1], arrQ[2])
-    
-    #    F[32] = arrQ[0] - arrQ[1]
-    #    F[33] = arrQ[1] - arrQ[2]
-    #    F[34] = arrQ[2] - arrQ[3]
-    #    F[35] = -arrQ[0] + arrQ[3]
-    
+        #j = self.nodes
+        F[i:i+j] = np.dot(
+                self.inzidenzmatrix_plus, v_massflow*v_Tb) +\
+                np.dot(
+                self.inzidenzmatrix_minus, v_massflow*v_Ta)
+        i = i+j
+
+        # energy balance T/Ta
+        j = self.elements
+        F[i:i+j] = np.dot(-1*self.inzidenzmatrix_minus.T, v_T) -\
+                          v_Ta
+        i = i+j
+
+        # impulse balance P/Pa
+        #j=self.elements
+        F[i:i+j] = np.dot(-1*self.inzidenzmatrix_minus.T, v_P) - v_Pa
+        i = i+j
+
+        # impulse balance P/Pb
+        F[i:i+j] = np.dot(self.inzidenzmatrix_plus.T, v_P) - v_Pb
+        i = i+j
+
+
+        F[i:i+len(self.__elements_location_source)] = dp.dependencies_producer_massflow(
+                v_massflow[min(self.__elements_location_source):
+                           max(self.__elements_location_source)+1],
+                v_Ta[min(self.__elements_location_source):
+                     max(self.__elements_location_source)+1],
+                v_Tb[min(self.__elements_location_source):
+                     max(self.__elements_location_source+1)],
+                v_Q[min(self.__elements_location_source):
+                    max(self.__elements_location_source)+1])
+        i = i + len(self.__elements_location_source)
+
+        F[i:i+len(self.__elements_location_source)] = dp.dependencies_producer_press(
+                v_Pb_set, v_Pb[min(self.__elements_location_source):
+                              max(self.__elements_location_source)+1])
+        i = i + len(self.__elements_location_source)
+        
+        F[i:i+len(self.__elements_location_source)] = dp.dependencies_producer_temp(
+                v_Tb_set, v_Tb[min(self.__elements_location_source):
+                               max(self.__elements_location_source)+1])
+        i = i + len(self.__elements_location_source)
+        
+        F[i:i+len(self.__elements_location_grid)] = dp.dependencies_pipe_press(
+                v_Pa[min(self.__elements_location_grid):
+                     max(self.__elements_location_grid)+1],
+                v_Pb[min(self.__elements_location_grid):
+                     max(self.__elements_location_grid)+1],
+                v_massflow[min(self.__elements_location_grid):
+                           max(self.__elements_location_grid)+1])
+        i = i + len(self.__elements_location_grid)
+
+        F[i:i+len(self.__elements_location_grid)] = dp.dependencies_pipe_Q(
+                v_Q[min(self.__elements_location_grid),
+                    max(self.__elements_location_grid)+1],
+                v_Ta[min(self.__elements_location_grid),
+                     max(self.__elements_location_grid)+1],
+                v_Tb[min(self.__elements_location_grid),
+                     max(self.__elements_location_grid)+1],
+                Tamb)
+        i = i + len(self.__elements_location_grid)
+        
+        F[i:i+len(self.__elements_location_grid)] = dp.dependencies_pipe_massflow(
+                v_massflow[min(self.__elements_location_grid),
+                           max(self.__elements_location_grid)+1],
+                v_Ta[min(self.__elements_location_grid),
+                     max(self.__elements_location_grid)+1],
+                v_Tb[min(self.__elements_location_grid),
+                     max(self.__elements_location_grid)+1],
+                v_Q[min(self.__elements_location_grid),
+                    max(self.__elements_location_grid)+1])
+        i = i + len(self.__elements_location_grid)
+
+        F[i:i+len(self.__elements_location_sink)] = dp.dependencies_consumer_massflow(
+                v_massflow[min(self.__elements_location_sink),
+                           max(self.__elements_location_sink)+1],
+                v_Ta[min(self.__elements_location_sink),
+                     max(self.__elements_location_sink)+1],
+                v_Tb[min(self.__elements_location_sink),
+                     max(self.__elements_location_sink)+1],
+                v_Q[min(self.__elements_location_sink),
+                    max(self.__elements_location_sink)+1])
+        i = i + len(self.__elements_location_sink)
+
+        F[i:i+len(self.__elements_location_sink)] = dp.dependencies_consumer_press(
+                v_Pa[min(self.__elements_location_sink),
+                     max(self.__elements_location_sink)+1],
+                v_Pb[min(self.__elements_location_sink),
+                     max(self.__elements_location_sink)+1],
+                v_massflow[min(self.__elements_location_sink),
+                     max(self.__elements_location_sink)+1])
+        i = i + len(self.__elements_location_sink)
+
+        F[i:i+len(self.__elements_location_sink)] = dp.dependencies_consumer_temp(
+                Tconsumer,
+                v_Tb[min(self.__elements_location_sink),
+                     max(self.__elements_location_sink)+1])
+        i = i + len(self.__elements_location_sink)
+
+        F[i:i+len(self.__elements_location_sink)] = dp.dependencies_consumer_Q(
+                Qconsumer,
+                v_Q[min(self.__elements_location_sink),
+                    max(self.__elements_location_sink)+1])
+
         return F
-    
+
 if __name__=="__main__":
     print('DistrictHeatingSystem run directly')
-    args = {}
-    args['massflow'] = 4  # length of elements
-    args['pressure'] = 4  # length of nodes
-    args['Pa'] = 4  # length of elements
-    args['Pb'] = 4  # lengtha of elements
-    args['T'] = 4  # length of nodes
-    args['Ta'] = 4  # length of elements
-    args['Tb'] = 4  # length of elements
-    args['heatflow'] = 4  # length of elements
-    args['initialValues_heatflow'] = [12000, 23000]
-    
+
     xGuess = np.array((57, 57, 57, 57,  # massflow
                        7, 7, 7, 7,  # pressure
                        7, 7, 7, 7,  # Pa
@@ -118,7 +206,7 @@ if __name__=="__main__":
                        80+273.15, 80+273.15, 15+273.15, 15+273.15,  # Tb
                        12000, 0, -12000, 0  # heatflow
                        ))
-    
+
     initialValues_heatflow = 12000
     solution = fsolve(gridCalculation_thermical, xGuess, args)
     
@@ -148,50 +236,4 @@ if __name__=="__main__":
 
 else:
     print('DistrictHeatingSystem was imported into another module')
-    args = {}
-    args['massflow'] = 4  # length of elements
-    args['pressure'] = 4  # length of nodes
-    args['Pa'] = 4  # length of elements
-    args['Pb'] = 4  # lengtha of elements
-    args['T'] = 4  # length of nodes
-    args['Ta'] = 4  # length of elements
-    args['Tb'] = 4  # length of elements
-    args['heatflow'] = 4  # length of elements
-    args['initialValues_heatflow'] = [12000, 23000]
-    
-    xGuess = np.array((57, 57, 57, 57,  # massflow
-                       7, 7, 7, 7,  # pressure
-                       7, 7, 7, 7,  # Pa
-                       7, 7, 7, 7,  # Pb
-                       80+273.15, 80+273.15, 15+273.15, 15+273.15,  # T
-                       15+273.15, 80+273.15, 80+273.15, 15+273.15,  # Ta
-                       80+273.15, 80+273.15, 15+273.15, 15+273.15,  # Tb
-                       12000, 0, -12000, 0  # heatflow
-                       ))
-    
-    initialValues_heatflow = 12000
-    solution = fsolve(Solver.gridCalculation_thermical, xGuess, args)
-    massflow = 'Massflow: \t'
-    pressure = 'Pressure P: \t'
-    pressureA = 'Pressure Pa: \t'
-    pressureB = 'Pressure Pb: \t'
-    temperature = 'Temperature T: \t'
-    temperatureA = 'Temperature Ta: '
-    temperatureB = 'Temperature Tb: '
-    heatflow = 'Heatflow Q: \t'
-    arrayNames = [massflow, pressure, pressureA,
-                  pressureB, temperature, temperatureA,
-                  temperatureB, heatflow]
-    
-    i = -1
-    j = 1
-    for index, item in enumerate(solution):
-        j = j + 1
-        if index % 4 == 0:
-            i = i + 1
-            j = 1
-        print(str(arrayNames[i]) + str(j) + '  |  ' + str(item))
-    
-    print('numbers of unknown variables: ' + str(len(solution)))
-    print('numbers of equations: ' + str(len(Solver.gridCalculation_thermical(xGuess, args))))
 

@@ -185,7 +185,7 @@ STANET_producer = {'names': (
                             'ANFNAM',
                             'ENDNAM',
                             'NAME',
-                            'Power'
+                            'POWER'
                             ),
                     'formats': (
                                 'U10',

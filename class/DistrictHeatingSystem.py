@@ -44,6 +44,10 @@ class DistrictHeatingSystem():
         self._inzidenzmatrix_HeatGrid = self.__inzidenzmatrix_HeatGrid()
         self._inzidenzmatrix_HeatSink = self.__inzidenzmatrix_HeatSink()
         self._inzidenzmatrix_HeatSource = self.__inzidenzmatrix_HeatSource()
+        self._inzidenzmatrix = np.concatenate((self._inzidenzmatrix_HeatGrid,
+                                              self._inzidenzmatrix_HeatSink,
+                                              self._inzidenzmatrix_HeatSource),
+                                              axis=1)
         self.__massbilance = self.__massbalance()
         self.__energybalanceTa = self.__energybalance(self.VTa)
         self.__energybalanceTb = self.__energybalance(self.VTb)
@@ -88,9 +92,30 @@ class DistrictHeatingSystem():
                                inzidenzmatrix_name = "heatSource")
 
     def calculateDHS(self):
-        
-        result = Solver()
-        return result
+        elements = np.shape(self._inzidenzmatrix)[1]
+        nodes = np.shape(self._inzidenzmatrix)[0]
+
+        v_massflow = [0] * elements
+        v_Q = [0] * elements
+
+        v_T = [0] * nodes
+        v_Ta = [0] * elements
+        v_Tb = [0] * elements
+
+        v_P = [0] * nodes
+        v_Pa = [0] * elements
+        v_Pb = [0] * elements
+
+        result = Solver(nodes, elements, self._inzidenzmatrix,
+                        self._inzidenzmatrix_HeatGrid,
+                        self._inzidenzmatrix_HeatSink,
+                        self._inzidenzmatrix_HeatSource,
+                        v_massflow,
+                        v_Q, v_T, v_Ta, v_Tb,
+                        v_P, v_Pa, v_Pb)
+
+        pass
+#        return result
 
     def __consumersLocationinMatrix(self):
         i = 0
@@ -198,7 +223,48 @@ class DistrictHeatingSystem():
 
         momentumbalance = operation1 - P
         return momentumbalance
-if __name__=="__main__":
+if __name__ == "__main__":
     print('DistrictHeatingSystem run directly')
+
+    import Dictionary
+
+    DataIO = DataIO(os.path.dirname(os.getcwd()) + os.sep + 'input',
+                    os.path.dirname(os.getcwd()) + os.sep + 'output')
+
+    heatgrid_nodes = DataIO.importCSV('Hannover_workshopNet1' +
+                                      os.sep + 'heatnet_nodes.csv',
+                                      dtypeSource=Dictionary.
+                                      HeatGrid_node_dtype,
+                                      startrow=1,
+                                      columnofdate=None,
+                                      dateformat='None')
+
+    heatgrid_pipes = DataIO.importCSV('Hannover_workshopNet1' +
+                                      os.sep + 'heatnet_pipes.csv',
+                                      dtypeSource=Dictionary.
+                                      HeatGrid_pipe_dtype,
+                                      startrow=1,
+                                      columnofdate=None,
+                                      dateformat='None')
+    heatsink = DataIO.importCSV('Hannover_workshopNet1' +
+                                         os.sep + 'consumer.csv',
+                                         dtypeSource=Dictionary.
+                                         HeatSink_consumer_dtype,
+                                         startrow=1,
+                                         columnofdate=None,
+                                         dateformat='None')
+
+    heatsource = DataIO.importCSV('Hannover_workshopNet1' +
+                                  os.sep + 'producer.csv',
+                                  dtypeSource=Dictionary.
+                                  HeatSource_producer_dtype,
+                                  startrow=1,
+                                  columnofdate=None,
+                                  dateformat='None')
+
+    DHS1 = DistrictHeatingSystem(heatgrid_pipes, heatgrid_nodes,
+                                 heatsink, heatsource)
+    DHS1.calculateDHS()
+
 else:
     print('DistrictHeatingSystem was imported into another module')

@@ -31,9 +31,9 @@ def inzidenzmatrix(rows, cols, inzidenzmatrix_name):
             if item_cols[1] == item:
                 returnMatrix[index][index_cols] = 1
 
-    print(str(inzidenzmatrix_name))
-    for row, item in zip(rows, returnMatrix):
-        print(str(row), str(item), sep='  |  ')
-    print('\n')
+#    print(str(inzidenzmatrix_name))
+#    for row, item in zip(rows, returnMatrix):
+#        print(str(row), str(item), sep='  |  ')
+#    print('\n')
 
     return returnMatrix

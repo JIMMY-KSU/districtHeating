@@ -28,7 +28,7 @@ class Solver():
         arrTa = [0] * args['Ta']  # length of entities of pipes
         arrTb = [0] * args['Tb']  # length of entities of pipes
         arrQ = [0] * args['heatflow']  # length of entities of nodes
-    
+
         i = 0
         arrM = x[i: i + len(arrM)]
         i = i + len(arrM)
@@ -45,9 +45,9 @@ class Solver():
         arrTb = x[i: i + len(arrTb)]
         i = i + len(arrTb)
         arrQ = x[i: i + len(arrQ)]
-    
+
         F = np.zeros(32)
-    
+
         # mass balance M/M
         F[0] = arrM[0] - arrM[1]
         F[1] = arrM[1] - arrM[2]

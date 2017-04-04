@@ -11,7 +11,6 @@ import inspect
 
 sys.path.append(os.getcwd() + os.sep + 'class')
 
-
 from DataIO import DataIO
 from DistrictHeatingSystem import DistrictHeatingSystem
 import Dictionary
@@ -19,49 +18,66 @@ from Plotter import Plotter
 from matplotlib import pyplot as plt
 
 
-DataIO = DataIO(os.getcwd() + os.sep + 'input',
-                    os.getcwd() + os.sep + 'output')
+DataIO = DataIO(
+            os.getcwd() + os.sep + 'input',
+            os.getcwd() + os.sep + 'output')
 
-heatgrid_nodes = DataIO.importCSV('Hannover_workshopNet1'  + os.sep + 'heatnet_nodes.csv',
-                                 dtypeSource = Dictionary.HeatGrid_node_dtype,
-                                 startrow=1,
-                                 columnofdate=None,
-                                 dateformat='None')
+heatgrid_nodes = DataIO.importDBF(
+        'TestNetz' + os.sep + 'KTestNetz.DBF',
+        Dictionary.HeatGrid_node_dtype,
+        Dictionary.HeatGrid_STANET_nodes_allocation)
 
-heatgrid_pipes = DataIO.importCSV('Hannover_workshopNet1' + os.sep + 'heatnet_pipes.csv',
-                                  dtypeSource = Dictionary.HeatGrid_pipe_dtype,
-                                  startrow=1,
-                                  columnofdate=None,
-                                  dateformat='None')
+heatgrid_pipes = DataIO.importDBF(
+        'TestNetz' + os.sep + 'STestNetz.DBF',
+        Dictionary.HeatGrid_pipe_dtype,
+        Dictionary.HeatGrid_STANET_pipes_allocation)
 
-heatsink_consumer = DataIO.importCSV('Hannover_workshopNet1' + os.sep + 'consumer.csv',
-                               dtypeSource=Dictionary.HeatSink_consumer_dtype,
-                               startrow=1,
-                               columnofdate=None,
-                               dateformat='None')
+heatsink = DataIO.importDBF(
+        'TestNetz' + os.sep + 'WTestNetz.DBF',
+        Dictionary.HeatSink_consumer_dtype,
+        Dictionary.HeatSink_STANET_consumer_allocation)
 
-heatsource = DataIO.importCSV('Hannover_workshopNet1' + os.sep + 'producer.csv',
-                              dtypeSource=Dictionary.HeatSource_producer_dtype,
-                              startrow=1,
-                              columnofdate=None,
-                              dateformat='None')
+heatsource = DataIO.importCSV(
+        'TestNetz' + os.sep + 'WTestNetz.csv',
+        dtype=Dictionary.HeatSource_producer_dtype,
+        startrow=1,
+        columnofdate=None,
+        dateformat='None')
 
-DHS1 = DistrictHeatingSystem(heatgrid_pipes, heatgrid_nodes, heatsink_consumer, heatsource)
+DHS1 = DistrictHeatingSystem(
+        heatgrid_pipes,
+        heatgrid_nodes,
+        heatsink,
+        heatsource)
+
 DHS1.calculateDHS()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+#heatgrid_nodes = DataIO.importCSV('Hannover_workshopNet1'  + os.sep + 'heatnet_nodes.csv',
+#                                 dtypeSource = Dictionary.HeatGrid_node_dtype,
+#                                 startrow=1,
+#                                 columnofdate=None,
+#                                 dateformat='None')
+#
+#heatgrid_pipes = DataIO.importCSV('Hannover_workshopNet1' + os.sep + 'heatnet_pipes.csv',
+#                                  dtypeSource = Dictionary.HeatGrid_pipe_dtype,
+#                                  startrow=1,
+#                                  columnofdate=None,
+#                                  dateformat='None')
+#
+#heatsink_consumer = DataIO.importCSV('Hannover_workshopNet1' + os.sep + 'consumer.csv',
+#                               dtypeSource=Dictionary.HeatSink_consumer_dtype,
+#                               startrow=1,
+#                               columnofdate=None,
+#                               dateformat='None')
+#
+#heatsource = DataIO.importCSV('Hannover_workshopNet1' + os.sep + 'producer.csv',
+#                              dtypeSource=Dictionary.HeatSource_producer_dtype,
+#                              startrow=1,
+#                              columnofdate=None,
+#                              dateformat='None')
+#
+#DHS1 = DistrictHeatingSystem(heatgrid_pipes, heatgrid_nodes, heatsink_consumer, heatsource)
+#DHS1.calculateDHS()
 
 '''heatgrid2'''
 

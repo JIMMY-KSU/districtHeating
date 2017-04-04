@@ -128,16 +128,16 @@ HeatGrid_pump_dtype =    {'names': (
                                }
 
 HeatSource_producer_dtype = {'names': (
-                                     'name',
-                                     'power',
                                      'start_node_name',
                                      'end_node_name',
+                                     'name',
+                                     'power',
                                      ),
                             'formats': (
+                                        'U10',
+                                        'U10',
                                         'U30',
                                         'f',
-                                        'U10',
-                                        'U10'
                                         )
                             }
 

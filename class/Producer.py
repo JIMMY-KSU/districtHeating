@@ -12,3 +12,7 @@ class Producer():
         self.power = producerValues['power']
         self.start_node_name = producerValues['start_node_name']
         self.end_node_name = producerValues['end_node_name']
+        self.supply_pressure = 7
+        self.return_pressure = 1
+        self.supply_temperature = 130 + 273.15
+        # TODO pressure anpassen (nicht fix)

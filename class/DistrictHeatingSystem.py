@@ -18,6 +18,7 @@ from HeatGrid import HeatGrid
 from HeatSink import HeatSink
 from HeatSource import HeatSource
 from inzidenzmatrix import inzidenzmatrix
+from scipy.optimize import fsolve
 from Solver import Solver
 
 
@@ -32,23 +33,14 @@ class DistrictHeatingSystem():
         self.consumersLocationinMatrix = self.__consumersLocationinMatrix()
         self.producersLocationinMatrix = self.__producersLocationinMatrix()
         self.pipesLocationinMatrix = self.__pipesLocationinMatrix()
-        
-        self.VMass = self.__VMass()
-        self.VTemp = self.__VTemp()
-        self.VPres = self.__VPres()
-        self.VTa = self.__VTa()
-        self.VTb = self.__VTb()
-        self.VPa = self.__VPa()
-        self.VPb = self.__VPb()
-        
+
         self._inzidenzmatrix_HeatGrid = self.__inzidenzmatrix_HeatGrid()
         self._inzidenzmatrix_HeatSink = self.__inzidenzmatrix_HeatSink()
         self._inzidenzmatrix_HeatSource = self.__inzidenzmatrix_HeatSource()
-        self.__massbilance = self.__massbalance()
-        self.__energybalanceTa = self.__energybalance(self.VTa)
-        self.__energybalanceTb = self.__energybalance(self.VTb)
-        self.__momentumbalancePa = self.__momentumbalancePa(self.VPa)
-        self.__momentumbalancePb = self.__momentumbalancePb(self.VPb)
+        self._inzidenzmatrix = np.concatenate((self._inzidenzmatrix_HeatGrid,
+                                              self._inzidenzmatrix_HeatSink,
+                                              self._inzidenzmatrix_HeatSource),
+                                              axis=1)
 
     def __inzidenzmatrix_HeatGrid(self):
         '''returns an inzidenzmatrix where all elements are displayed 
@@ -88,9 +80,30 @@ class DistrictHeatingSystem():
                                inzidenzmatrix_name = "heatSource")
 
     def calculateDHS(self):
+        edges = np.shape(self._inzidenzmatrix)[1]
+        nodes = np.shape(self._inzidenzmatrix)[0]
+
+        v_massflow = [0] * edges
+        v_Q = [0] * edges
+
+        v_T = [0] * nodes
+        v_Ta = [0] * edges
+        v_Tb = [0] * edges
+
+        v_P = [0] * nodes
+        v_Pa = [0] * edges
+        v_Pb = [0] * edges
+
+        solveGrid = Solver(nodes, edges, self._inzidenzmatrix,
+                        self._inzidenzmatrix_HeatGrid,
+                        self._inzidenzmatrix_HeatSink,
+                        self._inzidenzmatrix_HeatSource,
+                        v_massflow,
+                        v_Q, v_T, v_Ta, v_Tb,
+                        v_P, v_Pa, v_Pb)
         
-        result = Solver()
-        return result
+        solution = fsolve(solveGrid.gridCalculation_thermical, x)
+        return solution
 
     def __consumersLocationinMatrix(self):
         i = 0
@@ -131,74 +144,52 @@ class DistrictHeatingSystem():
             i = i + 1
 
         return pipesLocationinMatrix
-    
 
-    def __VMass(self):
-        '''sets vector massflow of any pipe and consumer and producer'''
-        VectorMass = np.asarray([0]*len(self.heatgrid.pipes()))
-        return VectorMass
-    
-    def __VTemp(self):
-        '''sets vector temperature of any node'''
-        VectorTemp = np.asarray([0]*len(self.heatgrid.nodes()))
-        return VectorTemp
-    
-    def __VPres(self):
-        '''sets vector pressure of any node'''
-        VectorPress = np.asarray([0]*len(self.heatgrid.nodes()))
-        return VectorPress
 
-    def __VTa(self):
-        '''sets vector temperature of input Temperature of any pipe'''
-        VectorTin = np.asarray([0]*len(self.heatgrid.pipes()))
-        return VectorTin
-    
-    def __VTb(self):
-        '''sets vector temperature of output Temperature of any pipe'''
-        VectorTout = np.asarray([0]*len(self.heatgrid.pipes()))
-        return VectorTout
-    
-    def __VPa(self):
-        '''sets vector pressure of input pressure of any pipe'''
-        VectorPin = np.asarray([0]*len(self.heatgrid.pipes()))
-        return VectorPin
-    
-    def __VPb(self):
-        '''sets vector pressure of output pressure of any pipe'''
-        VectorPout = np.asarray([0]*len(self.heatgrid.pipes()))
-        return VectorPout
-    
-    def __massbalance(self):
-        massBalance = self._inzidenzmatrix_HeatGrid * self.VMass
-        return massBalance
-    
-    def __energybalance(self, T):
-        '''sets energy balance of temperature(T):
-            T multiplied by diagonal mass vector'''
 
-        energyBalance = np.diag(self.VMass) * T
-        return energyBalance
-    
-    def __momentumbalancePa(self, P):
-        '''sets momentum balance of pressure(P):
-            P multiplied by transposed incidencematrix-'''
-            
-        operation1 = np.dot(np.transpose(
-                    self._inzidenzmatrix_HeatGrid.clip(max=0)),self.VPres)
 
-        momentumbalance = operation1 - P
-        return momentumbalance
-    
-    def __momentumbalancePb(self, P):
-        '''sets momentum balance of pressure(P):
-            P multiplied by transposed incidencematrix+'''
-
-        operation1 = np.dot(np.transpose(
-                    self._inzidenzmatrix_HeatGrid.clip(min=0)),self.VPres)
-
-        momentumbalance = operation1 - P
-        return momentumbalance
-if __name__=="__main__":
+if __name__ == "__main__":
     print('DistrictHeatingSystem run directly')
+
+    import Dictionary
+
+    DataIO = DataIO(os.path.dirname(os.getcwd()) + os.sep + 'input',
+                    os.path.dirname(os.getcwd()) + os.sep + 'output')
+
+    heatgrid_nodes = DataIO.importCSV('Hannover_workshopNet1' +
+                                      os.sep + 'heatnet_nodes.csv',
+                                      dtypeSource=Dictionary.
+                                      HeatGrid_node_dtype,
+                                      startrow=1,
+                                      columnofdate=None,
+                                      dateformat='None')
+
+    heatgrid_pipes = DataIO.importCSV('Hannover_workshopNet1' +
+                                      os.sep + 'heatnet_pipes.csv',
+                                      dtypeSource=Dictionary.
+                                      HeatGrid_pipe_dtype,
+                                      startrow=1,
+                                      columnofdate=None,
+                                      dateformat='None')
+    heatsink = DataIO.importCSV('Hannover_workshopNet1' +
+                                         os.sep + 'consumer.csv',
+                                         dtypeSource=Dictionary.
+                                         HeatSink_consumer_dtype,
+                                         startrow=1,
+                                         columnofdate=None,
+                                         dateformat='None')
+
+    heatsource = DataIO.importCSV('Hannover_workshopNet1' +
+                                  os.sep + 'producer.csv',
+                                  dtypeSource=Dictionary.
+                                  HeatSource_producer_dtype,
+                                  startrow=1,
+                                  columnofdate=None,
+                                  dateformat='None')
+
+    DHS1 = DistrictHeatingSystem(heatgrid_pipes, heatgrid_nodes,
+                                 heatsink, heatsource)
+    DHS1.calculateDHS()
+
 else:
     print('DistrictHeatingSystem was imported into another module')

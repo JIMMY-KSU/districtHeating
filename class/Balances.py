@@ -39,6 +39,7 @@ def energyBalance_2(inzidenzmatrix_minus_T, v_T, v_Ta):
     arr = np.dot(np.multiply(-1, inzidenzmatrix_minus_T), v_T) - v_Ta
     return arr
 
+
 def impulseBalance_1(inzidenzmatrix_minus_T, v_P, v_Pa):
     '''
     impulse balance (-1*I_minus.T*P - P^a)

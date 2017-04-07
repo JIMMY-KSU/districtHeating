@@ -131,7 +131,7 @@ class DistrictHeatingSystem():
         print('v:', v)
 
         solution = fsolve(
-                    gridCalculation, 
+                    gridCalculation,
                     getGuess(self.heatgrid,
                              self.heatsink,
                              self.heatsource),
@@ -140,6 +140,7 @@ class DistrictHeatingSystem():
                           self.heatsource,
                           self._inzidenzmatrix])
 
+    # TODO implement print into if __name__ == "__main__":
         print('Solution:')
         n = 0
         print('massflow:')

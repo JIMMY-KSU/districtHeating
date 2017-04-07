@@ -6,6 +6,7 @@ Created on Sat Jan 07 16:50:22 2017
 from Pipe import Pipe
 from Node import Node
 
+
 class HeatGrid():
 
     def __init__(self, tableOfPipes, tableOfNodes):
@@ -23,9 +24,8 @@ class HeatGrid():
         self.__importPipes(tableOfPipes)
         self.__importNodes(tableOfNodes)
 
-#        self.nodes_names = self.__nodes_names()
-        self.pipes_names = self.__pipes_names()
         self.nodes_names = self.__nodes_names()
+
     def pipes(self, i=slice(None, None)):
         return self._instancesPipe[i]
 
@@ -44,12 +44,6 @@ class HeatGrid():
         returnArray = [0]*len(self.nodes())
         for index, item in enumerate(self.nodes()):
             returnArray[index] = item.name
-        return returnArray
-
-    def __pipes_names(self):
-        returnArray = [0]*len(self.pipes())
-        for index, item in enumerate(self.pipes()):
-            returnArray[index] = item.index
         return returnArray
 
 if __name__ == "__main__":
@@ -76,6 +70,5 @@ if __name__ == "__main__":
             columnofdate=None,
             dateformat='None')
     heatgrid = HeatGrid(heatgrid_pipes, heatgrid_nodes)
-
 else:
     print('HeatGrid was imported into another module')

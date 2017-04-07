@@ -23,6 +23,7 @@ from HeatSource import HeatSource
 from inzidenzmatrix import inzidenzmatrix
 from guess import getGuess
 from scipy.optimize import root
+from gridCalculation import gridCalculation
 #from Solver import Solver
 
 
@@ -128,10 +129,16 @@ class DistrictHeatingSystem():
         print('Sources: ', numberOfSources)
         print('k:', k)
         print('v:', v)
-        solution = fsolve(self.F_elements, getGuess(self.heatgrid,
-                                                    self.heatsink,
-                                                    self.heatsource))
-        guess = getGuess(self.heatgrid, self.heatsink, self.heatsource)
+
+        solution = fsolve(
+                    gridCalculation, 
+                    getGuess(self.heatgrid,
+                             self.heatsink,
+                             self.heatsource),
+                    args=[self.heatgrid,
+                          self.heatsink,
+                          self.heatsource,
+                          self._inzidenzmatrix])
 
         print('Solution:')
         n = 0
@@ -178,143 +185,6 @@ class DistrictHeatingSystem():
         print('läuft!')
 
         return None
-
-    def F_elements(self, x):
-        numberOfNodes = len(self.heatgrid.nodes())
-        numberOfPipes = len(self.heatgrid.pipes())
-        numberOfSinks = len(self.heatsink.consumer())
-        numberOfSources = len(self.heatsource.producer())
-        k = numberOfNodes
-        v = (numberOfPipes + numberOfSinks + numberOfSources)
-        I = self._inzidenzmatrix
-        Iplus = np.zeros_like(I)
-        Iminus = np.zeros_like(I)
-        for i, row in enumerate(I):
-            for j, item in enumerate(row):
-                if(item == 1):
-                    Iplus[i, j] = item
-                if(item == -1):
-                    Iminus[i, j] = item
-        returnArray = np.zeros(6*v + 2*k)
-
-        n = 0
-        arrM = x[n: n + v]
-        n += len(arrM)
-        arrP = x[n: n + k]
-        n += len(arrP)
-        arrPa = x[n: n + v]
-        n += len(arrPa)
-        arrPb = x[n: n + v]
-        n += len(arrPb)
-        arrT = x[n: n + k]
-        n += len(arrT)
-        arrTa = x[n: n + v]
-        n += len(arrTa)
-        arrTb = x[n: n + v]
-        n += len(arrTb)
-        arrQ = x[n: n + v]
-
-        '''
-        equations of solver
-        '''
-        n = 0
-        returnArray[n:n+k] = \
-            np.dot(I, arrM)
-        n += k - 1
-
-        returnArray[n] = dp.producer_press(
-                                  self.heatsource.producer(0).return_pressure,
-                                  arrPa[numberOfPipes+numberOfSinks])
-        n += 1
-
-        returnArray[n:n+v] = \
-            np.dot(np.multiply(-1, np.transpose(Iminus)), arrT) - arrTa
-        n += v
-
-        returnArray[n:n+v] = \
-            np.dot(np.multiply(-1, np.transpose(Iminus)), arrP) - arrPa
-        n += v
-
-        returnArray[n:n+v] = \
-            np.dot(np.transpose(Iplus), arrP) - arrPb
-        n += v
-
-        returnArray[n:n+k] = \
-            np.dot(Iplus, np.dot(np.diag(arrM), arrTb))\
-            + np.dot(Iminus, np.dot(np.diag(arrM), arrTa))
-        n += k
-        '''
-        constitutive relations
-        '''
-        # vector of massflow
-        for index, item in enumerate(self.heatgrid.pipes()):
-            returnArray[index+n] = dp.pipe_massflow(
-                                     arrM[index],
-                                     arrTa[index],
-                                     arrTb[index],
-                                     arrQ[index])
-        n += numberOfPipes
-
-        for index, item in enumerate(self.heatsink.consumer()):
-            returnArray[index+n] = dp.consumer_massflow(
-                                     arrM[index+numberOfPipes],
-                                     arrTa[index+numberOfPipes],
-                                     arrTb[index+numberOfPipes],
-                                     arrQ[index+numberOfPipes])
-        n += numberOfSinks
-
-        for index, item in enumerate(self.heatsource.producer()):
-            returnArray[index+n] = dp.producer_massflow(
-                                     arrM[index+numberOfPipes+numberOfSinks],
-                                     arrTa[index+numberOfPipes+numberOfSinks],
-                                     arrTb[index+numberOfPipes+numberOfSinks],
-                                     arrQ[index+numberOfPipes+numberOfSinks])
-        n += numberOfSources
-
-        # pressure
-        for index, item in enumerate(self.heatgrid.pipes()):
-            returnArray[index+n] = dp.pipe_press(
-                                     arrPa[index],
-                                     arrPb[index],
-                                     arrM[index])
-        n += numberOfPipes
-
-        for index, item in enumerate(self.heatsource.producer()):
-            returnArray[index+n] = dp.producer_press(
-                                     item.supply_pressure,
-                                     arrPb[index+numberOfPipes+numberOfSinks])
-        n += numberOfSources
-
-        # temperatur
-        for index, item in enumerate(self.heatsink.consumer()):
-            returnArray[index+n] = dp.consumer_temp(
-                                     item.return_temperature,
-                                     arrTb[index+numberOfPipes])
-        n += numberOfSinks
-
-        for index, item in enumerate(self.heatsource.producer()):
-            returnArray[index+n] = dp.producer_temp(
-                                     item.supply_temperature,
-                                     arrTb[index+numberOfPipes+numberOfSinks])
-        n += numberOfSources
-
-        # heatflow
-        for index, item in enumerate(self.heatgrid.pipes()):
-            returnArray[index+n] = dp.pipe_heatflow(
-                                     arrQ[index],
-                                     arrTa[index],
-                                     arrTb[index])
-        n += numberOfPipes
-        for index, item in enumerate(self.heatsink.consumer()):
-            returnArray[index+n] = dp.consumer_heatflow(
-                                     item.heat_demand,
-                                     arrQ[index+numberOfPipes])
-
-#        for index, item in enumerate(returnArray):
-#            print(index, ' ', item)
-#        print('\n')
-
-        return returnArray
 
     def __VMass(self):
         '''sets vector massflow of any pipe and consumer and producer'''
@@ -381,6 +251,7 @@ class DistrictHeatingSystem():
 
         momentumbalance = operation1 - P
         return momentumbalance
+
 if __name__ == "__main__":
     print('DistrictHeatingSystem run directly')
     import sys

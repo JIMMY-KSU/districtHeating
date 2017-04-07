@@ -5,6 +5,7 @@ Created on Thu Mar  9 14:11:03 2017
 @author: jpelda
 """
 import math
+import numpy as np
 
 cp = 4182
 
@@ -19,7 +20,7 @@ def pipe_press(Pa, Pb, m, Ha=0, Hb=0):
     Zeta = 0.02
     rho = 1000
     g = 9.81
-    res = (Pa - Pb) * 100000 - Zeta * math.pow(m, 2) + rho * g * (Ha - Hb)
+    res = (Pa - Pb) * 100000 - Zeta * np.multiply(m, m) + rho * g * (Ha - Hb)
     return res
 
 

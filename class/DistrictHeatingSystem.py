@@ -138,6 +138,7 @@ class DistrictHeatingSystem():
                     args=[self.heatgrid,
                           self.heatsink,
                           self.heatsource,
+
                           self._inzidenzmatrix],
                     method='lm')
 #        solution = fsolve(
@@ -155,6 +156,10 @@ class DistrictHeatingSystem():
 
         solution = solutionRoot['x']
         print('\n', 'Success:', solutionRoot['success'], '\n')
+
+
+    # TODO implement print into if __name__ == "__main__":
+
         print('Solution:')
         n = 0
         print('massflow:')

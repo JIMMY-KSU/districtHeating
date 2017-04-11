@@ -65,8 +65,16 @@ def gridCalculation(x, args):
     arrTb = x[n: n + v]
     n += len(arrTb)
     arrQ = x[n: n + v]
-    arrMTa = [1 if i >= 0 else 0 for i in arrM]
-    arrMTb = [1 if i < 0 else 0 for i in arrM]
+    arrTab = np.zeros_like(arrM)
+    arrMa = [1 if i >= 0 else 0 for i in arrM]
+    arrMb = [-1 if i < 0 else 0 for i in arrM]
+    Iab = np.dot(Iminus, np.diag(arrMa)) + \
+          np.dot(Iplus, np.diag(arrMb))
+    for index, item in enumerate(arrM):
+        if item >= 0:
+            arrTab[index] = arrTa[index]
+        else:
+            arrTab[index] = arrTb[index]
     '''
     equations of solver
     '''
@@ -74,8 +82,7 @@ def gridCalculation(x, args):
     massBalance = massBalance[0:len(massBalance)-1]
 
     energyBalance_1 = \
-        np.dot(np.multiply(-1, np.transpose(Iminus)), arrT) - \
-        (np.dot(arrTa, np.diag(arrMTa)) + np.dot(arrTb, np.diag(arrMTb)))
+        np.dot(np.transpose(Iab), arrT) + arrTab
 
     energyBalance_2 = \
         np.dot(np.multiply(-1, np.transpose(Iminus)), arrP) - arrPa

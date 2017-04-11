@@ -17,10 +17,10 @@ def pipe_massflow(m, Ta, Tb, Q, cp=cp):
 
 
 def pipe_press(Pa, Pb, m, Ha=0, Hb=0):
-    Zeta = 0.02
+    Zeta = 0.2
     rho = 1000
     g = 9.81
-    res = (Pa - Pb) * 100000 - Zeta * np.multiply(m, m) + rho * g * (Ha - Hb)
+    res = (Pa - Pb) * 100000 - Zeta * m * abs(m) + rho * g * (Ha - Hb)
     return res
 
 
@@ -58,7 +58,7 @@ def producer_massflow(m, Ta, Tb, Q, cp=cp):
 
 
 def producer_press(P_set, P):
-    res = P_set - P  # abs(Pb_set - Pb) + abs(Pa_set - Pa)
+    res = P_set - P
     return res
 
 

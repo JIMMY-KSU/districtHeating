@@ -130,16 +130,31 @@ class DistrictHeatingSystem():
         print('k:', k)
         print('v:', v)
 
-        solution = fsolve(
-                    gridCalculation, 
+        solutionRoot = root(
+                    gridCalculation,
                     getGuess(self.heatgrid,
                              self.heatsink,
                              self.heatsource),
                     args=[self.heatgrid,
                           self.heatsink,
                           self.heatsource,
-                          self._inzidenzmatrix])
+                          self._inzidenzmatrix],
+                    method='lm')
+#        solution = fsolve(
+#                    gridCalculation,
+#                    getGuess(self.heatgrid,
+#                             self.heatsink,
+#                             self.heatsource),
+#                    args=[self.heatgrid,
+#                          self.heatsink,
+#                          self.heatsource,
+#                          self._inzidenzmatrix])
 
+        for i in solutionRoot:
+            print(i)
+
+        solution = solutionRoot['x']
+        print('\n', 'Success:', solutionRoot['success'], '\n')
         print('Solution:')
         n = 0
         print('massflow:')

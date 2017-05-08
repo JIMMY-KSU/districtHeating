@@ -144,12 +144,14 @@ HeatSource_producer_dtype = {'names': (
 STANET_nodes =          {'names': (
                                 'x',
                                 'y',
-                                'name'
+                                'name',
+                                'height'
                                 ),
                        'formats': (
                                 'f',
                                 'f',
                                 'U10'
+                                'f'
                                 )
                                }
 
@@ -198,7 +200,9 @@ STANET_producer = {'names': (
 HeatGrid_STANET_nodes_allocation = {
                                 'x': 'XRECHTS',
                                 'y': 'YHOCH',
-                                'name': 'KNAM'
+                                'name': 'KNAM',
+                                'height': 'GEOH',
+                                'SP_RP': 'SUPPLY'
                                 }
 
 HeatGrid_STANET_pipes_allocation = {

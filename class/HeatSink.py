@@ -28,6 +28,13 @@ class HeatSink():
     def consumer(self, i = slice(None,None)):
         return self._instancesConsumer[i]
 
+    def averageReturnTemperature(self):
+        sumQ = 0
+        sumQT = 0
+        for i in self.consumer():
+            sumQT += i.heat_demand * i.return_temperature
+            sumQ += i.heat_demand
+        return sumQT / sumQ
 
 
     def __consumerProfile(self):

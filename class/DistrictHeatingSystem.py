@@ -9,10 +9,11 @@ import sys
 import os
 import numpy as np
 from scipy.optimize import fsolve
-sys.path.append(os.getcwd() + os.sep + 'class')
-sys.path.append(os.getcwd() + os.sep + 'function')
+
 sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'class')
+print(os.path.dirname(os.getcwd()) + os.sep + 'class')
 sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
+print(os.path.dirname(os.getcwd()) + os.sep + 'function')
 
 import dependencies as dp 
 
@@ -23,8 +24,7 @@ from HeatSource import HeatSource
 from inzidenzmatrix import inzidenzmatrix
 from guess import getGuess
 from scipy.optimize import root
-from gridCalculation import gridCalculation
-#from Solver import Solver
+from Solver import Solver
 
 
 class DistrictHeatingSystem():
@@ -39,22 +39,33 @@ class DistrictHeatingSystem():
 #        self.producersLocationinMatrix = self.__producersLocationinMatrix()
 #        self.pipesLocationinMatrix = self.__pipesLocationinMatrix()
 
-        self.VMass = self.__VMass()
-        self.VTemp = self.__VTemp()
-        self.VPres = self.__VPres()
-        self.VTa = self.__VTa()
-        self.VTb = self.__VTb()
-        self.VPa = self.__VPa()
-        self.VPb = self.__VPb()
+        self.v_m = 0
+        self.v_T = 0
+        self.v_P = 0
+        self.v_Ta = 0
+        self.v_Tb = 0
+        self.v_Pa = 0
+        self.v_Pb = 0
+        self.v_Q = 0
+
         self._inzidenzmatrix_HeatGrid = self.__inzidenzmatrix_HeatGrid()
         self._inzidenzmatrix_HeatSink = self.__inzidenzmatrix_HeatSink()
         self._inzidenzmatrix_HeatSource = self.__inzidenzmatrix_HeatSource()
         self._inzidenzmatrix = self.__inzidenzmatrix()
-        self.__massbilance = self.__massbalance()
-        self.__energybalanceTa = self.__energybalance(self.VTa)
-        self.__energybalanceTb = self.__energybalance(self.VTb)
-        self.__momentumbalancePa = self.__momentumbalancePa(self.VPa)
-        self.__momentumbalancePb = self.__momentumbalancePb(self.VPb)
+
+        self.numberOfNodes = len(self.heatgrid.nodes())
+        self.numberOfPipes = len(self.heatgrid.pipes())
+        self.numberOfSinks = len(self.heatsink.consumer())
+        self.numberOfSources = len(self.heatsource.producer())
+        self.numberOfElements = (self.numberOfPipes +
+                                 self.numberOfSinks +
+                                 self.numberOfSources)
+        print('Nodes: ', self.numberOfNodes)
+        print('Pipes: ', self.numberOfPipes)
+        print('Sinks: ', self.numberOfSinks)
+        print('Sources: ', self.numberOfSources)
+        print('nodes:', self.numberOfNodes)
+        print('elements:', self.numberOfElements)
 
     def __inzidenzmatrix_HeatGrid(self):
         '''returns an inzidenzmatrix where all elements are displayed 
@@ -115,20 +126,8 @@ class DistrictHeatingSystem():
                               inzidenzmatrix_name="all")
 
     def calculateDHS(self):
-        for i in self.heatsink.consumer():
-            print(i.heat_demand)
-        numberOfNodes = len(self.heatgrid.nodes())
-        numberOfPipes = len(self.heatgrid.pipes())
-        numberOfSinks = len(self.heatsink.consumer())
-        numberOfSources = len(self.heatsource.producer())
-        k = numberOfNodes
-        v = (numberOfPipes + numberOfSinks + numberOfSources)
-        print('Nodes: ', numberOfNodes)
-        print('Pipes: ', numberOfPipes)
-        print('Sinks: ', numberOfSinks)
-        print('Sources: ', numberOfSources)
-        print('k:', k)
-        print('v:', v)
+
+
 
 #        solutionRoot = root(
 #                    gridCalculation,
@@ -192,83 +191,24 @@ class DistrictHeatingSystem():
 #        solution = solutionRoot['x']
 #        print('\n', 'Success:', solutionRoot['success'], '\n')
 
-        solution = fsolve(
-                    gridCalculation,
-                    getGuess(self.heatgrid,
-                             self.heatsink,
-                             self.heatsource),
-                    args=[self.heatgrid,
-                          self.heatsink,
-                          self.heatsource,
-                          self._inzidenzmatrix])
+        
+        Solver_fsolve = Solver(self._inzidenzmatrix,
+                               self._inzidenzmatrix_HeatGrid,
+                               self._inzidenzmatrix_HeatSink,
+                               self._inzidenzmatrix_HeatSource)
+        
+        
+        solution = fsolve(Solver_fsolve.gridCalculation,
+                        getGuess(self.heatgrid,
+                                 self.heatsink,
+                                 self.heatsource),
+                        args=[self.heatgrid,
+                              self.heatsink,
+                              self.heatsource,
+                              self._inzidenzmatrix])
 
         return None
 
-    def __VMass(self):
-        '''sets vector massflow of any pipe and consumer and producer'''
-        VectorMass = np.asarray([0]*len(self.heatgrid.pipes()))
-        return VectorMass
-
-    def __VTemp(self):
-        '''sets vector temperature of any node'''
-        VectorTemp = np.asarray([0]*len(self.heatgrid.nodes()))
-        return VectorTemp
-
-    def __VPres(self):
-        '''sets vector pressure of any node'''
-        VectorPress = np.asarray([0]*len(self.heatgrid.nodes()))
-        return VectorPress
-
-    def __VTa(self):
-        '''sets vector temperature of input Temperature of any pipe'''
-        VectorTin = np.asarray([0]*len(self.heatgrid.pipes()))
-        return VectorTin
-
-    def __VTb(self):
-        '''sets vector temperature of output Temperature of any pipe'''
-        VectorTout = np.asarray([0]*len(self.heatgrid.pipes()))
-        return VectorTout
-
-    def __VPa(self):
-        '''sets vector pressure of input pressure of any pipe'''
-        VectorPin = np.asarray([0]*len(self.heatgrid.pipes()))
-        return VectorPin
-
-    def __VPb(self):
-        '''sets vector pressure of output pressure of any pipe'''
-        VectorPout = np.asarray([0]*len(self.heatgrid.pipes()))
-        return VectorPout
-
-    def __massbalance(self):
-        massBalance = self._inzidenzmatrix_HeatGrid * self.VMass
-        return massBalance
-
-    def __energybalance(self, T):
-        '''sets energy balance of temperature(T):
-            T multiplied by diagonal mass vector'''
-
-        energyBalance = np.diag(self.VMass) * T
-        return energyBalance
-
-    def __momentumbalancePa(self, P):
-        '''sets momentum balance of pressure(P):
-            P multiplied by transposed incidencematrix-'''
-
-        operation1 = np.dot(np.transpose(
-                    self._inzidenzmatrix_HeatGrid.clip(max=0)), self.VPres)
-
-        momentumbalance = operation1 - P
-        return momentumbalance
-
-    def __momentumbalancePb(self, P):
-        '''sets momentum balance of pressure(P):
-            P multiplied by transposed incidencematrix+'''
-
-        operation1 = np.dot(np.transpose(
-                    self._inzidenzmatrix_HeatGrid.clip(min=0)), self.VPres)
-
-        momentumbalance = operation1 - P
-        return momentumbalance
 
 if __name__ == "__main__":
     print('DistrictHeatingSystem run directly')

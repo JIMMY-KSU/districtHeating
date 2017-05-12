@@ -22,7 +22,9 @@ class HeatSource():
         return self._instancesProducer[i]
     
     def __nodes_names(self):
-        returnArray = [0]*len(self.producer())
+        arr = [0]*len(self.producer())
         for index, item in enumerate(self.producer()):
-            returnArray[index] = item.start_node_name
-        return returnArray
+            arr[index] = item.start_node_name
+        return arr
+
+

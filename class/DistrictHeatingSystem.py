@@ -130,18 +130,7 @@ class DistrictHeatingSystem():
         print('k:', k)
         print('v:', v)
 
-        solutionRoot = root(
-                    gridCalculation,
-                    getGuess(self.heatgrid,
-                             self.heatsink,
-                             self.heatsource),
-                    args=[self.heatgrid,
-                          self.heatsink,
-                          self.heatsource,
-
-                          self._inzidenzmatrix],
-                    method='lm')
-#        solution = fsolve(
+#        solutionRoot = root(
 #                    gridCalculation,
 #                    getGuess(self.heatgrid,
 #                             self.heatsink,
@@ -149,60 +138,69 @@ class DistrictHeatingSystem():
 #                    args=[self.heatgrid,
 #                          self.heatsink,
 #                          self.heatsource,
-#                          self._inzidenzmatrix])
+#
+#                          self._inzidenzmatrix],
+#                    method='lm')
 
-        for i in solutionRoot:
-            print(i)
+#        print('Solution:')
+#        n = 0
+#        print('massflow:')
+#        for i in range(v):
+#            print('  ', solution[n])
+#            n += 1
+#
+#        print('pressure:')
+#        for i in range(k):
+#            print('  ', solution[n])
+#            n += 1
+#
+#        print('pressure a:')
+#        for i in range(v):
+#            print('  ', solution[n])
+#            n += 1
+#
+#        print('pressure b:')
+#        for i in range(v):
+#            print('  ', solution[n])
+#            n += 1
+#
+#        print('tempreature:')
+#        for i in range(k):
+#            print('  ', solution[n])
+#            n += 1
+#
+#        print('tempreature a:')
+#        for i in range(v):
+#            print('  ', solution[n])
+#            n += 1
+#
+#        print('tempreature b:')
+#        for i in range(v):
+#            print('  ', solution[n])
+#            n += 1
+#
+#        print('heatflow:')
+#        for i in range(v):
+#            print('  ', solution[n])
+#            n += 1
+#
+#        print('läuft!')
+#        
+#        for i in solutionRoot:
+#            print(i)
+#
+#        solution = solutionRoot['x']
+#        print('\n', 'Success:', solutionRoot['success'], '\n')
 
-        solution = solutionRoot['x']
-        print('\n', 'Success:', solutionRoot['success'], '\n')
-
-
-    # TODO implement print into if __name__ == "__main__":
-
-        print('Solution:')
-        n = 0
-        print('massflow:')
-        for i in range(v):
-            print('  ', solution[n])
-            n += 1
-
-        print('pressure:')
-        for i in range(k):
-            print('  ', solution[n])
-            n += 1
-
-        print('pressure a:')
-        for i in range(v):
-            print('  ', solution[n])
-            n += 1
-
-        print('pressure b:')
-        for i in range(v):
-            print('  ', solution[n])
-            n += 1
-
-        print('tempreature:')
-        for i in range(k):
-            print('  ', solution[n])
-            n += 1
-
-        print('tempreature a:')
-        for i in range(v):
-            print('  ', solution[n])
-            n += 1
-
-        print('tempreature b:')
-        for i in range(v):
-            print('  ', solution[n])
-            n += 1
-
-        print('heatflow:')
-        for i in range(v):
-            print('  ', solution[n])
-            n += 1
-
-        print('läuft!')
+        solution = fsolve(
+                    gridCalculation,
+                    getGuess(self.heatgrid,
+                             self.heatsink,
+                             self.heatsource),
+                    args=[self.heatgrid,
+                          self.heatsink,
+                          self.heatsource,
+                          self._inzidenzmatrix])
 
         return None
 

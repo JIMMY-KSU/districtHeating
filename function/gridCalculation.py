@@ -6,8 +6,75 @@ Created on Tue Apr  4 14:45:18 2017
 """
 
 import dependencies as dp
+import balances as bl
 import numpy as np
 
+
+class Solver():
+    def __init__(self,
+                 inzidenzmatrix,
+                 inzidenzmatrix_grid,
+                 inzidenzmatrix_sink,
+                 inzidenzmatrix_source
+                 ):
+
+        edges = np.shape(inzidenzmatrix)[1]
+        nodes = np.shape(inzidenzmatrix)[0]
+
+        '''
+        sets up all necessary inzmatrices
+        '''
+        self.__I = np.asarray(inzidenzmatrix)
+        self.__I_minus = self.__I.clip(max=0)
+        self.__I_minus_T = self.__I_minus.T
+        self.__I_plus = self.__I.clip(min=0)
+        self.__I_plus_T = self.__I_plus.T
+
+        self.__I_grid = np.asarray(inzidenzmatrix_grid)
+        self.__I_grid_slice = slice(0, self.__I_grid.shape[1])
+
+        self.__I_sink = np.asarray(inzidenzmatrix_sink)
+        self.__I_sink_slice = slice(self.__I_grid.shape[1],
+                                            self.__I_grid.shape[1] +
+                                            self.__I_sink.shape[1])
+
+        self.__I_source = np.asarray(inzidenzmatrix_source)
+        self.__I_source_slice = slice(self.__I_grid.shape[1] +
+                                              self.__I_sink.shape[1],
+                                              self.__I_grid.shape[1] +
+                                              self.__I_sink.shape[1] +
+                                              self.__I_source.shape[1])
+        '''
+        vector of massflows
+        '''
+        v_m = [0] * edges
+
+        '''
+        vector of heatflows
+        '''
+        v_Q = [0] * edges
+
+        '''
+        vector of temperatures
+        '''
+        v_T = [0] * nodes
+        # temperature from node away
+        v_Ta = [0] * edges
+        # temperature towards node
+        v_Tb = [0] * edges
+
+        '''
+        vector of pressures
+        '''
+        v_P = [0] * nodes
+        # pressure from node away
+        v_Pa = [0] * edges
+        # pressure towards node
+        v_Pb = [0] * edges
+        
+        
+        # TODO hier weiter die class Solver erstellen.
+        
 def gridCalculation(x, args):
     heatgrid = args[0]
     heatsink = args[1]
@@ -66,10 +133,13 @@ def gridCalculation(x, args):
     n += len(arrTb)
     arrQ = x[n: n + v]
     arrTab = np.zeros_like(arrM)
-    arrMa = [1 if i >= 0 else 0 for i in arrM]
-    arrMb = [-1 if i < 0 else 0 for i in arrM]
-    Iab = np.dot(Iminus, np.diag(arrMa)) + \
-          np.dot(Iplus, np.diag(arrMb))
+    v_ma = [1 if i >= 0 else 0 for i in v_m]
+    v_mb = [-1 if i < 0 else 0 for i in v_m]
+
+    Iab = np.dot(Iminus, np.diag(v_ma)) + \
+          np.dot(Iplus, np.diag(v_mb))
+          
+          
     for index, item in enumerate(arrM):
         if item >= 0:
             arrTab[index] = arrTa[index]

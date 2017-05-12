@@ -10,7 +10,7 @@ from scipy.optimize import fsolve
 from scipy.optimize import root
 import math
 import Dependencies as dp
-import Balances as bc
+import balances as bc
 
 Tamb = 5+273.15
 v_Pb_set = 5

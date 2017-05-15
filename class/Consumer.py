@@ -28,6 +28,7 @@ class Consumer():
         self.heat_demand = consumerValues['heat_demand']
         self.flow = consumerValues['flow']
         self.return_temperature = 60 + 273.15
+
         # TODO implement function for massflow
 
 
@@ -40,3 +41,6 @@ class Consumer():
 
     def heat_consumptionAverage(self, i = slice(None,None)):
         return self.__dataArray['heat_consumptionAverage'][i]
+
+    def massflow(self):
+        return self.massflow

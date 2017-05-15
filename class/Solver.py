@@ -10,14 +10,6 @@ import balances as bl
 import numpy as np
 
 
-Tamb = 5+273.15  # [K]
-producer_v_Pa_set = 10
-producer_v_Pb_set = 5
-producer_v_Tb_set = 80+273.15  # [K]
-consumer_v_Tb_set = 273.15 + 30  # [K]
-consumer_v_Q_set = 12000  # [W]
-
-
 class Solver():
     def __init__(self, inzidenzmatrix, inzidenzmatrix_grid,
                  inzidenzmatrix_sink, inzidenzmatrix_source):
@@ -48,6 +40,17 @@ class Solver():
                                       self.__I_grid.shape[1] +
                                       self.__I_sink.shape[1] +
                                       self.__I_source.shape[1])
+
+        self.Tamb = 5+273.15  # [K]
+        self.producer_v_Pa_set = 10  # dont change this, it
+                                     # is not yet implemented in the dependecies!
+        
+        self.producer_v_Pb_set = 5  # dont change this, 
+                                    # it is not yet implemented in the dependecies!
+        self.producer_v_Tb_set = 80+273.15  # [K]
+        self.consumer_v_Tb_set = 273.15 + 30  # [K]
+        self.consumer_v_Q_set = 12000  # [W]
+
         '''
         vector of massflows
         '''
@@ -76,27 +79,7 @@ class Solver():
         # pressure towards node
         v_Pb = [0] * self.edges
 
-    def gridCalculation(self, x, args):
-        heatgrid = args[0]
-        heatsink = args[1]
-        heatsource = args[2]
-        I = args[3]
-
-        numberOfSinks = len(heatsink.consumer())
-        numberOfSources = len(heatsource.producer())
-
-        arrSupplyPressureSources = np.zeros(numberOfSources)
-        arrSupplyTemperatureSources = np.zeros(numberOfSources)
-        arrReturnTemperatureSinks = np.zeros(numberOfSinks)
-        arrHeatDemandSinks = np.zeros(numberOfSinks)
-
-        for index, item in enumerate(heatsource.producer()):
-            arrSupplyPressureSources[index] = item.supply_pressure
-            arrSupplyTemperatureSources[index] = item.supply_temperature
-
-        for index, item in enumerate(heatsink.consumer()):
-            arrReturnTemperatureSinks[index] = item.return_temperature
-            arrHeatDemandSinks[index] = item.heat_demand
+    def gridCalculation(self, x):
 
         i = 0
         v_m = x[i: i + self.edges]
@@ -184,16 +167,16 @@ class Solver():
 #                                  v_Pb[self.__I_source_slice])
 
         producer_Tb = dp.producer_temp(
-                              producer_v_Tb_set,
+                              self.producer_v_Tb_set,
                               v_Tb[self.__I_source_slice])
-    
+
         producer_Pb = dp.producer_press(
-                                  producer_v_Pb_set,
+                                  self.producer_v_Pb_set,
                                   v_Pa[self.__I_source_slice])
 
         # temperatur
         consumer_Tb = dp.consumer_temp(
-                                  consumer_v_Tb_set,
+                                  self.consumer_v_Tb_set,
                                   v_Tb[self.__I_sink_slice])
 
         # heatflow
@@ -203,7 +186,7 @@ class Solver():
                                   v_Tb[self.__I_grid_slice])
 
         consumer_Q = dp.consumer_heatflow(
-                                  consumer_v_Q_set,
+                                  self.consumer_v_Q_set,
                                   v_Q[self.__I_sink_slice])
 
         F = np.concatenate((
@@ -216,3 +199,159 @@ class Solver():
                          pipeQ, consumer_Q))
 
         return F
+
+    def getGuess(heatgrid, heatsink, heatsource):
+#  TODO update getGuess so it works.
+
+    averageReturnTemperature = heatsink.averageReturnTemperature()
+
+    guess = np.zeros(6*self.edges + 2*self.nodes)
+    n = 0
+
+    # massflow
+    v_m = 
+    guess[n] = 0.51
+    n += 1
+    guess[n] = 0.17
+    n += 1
+    guess[n] = 0.765
+    n += 1
+    guess[n] = 0.51
+    n += 1
+    guess[n] = 0.17
+    n += 1
+    guess[n] = 0.765
+    n += 1
+
+    for index, item in enumerate(heatsink.consumer()):
+        # TODO make cp variable
+        guess[n] = (item.heat_demand*(-1)) / (4182 * (heatsource.producer(0).supply_temperature-item.return_temperature))
+        n += 1
+
+    for index, item in enumerate(heatsource.producer()):
+        guess[n] = 0.765
+        n += 1
+
+    # pressure
+    for index, item in enumerate(heatgrid.nodes()):
+        if item.SP_RP == 'J':
+            guess[n] = heatsource.producer(0).supply_pressure
+        elif item.SP_RP == 'N':
+            guess[n] = heatsource.producer(0).return_pressure
+        else:
+            guess[n] = heatsource.producer(0).return_pressure
+            print('No value for SP_RP for', item.name, '!')
+        n += 1
+
+    # pressure a
+    for indexPipe, itemPipe in enumerate(heatgrid.pipes()):
+        for indexNode, itemNode in enumerate(heatgrid.nodes()):
+            if itemPipe.start_node_name == itemNode.name:
+                if itemNode.SP_RP == 'J':
+                    guess[n] = heatsource.producer(0).supply_pressure
+                elif itemNode.SP_RP == 'N':
+                    guess[n] = heatsource.producer(0).return_pressure
+                else:
+                    guess[n] = heatsource.producer(0).return_pressure
+                    print('No value for SP_RP for', item.name, '!')
+        n += 1
+
+    for index, item in enumerate(heatsink.consumer()):
+        guess[n] = heatsource.producer(0).supply_pressure
+        n += 1
+
+    for index, item in enumerate(heatsource.producer()):
+        guess[n] = heatsource.producer(0).return_pressure
+        n += 1
+
+    # pressure b
+    for indexPipe, itemPipe in enumerate(heatgrid.pipes()):
+        for indexNode, itemNode in enumerate(heatgrid.nodes()):
+            if itemPipe.end_node_name == itemNode.name:
+                if itemNode.SP_RP == 'J':
+                    guess[n] = heatsource.producer(0).supply_pressure
+                elif itemNode.SP_RP == 'N':
+                    guess[n] = heatsource.producer(0).return_pressure
+                else:
+                    guess[n] = heatsource.producer(0).return_pressure
+                    print('No value for SP_RP for', item.name, '!')
+        n += 1
+
+    for index, item in enumerate(heatsink.consumer()):
+        guess[n] = heatsource.producer(0).return_pressure
+        n += 1
+
+    for index, item in enumerate(heatsource.producer()):
+        guess[n] = heatsource.producer(0).supply_pressure
+        n += 1
+
+    # temperature
+    for index, item in enumerate(heatgrid.nodes()):
+        if item.SP_RP == 'J':
+            guess[n] = heatsource.producer(0).supply_temperature
+        elif item.SP_RP == 'N':
+            guess[n] = averageReturnTemperature
+        else:
+            guess[n] = heatsource.producer(0).supply_temperature
+            print('No value for SP_RP for', item.name, '!')
+        print(guess[n])
+        n += 1
+
+    # temperature a
+    for indexPipe, itemPipe in enumerate(heatgrid.pipes()):
+        for indexNode, itemNode in enumerate(heatgrid.nodes()):
+            if itemPipe.start_node_name == itemNode.name:
+                if itemNode.SP_RP == 'J':
+                    guess[n] = heatsource.producer(0).supply_temperature
+                elif itemNode.SP_RP == 'N':
+                    guess[n] = averageReturnTemperature
+                else:
+                    guess[n] = heatsource.producer(0).supply_temperature
+                    print('No value for SP_RP for', item.name, '!')
+        print(guess[n])
+        n += 1
+
+    for index, item in enumerate(heatsink.consumer()):
+        guess[n] = heatsource.producer(0).supply_temperature
+        n += 1
+
+    for index, item in enumerate(heatsource.producer()):
+        guess[n] = averageReturnTemperature
+        n += 1
+
+    # temperature b
+    for indexPipe, itemPipe in enumerate(heatgrid.pipes()):
+        for indexNode, itemNode in enumerate(heatgrid.nodes()):
+            if itemPipe.end_node_name == itemNode.name:
+                if itemNode.SP_RP == 'J':
+                    guess[n] = heatsource.producer(0).supply_temperature
+                elif itemNode.SP_RP == 'N':
+                    guess[n] = averageReturnTemperature
+                else:
+                    guess[n] = heatsource.producer(0).supply_temperature
+                    print('No value for SP_RP for', item.name, '!')
+        print(guess[n])
+        n += 1
+
+    for index, item in enumerate(heatsink.consumer()):
+        guess[n] = item.return_temperature
+        n += 1
+
+    for index, item in enumerate(heatsource.producer()):
+        guess[n] = heatsource.producer(0).supply_temperature
+        n += 1
+
+    # heatflow
+    for index, item in enumerate(heatgrid.pipes()):
+        guess[n] = -1
+        n += 1
+
+    for index, item in enumerate(heatsink.consumer()):
+        guess[n] = item.heat_demand
+        n += 1
+
+    for index, item in enumerate(heatsource.producer()):
+        guess[n] = 225000
+        n += 1
+
+    return guess

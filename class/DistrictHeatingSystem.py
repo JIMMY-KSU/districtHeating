@@ -196,16 +196,11 @@ class DistrictHeatingSystem():
                                self._inzidenzmatrix_HeatGrid,
                                self._inzidenzmatrix_HeatSink,
                                self._inzidenzmatrix_HeatSource)
-        
-        
+
         solution = fsolve(Solver_fsolve.gridCalculation,
                         getGuess(self.heatgrid,
                                  self.heatsink,
-                                 self.heatsource),
-                        args=[self.heatgrid,
-                              self.heatsink,
-                              self.heatsource,
-                              self._inzidenzmatrix])
+                                 self.heatsource))
 
         return None
 

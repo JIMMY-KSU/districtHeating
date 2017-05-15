@@ -14,19 +14,21 @@ sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
 class HeatSink():
     def __init__(self, tableOfConsumer):
 
-        self.__tableOfConsumer = tableOfConsumer
-        self._instancesConsumer = []
+        self._instancesOfConsumer = []
 
-        self.__importConsumer()
+        self.__importConsumer(tableOfConsumer)
 
-    def __importConsumer(self):
 
-        for item in self.__tableOfConsumer:
+        self.consumers_m = self.__consumers_m
+
+    def __importConsumer(self, tableOfConsumer):
+
+        for item in tableOfConsumer:
             self._instancesConsumer.append(Consumer(item))
 
 
     def consumer(self, i = slice(None,None)):
-        return self._instancesConsumer[i]
+        return self._instancesOfConsumer[i]
 
     def averageReturnTemperature(self):
         sumQ = 0
@@ -39,3 +41,10 @@ class HeatSink():
 
     def __consumerProfile(self):
         pass
+
+    def __consumers_m(self):
+        arr = [0]*len(self.consumer())
+        for index, item in enumerate(self.consumer()):
+            arr[index] = item.massflow
+        return arr
+            

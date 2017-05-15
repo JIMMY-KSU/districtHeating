@@ -37,7 +37,7 @@ def consumer_massflow(m, Ta, Tb, Q, cp=cp):
 
 def consumer_press(Pa, Pb, m):
     zeta = 0
-    res = 0  # (Pb - Pa) - zeta * math.pow(m, 2)
+    res = 5  # (Pb - Pa) - zeta * math.pow(m, 2)
     return res
 
 
@@ -53,7 +53,7 @@ def consumer_heatflow(Q_set, Q):
 
 # producer
 def producer_massflow(m, Ta, Tb, Q, cp=cp):
-    res = m * cp * (Tb - Ta) - Q
+    res = m * cp * (Tb - Ta) + Q
     return res
 
 

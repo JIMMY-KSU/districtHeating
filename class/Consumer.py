@@ -24,10 +24,14 @@ class Consumer():
             consumerValues['heat_consumptionProfile']
         self.heat_consumptionAverage = \
             consumerValues['heat_consumptionAverage']
-        self.massflow = 100 # t/h
-        self.heat_demand = consumerValues['heat_demand']
+
+        self.Q = consumerValues['heat_demand']
+
         self.flow = consumerValues['flow']
-        self.return_temperature = 60 + 273.15
+        self.Ta = 130 + 273.15
+        self.Tb = 60 + 273.15
+        self.cp = 4.1
+        self.m = self.__massflow(self.Q, self.cp, self.Ta, self.Tb) # t/h
 
         # TODO implement function for massflow
 
@@ -35,12 +39,14 @@ class Consumer():
     def heat_consumptionProfiles(self, i=slice(None,None)):
         return self.__dataArray['heat_consumptionProfile'][i]
 
-    def heat_consumption(self, heatExProfile, i = slice(None,None)):
-        heat_consumption=consumptionProfile(heatExProfile,i)
-        return heat_consumption
+    def heatflow(self, heatExProfile, i = slice(None,None)):
+#        arr = consumptionProfile(heatExProfile,i)
+        arr = 1000 #  [kW]
+        return arr
 
     def heat_consumptionAverage(self, i = slice(None,None)):
         return self.__dataArray['heat_consumptionAverage'][i]
 
-    def massflow(self):
-        return self.massflow
+    def __massflow(self, Q, cp, Ta, Tb):
+        val = Q / (cp * (Ta - Tb))
+        return val

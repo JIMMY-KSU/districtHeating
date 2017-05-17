@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
     heatgrid_nodes = DataIO.importCSV(
             'heatnet_nodes.csv',
-            dtypeSource=Dictionary.HeatGrid_node_dtype,
+            dtype=Dictionary.HeatGrid_node_dtype,
             startrow=1,
             columnofdate=None,
             dateformat='None')
@@ -65,10 +65,29 @@ if __name__ == "__main__":
 
     heatgrid_pipes = DataIO.importCSV(
             'heatnet_pipes.csv',
-            dtypeSource=Dictionary.HeatGrid_pipe_dtype,
+            dtype=Dictionary.HeatGrid_pipe_dtype,
             startrow=1,
             columnofdate=None,
             dateformat='None')
     heatgrid = HeatGrid(heatgrid_pipes, heatgrid_nodes)
+
+#  TODO work for supply return pipe calculation
+    arr = heatgrid.pipes()
+    firstNodeOfSupply = 1
+    arrOfNumbersOfSupplyPipes = []
+    i = 0
+    while i < len(arr):
+        print(arr[i].end_node_name)
+        print(arr[i].start_node_name)
+        
+        if arr[i].start_node_name == "1":
+            arrOfNumbersOfSupplyPipes.append(i)
+        j = 0
+        while j < len(arr):
+            if arr[i].end_node_name == arr[j].start_node_name:
+                arrOfNumbersOfSupplyPipes.append(i)
+            j = j + 1
+        i = i + 1
+    print(arrOfNumbersOfSupplyPipes)
 else:
     print('HeatGrid was imported into another module')

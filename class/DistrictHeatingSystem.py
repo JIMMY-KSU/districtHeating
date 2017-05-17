@@ -198,7 +198,7 @@ class DistrictHeatingSystem():
                                self._inzidenzmatrix_HeatSource)
 
         solution = fsolve(Solver_fsolve.gridCalculation,
-                        getGuess(self.heatgrid,
+                        Solver_fsolve.getGuess(self.heatgrid,
                                  self.heatsink,
                                  self.heatsource))
 
@@ -214,7 +214,6 @@ if __name__ == "__main__":
     sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
 
     from DataIO import DataIO
-    from DistrictHeatingSystem import DistrictHeatingSystem
     import Dictionary
     from Plotter import Plotter
     from matplotlib import pyplot as plt

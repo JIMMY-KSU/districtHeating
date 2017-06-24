@@ -7,15 +7,12 @@ Created on Sat Jan  7 16:22:28 2017
 
 import sys
 import os
-import inspect
 
 sys.path.append(os.getcwd() + os.sep + 'class')
 
 from DataIO import DataIO
 from DistrictHeatingSystem import DistrictHeatingSystem
 import Dictionary
-from Plotter import Plotter
-from matplotlib import pyplot as plt
 
 
 DataIO = DataIO(

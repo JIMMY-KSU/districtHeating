@@ -11,9 +11,9 @@ import numpy as np
 from scipy.optimize import fsolve
 
 sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'class')
-print(os.path.dirname(os.getcwd()) + os.sep + 'class')
+print(os.getcwd() +os.sep + 'class')
 sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
-print(os.path.dirname(os.getcwd()) + os.sep + 'function')
+print(os.getcwd() + os.sep + 'function')
 
 import dependencies as dp 
 

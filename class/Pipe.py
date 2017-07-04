@@ -31,13 +31,14 @@ class Pipe():
         self.end_y = pipeValues['end_y']
         self.start_node_name = pipeValues['start_node_name']
         self.end_node_name = pipeValues['end_node_name']
+        self.start_end_node_name = [self.start_node_name, self.end_node_name]
         self.length = pipeValues['length'] #[mm]
         self.diameter_inner = pipeValues['diameter_inner']
         self.diameter_outer = pipeValues['diameter_outer']
         self.start_height = pipeValues['start_height']
         self.end_height = pipeValues['end_height']
         self.roughness = pipeValues['roughness']
-        self.SP_RP = pipeValues['SP_RP']
+        self.sp_rp = pipeValues['sp_rp']
 
         if 'heatTransitionCoefficient' in pipeValues:    
             self.heatTransitionCoefficient = pipeValues['heatTransitionCoefficient'] #[W/m]
@@ -248,6 +249,6 @@ class Pipe():
 #    def roughness(self, i = slice(None,None)):
 #        return self.__dataArray['roughness'][i]
 if __name__=="__main__":
-    print('pipe run directly')
+    print('class Pipe run directly')
 else:
-    print('pipe was imported into another module')
+    print('class Pipe was imported into another module')

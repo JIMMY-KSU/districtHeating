@@ -29,7 +29,7 @@ HeatGrid_pipe_dtype =    {'names':(
                                 'diameter_1',
                                 'diameter_2',
                                 'diameter_3',
-                                'SP_RP'),
+                                'sp_rp'),
                        'formats': (
                                 'i',
                                 'f',
@@ -63,7 +63,7 @@ HeatGrid_node_dtype =    {'names': (
                                 'y',
                                 'name',
                                 'height',
-                                'SP_RP'
+                                'sp_rp'
                                 ),
                        'formats': (
                                 'i',
@@ -202,7 +202,7 @@ HeatGrid_STANET_nodes_allocation = {
                                 'y': 'YHOCH',
                                 'name': 'KNAM',
                                 'height': 'GEOH',
-                                'SP_RP': 'SUPPLY'
+                                'sp_rp': 'SUPPLY'
                                 }
 
 HeatGrid_STANET_pipes_allocation = {
@@ -228,7 +228,7 @@ HeatGrid_STANET_pipes_allocation = {
                                 'diameter_1': 0,
                                 'diameter_2': 0,
                                 'diameter_3': 0,
-                                'SP_RP': 'SUPPLY'
+                                'sp_rp': 'SUPPLY'
                                 }
 
 HeatSink_STANET_consumer_allocation = {

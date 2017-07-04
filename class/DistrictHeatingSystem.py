@@ -22,7 +22,6 @@ from HeatGrid import HeatGrid
 from HeatSink import HeatSink
 from HeatSource import HeatSource
 from inzidenzmatrix import inzidenzmatrix
-from guess import getGuess
 from scipy.optimize import root
 from Solver import Solver
 
@@ -32,11 +31,11 @@ logger = logging.getLogger('stackoverflow_rocks')
 
 class DistrictHeatingSystem():
     def __init__(self, heatgrid_pipes, heatgrid_nodes, heatsink, heatsource):
-HeatGrid()
-        self.heatgrid = HeatGrid(heatgrid_pipes, heatgrid_nodes)
+
         self.heatsink = HeatSink(heatsink)
         self.heatsource = HeatSource(heatsource)
-
+# TODO install producer start  as supply node like [1,None] into HeatGrid()
+        self.heatgrid = HeatGrid(heatgrid_pipes, heatgrid_nodes)
 #        self.consumersLocationinMatrix = self.__consumersLocationinMatrix()
 #        self.producersLocationinMatrix = self.__producersLocationinMatrix()
 #        self.pipesLocationinMatrix = self.__pipesLocationinMatrix()

@@ -13,4 +13,4 @@ class Node():
         self.y = nodeValues['y']
         self.name = nodeValues['name']
         self.height = nodeValues['height']
-        self.SP_RP = nodeValues['SP_RP']
+        self.sp_rp = nodeValues['sp_rp']

@@ -2,30 +2,54 @@
 """
 Created on Sat Jan 07 16:50:22 2017
 @author: jpelda"""
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'class')
+print(os.path.dirname(os.getcwd()) + os.sep + 'class')
+sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
+print(os.path.dirname(os.getcwd()) + os.sep + 'function')
 
 from Pipe import Pipe
 from Node import Node
+import findAdditionalElements
 
 
 class HeatGrid():
 
-    def __init__(self, tableOfPipes, tableOfNodes):
+    def __init__(self, tableOfPipes, tableOfNodes,
+                 producersSupplyNode=None, producersReturnNode=None):
         '''
         input:
             tableOfPipes = [] # contains all Pipes of network, \
-                allocation Dictionary can be found in Dictionary
-            tableOfNodes = [] # same as tabelOfPipes but for nodes
-            SP = '' # name in imported tables for supply line
-            RP = '' # name in imported tables for return line
+                allocation Dictionary can be found in Dictionary \n
+            tableOfNodes = [] # same as tabelOfPipes but for nodes \n
+            producersSupplyNode = [] is given by 
+                [[val, None],[val, None], ...], out of this all pipes with
+            val and additional numbers are written into pipes_sp\n
+            producersRetrunNode = [] is given by 
+                [[val, None], [val, None], ...], out of this all pipes with
+                val and additional numbers are written into pipes_rp\n
         '''
 
         self._instancesPipe = []
         self._instancesNode = []
         self.__importPipes(tableOfPipes)
         self.__importNodes(tableOfNodes)
-
+        print(self._instancesPipe)
+        print(self._instancesNode)
+        print(self._instancesPipe[1].start_)
         self.nodes_names = self.__nodes_names()
 
+#    def pipes_sp(self):
+#        return findAdditionalElements(
+#                producersSupplyNode,
+#                [self.pipes(i).start_x, self.pipes(i).end_x])
+        
+    
+    def pipes_rp(self):
+        pass
+    
     def pipes(self, i=slice(None, None)):
         return self._instancesPipe[i]
 

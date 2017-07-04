@@ -27,10 +27,12 @@ from scipy.optimize import root
 from Solver import Solver
 
 
+import logging
+logger = logging.getLogger('stackoverflow_rocks')
+
 class DistrictHeatingSystem():
-
     def __init__(self, heatgrid_pipes, heatgrid_nodes, heatsink, heatsource):
-
+HeatGrid()
         self.heatgrid = HeatGrid(heatgrid_pipes, heatgrid_nodes)
         self.heatsink = HeatSink(heatsink)
         self.heatsource = HeatSource(heatsource)
@@ -60,6 +62,11 @@ class DistrictHeatingSystem():
         self.numberOfElements = (self.numberOfPipes +
                                  self.numberOfSinks +
                                  self.numberOfSources)
+
+        logger.debug("This is a debug log")
+        logger.critical("This is critical")
+        logger.error("An error occurred")
+        logger.info("This is an info log")
         print('Nodes: ', self.numberOfNodes)
         print('Pipes: ', self.numberOfPipes)
         print('Sinks: ', self.numberOfSinks)
@@ -67,6 +74,9 @@ class DistrictHeatingSystem():
         print('nodes:', self.numberOfNodes)
         print('elements:', self.numberOfElements)
 
+    
+
+        
     def __inzidenzmatrix_HeatGrid(self):
         '''returns an inzidenzmatrix where all elements are displayed 
             (producer, consumer, pipes)'''

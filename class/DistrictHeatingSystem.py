@@ -10,9 +10,9 @@ import os
 import numpy as np
 from scipy.optimize import fsolve
 
-sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'class')
+sys.path.append(os.getcwd() + os.sep + 'class')
 print(os.getcwd() +os.sep + 'class')
-sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
+sys.path.append(os.getcwd() + os.sep + 'function')
 print(os.getcwd() + os.sep + 'function')
 
 import dependencies as dp 
@@ -210,13 +210,10 @@ if __name__ == "__main__":
     import sys
     import os
 
-    sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'class')
-    sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
+#    sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'class')
+#    sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
 
-    from DataIO import DataIO
     import Dictionary
-    from Plotter import Plotter
-    from matplotlib import pyplot as plt
 
     DataIO = DataIO(
                 os.path.dirname(os.getcwd()) + os.sep + 'input',

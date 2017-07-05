@@ -49,6 +49,7 @@ DHS1 = DistrictHeatingSystem(
 
 DHS1.calculateDHS()
 
+huhu
 #heatgrid_nodes = DataIO.importCSV('Hannover_workshopNet1'  + os.sep + 'heatnet_nodes.csv',
 #                                 dtypeSource = Dictionary.HeatGrid_node_dtype,
 #                                 startrow=1,

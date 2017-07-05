@@ -14,6 +14,8 @@ from Finder import Finder
 from Pipe import Pipe
 from Node import Node
 
+import numpy as np
+
 
 class HeatGrid():
 
@@ -32,52 +34,54 @@ class HeatGrid():
                 val and additional numbers are written into pipes_rp\n
         '''
         self.__nodeSupply = nodeSupply
+        
         self._instancesPipe = self.__importPipes(tableOfPipes)
-        arr = self.__setListOfSupplyPipes(
-                                    self.__findSupplyAndReturnPipesAndNodes())
-
-        self._instancesPipe_sp = arr[0]
-        self._instancesPipe_rp = arr[1]
+        
+        self.__nameSupplyAndReturnPipesAndNodes(
+                self.__findSupplyAndReturnPipesAndNodes())
+        
         
         self._instancesNode = self.__importNodes(tableOfNodes)
-        
         self.nodes_names = self.__nodes_names()
 
-#    def pipes_sp(self):
-#        return findAdditionalElements(
-#                producersSupplyNode,
-#                [self.pipes(i).start_x, self.pipes(i).end_x])
-        
-    
-    def pipes_rp(self):
-        pass
-    
+
     def pipes(self, i=slice(None, None)):
         return self._instancesPipe[i]
 
+    def pipes_start_end_node_name(self):
+        arr = []
+        for item in self._instancesPipe:
+            arr.append(item.start_end_node_name)
+        return arr
+
     def nodes(self, i=slice(None, None)):
         return self._instancesNode[i]
-      
+
     def __findSupplyAndReturnPipesAndNodes(self):
+        '''
+        gets an arr of all supply pipes,
+        find by class Finder method findAllItems
+        '''
         search_list = []
         for item in self.pipes():
             search_list.append(item.start_end_node_name)
-#        print([self.__nodeSupply,0], search_list)
-        arr = Finder().findAllItems(self.__nodeSupply, search_list)            
+        arr = Finder().findAllItems(self.__nodeSupply, search_list)
         return arr
-        
-    def __setListOfSupplyPipes(self, arr):
-        arr_sp = []
-        arr_rp = []
-        for item0 in arr:
-            for item1 in self.pipes():
-                if item1.start_end_node_name == item0:
-                    arr_sp.append(item1)
+
+    def __nameSupplyAndReturnPipesAndNodes(self, arr):
+        '''
+        names all Pipes at sp_rp with 1 for supply pipe and 0 for return pipe
+        '''
+        arr_pipes = self.pipes_start_end_node_name()
+
+        for index, item in enumerate(arr_pipes):
+            for item1 in arr:
+                if item == item1:
+                    self.pipes(index).sp_rp = 1
+                    break
                 else:
-                    arr_rp.append(item1)
-        return arr_sp, arr_rp
-        
-        
+                    self.pipes(index).sp_rp = 0
+
     def __importPipes(self, arr):
         retArr = []
         for item in arr:
@@ -117,19 +121,9 @@ if __name__ == "__main__":
     
     testGrid = HeatGrid(heatgrid_pipes, heatgrid_nodes, [["K1017",None]])
     
-#  TODO work for supply return pipe calculation
     for item in testGrid.pipes():
-        print("Pipes" + item.sp_rp, item.start_node_name, item.end_node_name)
-    
-    for index, item in enumerate(testGrid.nodes()):
-        if item.sp_rp == "J":
-            print(item.sp_rp, item.name, testGrid._instancesPipe_sp[index-1].start_node_name)
-    for item in testGrid._instancesPipe_sp:
-        print(item.start_end_node_name, item.length)
-    
-    for index, item in enumerate(testGrid.nodes()):
-        if item.sp_rp =="N":
-            print(item.sp_rp, item.name, testGrid._instancesPipe_rp[index-1].start_node_name)
-        
+        print("Loaded Pipe: RP/SP %s sNode %s eNode %s" % (str(item.sp_rp),
+              item.start_node_name, item.end_node_name))
+
 else:
     print('HeatGrid was imported into another module')

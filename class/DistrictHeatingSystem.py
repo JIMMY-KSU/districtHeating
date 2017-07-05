@@ -10,10 +10,10 @@ import os
 import numpy as np
 from scipy.optimize import fsolve
 
-sys.path.append(os.getcwd() + os.sep + 'class')
-print(os.getcwd() +os.sep + 'class')
-sys.path.append(os.getcwd() + os.sep + 'function')
-print(os.getcwd() + os.sep + 'function')
+sys.path.append(os.getcwd())
+print(os.getcwd())
+sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
+print(os.path.dirname(os.getcwd()) + os.sep + 'function')
 
 import dependencies as dp 
 
@@ -35,7 +35,10 @@ class DistrictHeatingSystem():
         self.heatsink = HeatSink(heatsink)
         self.heatsource = HeatSource(heatsource)
 # TODO install producer start  as supply node like [1,None] into HeatGrid()
-        self.heatgrid = HeatGrid(heatgrid_pipes, heatgrid_nodes)
+        self.heatgrid = HeatGrid(heatgrid_pipes,
+                                 heatgrid_nodes,
+                                 nodeSupply = 
+                                     self.heatsource.end_nodes_names)
 #        self.consumersLocationinMatrix = self.__consumersLocationinMatrix()
 #        self.producersLocationinMatrix = self.__producersLocationinMatrix()
 #        self.pipesLocationinMatrix = self.__pipesLocationinMatrix()
@@ -255,6 +258,7 @@ if __name__ == "__main__":
             heatgrid_nodes,
             heatsink,
             heatsource)
+    
 
     DHS1.calculateDHS()
 else:

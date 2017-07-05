@@ -5,8 +5,8 @@ Created on Sat Jan 07 16:50:22 2017
 import sys
 import os
 
-sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'class')
-print(os.path.dirname(os.getcwd()) + os.sep + 'class')
+sys.path.append(os.getcwd())
+print(os.getcwd())
 sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
 print(os.path.dirname(os.getcwd()) + os.sep + 'function')
 
@@ -43,7 +43,8 @@ class HeatGrid():
         
         self._instancesNode = self.__importNodes(tableOfNodes)
         self.nodes_names = self.__nodes_names()
-
+        
+        self.__str__()
 
     def pipes(self, i=slice(None, None)):
         return self._instancesPipe[i]
@@ -100,6 +101,13 @@ class HeatGrid():
             returnArray[index] = item.name
         return returnArray
 
+    def __str__(self):
+        for item in self.pipes():
+            print("Loaded Pipe: RP/SP %s sNode %s eNode %s"
+                  % (str(item.sp_rp),
+                     item.start_node_name,
+                     item.end_node_name))
+
 if __name__ == "__main__":
     print('HeatGrid run directly')
     from DataIO import DataIO
@@ -120,10 +128,9 @@ if __name__ == "__main__":
         Dictionary.HeatGrid_STANET_pipes_allocation)
     
     testGrid = HeatGrid(heatgrid_pipes, heatgrid_nodes, [["K1017",None]])
-    
-    for item in testGrid.pipes():
-        print("Loaded Pipe: RP/SP %s sNode %s eNode %s" % (str(item.sp_rp),
-              item.start_node_name, item.end_node_name))
+
 
 else:
     print('HeatGrid was imported into another module')
+    
+

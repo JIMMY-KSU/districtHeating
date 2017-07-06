@@ -10,14 +10,13 @@ import os
 import numpy as np
 from scipy.optimize import fsolve
 
-sys.path.append(os.getcwd())
-print(os.getcwd())
+#sys.path.append(os.getcwd())
+#print(os.getcwd())
 sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
 print(os.path.dirname(os.getcwd()) + os.sep + 'function')
 
 import dependencies as dp 
 
-from DataIO import DataIO
 from HeatGrid import HeatGrid
 from HeatSink import HeatSink
 from HeatSource import HeatSource
@@ -34,7 +33,6 @@ class DistrictHeatingSystem():
 
         self.heatsink = HeatSink(heatsink)
         self.heatsource = HeatSource(heatsource)
-# TODO install producer start  as supply node like [1,None] into HeatGrid()
         self.heatgrid = HeatGrid(heatgrid_pipes,
                                  heatgrid_nodes,
                                  nodeSupply = 
@@ -76,134 +74,74 @@ class DistrictHeatingSystem():
         print('nodes:', self.numberOfNodes)
         print('elements:', self.numberOfElements)
 
-    
 
-        
     def __inzidenzmatrix_HeatGrid(self):
-        '''returns an inzidenzmatrix where all elements are displayed 
-            (producer, consumer, pipes)'''
+        '''returns an inzidenzmatrix of HeatGrid, where pipes are col
+        and nodes are row'''
         array_col = []
-
-        for item in self.heatgrid.pipes():
-            array_col.append(
-                             [item.start_node_name,
-                              item.end_node_name])
-
-        return inzidenzmatrix(self.heatgrid.nodes_names, array_col,
+        try:
+            for item in self.heatgrid.pipes():
+                array_col.append(
+                                 [item.start_node_name,
+                                  item.end_node_name])
+        except ValueError:
+            print("Error in __inzidenzmatrix_HeatGrid, no heatgrid loaded?")
+        return inzidenzmatrix(self.heatgrid.v_nodes_name, array_col,
                               inzidenzmatrix_name="heatGrid")
 
     def __inzidenzmatrix_HeatSink(self):
-
+        '''returns an inzidenzmatrix of HeatSink, where consumer are col
+        and nodes are row'''
         array_col = []
-
-        for item in self.heatsink.consumer():
-            array_col.append(
-                             [item.start_node_name,
-                              item.end_node_name])
-
-        return inzidenzmatrix(self.heatgrid.nodes_names, array_col,
+        try:
+            for item in self.heatsink.consumer():
+                array_col.append(
+                                 [item.start_node_name,
+                                  item.end_node_name])
+        except ValueError:
+            print("Error in __inzidenzmatrix_HeatSink, no heatsink loaded?")
+        return inzidenzmatrix(self.heatgrid.v_nodes_name, array_col,
                               inzidenzmatrix_name="heatSink")
 
     def __inzidenzmatrix_HeatSource(self):
-        # TODO implement Try and error in case of no loaded\
-        # self.heatgrid.nodes_name
-        # implement as property as well as other inzidenzmatrixen
+        '''returns an inzidenzmatrix of HeatSource, where producer are col
+        and nodes are row'''
         array_col = []
-        for item in self.heatsource.producer():
-            array_col.append([item.start_node_name,
-                              item.end_node_name])
-
-        return inzidenzmatrix(self.heatgrid.nodes_names, array_col,
+        try:
+            for item in self.heatsource.producer():
+                array_col.append([item.start_node_name,
+                                  item.end_node_name])
+        except ValueError:
+            print("Error in __inzidenzmatrix_HeatSource, \
+                  no heatsource loaded?")
+        return inzidenzmatrix(self.heatgrid.v_nodes_name, array_col,
                               inzidenzmatrix_name="heatSource")
 
     def __inzidenzmatrix(self):
-
+        '''returns an inzidenzmatrix of HeatGrid, HeatSink and HeatSource,\
+        where all elements are col and nodes are row'''
         array_col = []
+        try:
+            for item in self.heatgrid.pipes():
+                array_col.append(
+                                 [item.start_node_name,
+                                  item.end_node_name])
 
-        for item in self.heatgrid.pipes():
-            array_col.append(
-                             [item.start_node_name,
-                              item.end_node_name])
+            for item in self.heatsink.consumer():
+                array_col.append(
+                                 [item.start_node_name,
+                                  item.end_node_name])
 
-        for item in self.heatsink.consumer():
-            array_col.append(
-                             [item.start_node_name,
-                              item.end_node_name])
-
-        for item in self.heatsource.producer():
-            array_col.append([item.start_node_name,
-                              item.end_node_name])
-
-        return inzidenzmatrix(self.heatgrid.nodes_names, array_col,
+            for item in self.heatsource.producer():
+                array_col.append([item.start_node_name,
+                                  item.end_node_name])
+        except ValueError:
+            print("Error in __inzidenzmatrix")
+        return inzidenzmatrix(self.heatgrid.v_nodes_name, array_col,
                               inzidenzmatrix_name="all")
 
     def calculateDHS(self):
 
-
-
-#        solutionRoot = root(
-#                    gridCalculation,
-#                    getGuess(self.heatgrid,
-#                             self.heatsink,
-#                             self.heatsource),
-#                    args=[self.heatgrid,
-#                          self.heatsink,
-#                          self.heatsource,
-#
-#                          self._inzidenzmatrix],
-#                    method='lm')
-
-#        print('Solution:')
-#        n = 0
-#        print('massflow:')
-#        for i in range(v):
-#            print('  ', solution[n])
-#            n += 1
-#
-#        print('pressure:')
-#        for i in range(k):
-#            print('  ', solution[n])
-#            n += 1
-#
-#        print('pressure a:')
-#        for i in range(v):
-#            print('  ', solution[n])
-#            n += 1
-#
-#        print('pressure b:')
-#        for i in range(v):
-#            print('  ', solution[n])
-#            n += 1
-#
-#        print('tempreature:')
-#        for i in range(k):
-#            print('  ', solution[n])
-#            n += 1
-#
-#        print('tempreature a:')
-#        for i in range(v):
-#            print('  ', solution[n])
-#            n += 1
-#
-#        print('tempreature b:')
-#        for i in range(v):
-#            print('  ', solution[n])
-#            n += 1
-#
-#        print('heatflow:')
-#        for i in range(v):
-#            print('  ', solution[n])
-#            n += 1
-#
-#        print('läuft!')
-#        
-#        for i in solutionRoot:
-#            print(i)
-#
-#        solution = solutionRoot['x']
-#        print('\n', 'Success:', solutionRoot['success'], '\n')
-
-        
         Solver_fsolve = Solver(self._inzidenzmatrix,
                                self._inzidenzmatrix_HeatGrid,
                                self._inzidenzmatrix_HeatSink,
@@ -218,14 +156,10 @@ class DistrictHeatingSystem():
 
 
 if __name__ == "__main__":
-    print('DistrictHeatingSystem run directly')
-    import sys
-    import os
-
-#    sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'class')
-#    sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
-
+    from DataIO import DataIO
     import Dictionary
+    print('DistrictHeatingSystem run directly')
+
 
     DataIO = DataIO(
                 os.path.dirname(os.getcwd()) + os.sep + 'input',
@@ -258,7 +192,6 @@ if __name__ == "__main__":
             heatgrid_nodes,
             heatsink,
             heatsource)
-    
 
     DHS1.calculateDHS()
 else:

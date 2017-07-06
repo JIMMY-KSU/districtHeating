@@ -18,16 +18,17 @@ class Finder():
             while i < len(search_list):
                 if (item0[0] == search_list[i][0] or item0[0] == search_list[i][1]
                 or item0[1] == search_list[i][0] or item0[1] == search_list[i][1]):
-                    arr.append(search_list.pop(i))
+                    arr.append(search_list[i])
+                    search_list = np.delete(search_list, i, axis=0)
                     i = i - 1
                     noMoreElementsIn_search_list = 0
                 i = i + 1
-        return arr if(bool(noMoreElementsIn_search_list)) else\
+        return np.asarray(arr) if(bool(noMoreElementsIn_search_list)) else\
                         self.findAllItems(arr, search_list, arr)
     
     
 if __name__ == "__main__":
-    print('DistrictHeatingSystem run directly')
+    print('Finder run directly')
     pipes = [[1,2],[2,3],[3,4],[4,1],[4,5],[4,6],[4,7],[8,11],\
              [9,11],[10,12],[12,11],[11,0]] #first value = SP, sec = RP
     consumer = [[1,11],[1,12],[5,8],[6,9],[7,10]]
@@ -42,7 +43,7 @@ if __name__ == "__main__":
     print(pipes_ab)
 
 else:
-    print('DistrictHeatingSystem was imported into another module')
+    print('Finder was imported into another module')
 
 
 

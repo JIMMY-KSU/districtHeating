@@ -20,10 +20,8 @@ class Consumer():
         self.start_y = consumerValues['start_y']
         self.end_x = consumerValues['end_x']
         self.end_y = consumerValues['end_y']
-        self.heat_consumptionProfile = \
-            consumerValues['heat_consumptionProfile']
-        self.heat_consumptionAverage = \
-            consumerValues['heat_consumptionAverage']
+        self.heat_profile = consumerValues['heat_consumptionProfile']
+        self.heat_average = consumerValues['heat_consumptionAverage']
 
         self.Q = consumerValues['heat_demand']
 

@@ -38,7 +38,7 @@ class Pipe():
         self.start_height = pipeValues['start_height']
         self.end_height = pipeValues['end_height']
         self.roughness = pipeValues['roughness']
-        self.sp_rp = pipeValues['sp_rp']
+        self.sprp = pipeValues['sprp']
 
         if 'heatTransitionCoefficient' in pipeValues:    
             self.heatTransitionCoefficient = pipeValues['heatTransitionCoefficient'] #[W/m]
@@ -218,36 +218,7 @@ class Pipe():
 #        #volume =  # m^3
 #        return volume
         pass
-        
-        
-#    def index(self, i = slice(None,None)):
-#        return self.__dataArray['index'][i]
-#    def start_x(self, i = slice(None,None)):
-#        return self.__dataArray['start_x'][i]
-#    def start_y(self, i = slice(None,None)):
-#        return self.__dataArray['start_y'][i]
-#    def end_x(self, i = slice(None,None)):
-#        return self.__dataArray['end_x'][i]
-#    def end_y(self, i = slice(None,None)):
-#        return self.__dataArray['end_y'][i]
-#    def start_point(self, i = slice(None,None)):
-#        return self.__dataArray['start_point'][i]
-#    def end_point(self, i = slice(None,None)):
-#        return self.__dataArray['end_point'][i]
-#    def length(self, i = slice(None,None)):
-#        return self.__dataArray['length'][i]
-#    def inner_diameter(self, i = slice(None,None)):
-#        return self.__dataArray['inner_diameter'][i]
-#    def outer_diameter(self, i = slice(None,None)):
-#        return self.__dataArray['outer_diameter'][i]
-#    def start_height(self, i = slice(None,None)):
-#        return self.__dataArray['start_height'][i]
-#    def end_height(self, i = slice(None,None)):
-#        return self.__dataArray['end_height'][i]
-#    def heatTransitionCoefficient(self, i = slice(None,None)):
-#        return self.__dataArray['heatTransitionCoefficient'][i]
-#    def roughness(self, i = slice(None,None)):
-#        return self.__dataArray['roughness'][i]
+
 if __name__=="__main__":
     print('class Pipe run directly')
 else:

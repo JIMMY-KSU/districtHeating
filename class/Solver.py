@@ -192,23 +192,21 @@ class Solver():
         '''
         v_m = np.zeros(self.edges)
         # massflow
-        v_m[self.__I_grid_slice] = -heatsink.consumer(1).m
-        v_m[self.__I_sink_slice] = -heatsink.consumer(1).m
-#  TODO len(heatsink.consumer() is only valid if all
-#  massflows of consumers are equal!)
-        v_m[self.__I_source_slice] = -heatsink.consumer(1).m\
-            * len(heatsink.consumer())
+        v_m[self.__I_grid_slice] = -(np.average(heatsink.v_consumers_m))
+        v_m[self.__I_sink_slice] = -heatsink.v_consumers_m
 
+        v_m[self.__I_source_slice] = -(np.sum(heatsink.v_consumers_m) /
+                                       len(heatsource.producer()))
         '''
         vector of heatflows by guess
         '''
         v_Q = np.zeros(self.edges)
         # heatflows
-        v_Q[self.__I_grid_slice] = heatsink.consumer(1).Q
-#  TODO how to get an array of all heatflows of the consumers?
-        v_Q[self.__I_sink_slice] = heatsink.consumer(1).Q
-        v_Q[self.__I_source_slice] = heatsink.consumer(1).Q\
-            * len(heatsink.consumer())
+        v_Q[self.__I_grid_slice] = np.average(heatsink.v_consumers_m)
+           #  TODO how to get an array of all heatflows of the consumers?
+        v_Q[self.__I_sink_slice] = heatsink.v_consumers_Q
+        v_Q[self.__I_source_slice] = -(np.sum(heatsink.v_consumers_m) / 
+                                       len(heatsource.producer()))
 
         '''
         vector of temperatures by guess

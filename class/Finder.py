@@ -28,7 +28,7 @@ class Finder():
     
     
 if __name__ == "__main__":
-    print('Finder run directly')
+    print('Finder \t\t\t run directly')
     pipes = [[1,2],[2,3],[3,4],[4,1],[4,5],[4,6],[4,7],[8,11],\
              [9,11],[10,12],[12,11],[11,0]] #first value = SP, sec = RP
     consumer = [[1,11],[1,12],[5,8],[6,9],[7,10]]
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     print(pipes_ab)
 
 else:
-    print('Finder was imported into another module')
+    print('Finder \t\t\t was imported into another module')
 
 
 

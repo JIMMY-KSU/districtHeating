@@ -11,11 +11,10 @@ from HeatSink_Consumptionprofiles import HeatSink_Consumptionprofiles
 class Consumer():
 
     def __init__(self, consumerValues):
-
         self.index = consumerValues['index']
         self.heat_exchangerModel = consumerValues['heat_exchangerModel']
-        self.start_node_name = consumerValues['start_node_name']
-        self.end_node_name = consumerValues['end_node_name']
+        self.sNode = consumerValues['sNode']
+        self.eNode = consumerValues['eNode']
         self.start_x = consumerValues['start_x']
         self.start_y = consumerValues['start_y']
         self.end_x = consumerValues['end_x']
@@ -48,3 +47,18 @@ class Consumer():
     def __massflow(self, Q, cp, Ta, Tb):
         val = Q / (cp * (Ta - Tb))
         return val
+
+if __name__ == "__main__":
+    print("Consumer \t\t run directly")
+
+    consumerValues = {'index': 1, 'heat_exchangerModel': 'heatExchangerModel',
+                      'sNode': 'K1017', 'eNode': 'K1018',
+                      'start_x': 11, 'start_y': 21, 'end_x': 10, 'end_y': 20,
+                      'heat_consumptionProfile': 'house',
+                      'heat_consumptionAverage': 3, 'heat_demand': 1000,
+                      'flow': 10}
+    consumer = Consumer(consumerValues)
+    print(consumer.__dict__)
+
+else:
+    print("Consumer \t\t was imported into another module")

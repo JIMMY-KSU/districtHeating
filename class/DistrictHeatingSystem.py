@@ -13,7 +13,7 @@ from scipy.optimize import fsolve
 #sys.path.append(os.getcwd())
 #print(os.getcwd())
 sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
-print(os.path.dirname(os.getcwd()) + os.sep + 'function')
+#print(os.path.dirname(os.getcwd()) + os.sep + 'function')
 
 import dependencies as dp 
 
@@ -36,44 +36,24 @@ class DistrictHeatingSystem():
         self.heatgrid = HeatGrid(heatgrid_pipes,
                                  heatgrid_nodes,
                                  nodeSupply = 
-                                     self.heatsource.end_nodes_names)
+                                     self.heatsource.eNodes)
 #        self.consumersLocationinMatrix = self.__consumersLocationinMatrix()
 #        self.producersLocationinMatrix = self.__producersLocationinMatrix()
 #        self.pipesLocationinMatrix = self.__pipesLocationinMatrix()
-
-        self.v_m = 0
-        self.v_T = 0
-        self.v_P = 0
-        self.v_Ta = 0
-        self.v_Tb = 0
-        self.v_Pa = 0
-        self.v_Pb = 0
-        self.v_Q = 0
 
         self._inzidenzmatrix_HeatGrid = self.__inzidenzmatrix_HeatGrid()
         self._inzidenzmatrix_HeatSink = self.__inzidenzmatrix_HeatSink()
         self._inzidenzmatrix_HeatSource = self.__inzidenzmatrix_HeatSource()
         self._inzidenzmatrix = self.__inzidenzmatrix()
+        
+        self._nodes = len(self._inzidenzmatrix)
+        self._elements = len(self._inzidenzmatrix[0])
 
-        self.numberOfNodes = len(self.heatgrid.nodes())
-        self.numberOfPipes = len(self.heatgrid.pipes())
-        self.numberOfSinks = len(self.heatsink.consumer())
-        self.numberOfSources = len(self.heatsource.producer())
-        self.numberOfElements = (self.numberOfPipes +
-                                 self.numberOfSinks +
-                                 self.numberOfSources)
 
         logger.debug("This is a debug log")
         logger.critical("This is critical")
         logger.error("An error occurred")
         logger.info("This is an info log")
-        print('Nodes: ', self.numberOfNodes)
-        print('Pipes: ', self.numberOfPipes)
-        print('Sinks: ', self.numberOfSinks)
-        print('Sources: ', self.numberOfSources)
-        print('nodes:', self.numberOfNodes)
-        print('elements:', self.numberOfElements)
-
 
     def __inzidenzmatrix_HeatGrid(self):
         '''returns an inzidenzmatrix of HeatGrid, where pipes are col
@@ -82,8 +62,8 @@ class DistrictHeatingSystem():
         try:
             for item in self.heatgrid.pipes():
                 array_col.append(
-                                 [item.start_node_name,
-                                  item.end_node_name])
+                                 [item.sNode,
+                                  item.eNode])
         except ValueError:
             print("Error in __inzidenzmatrix_HeatGrid, no heatgrid loaded?")
         return inzidenzmatrix(self.heatgrid.v_nodes_name, array_col,
@@ -96,8 +76,8 @@ class DistrictHeatingSystem():
         try:
             for item in self.heatsink.consumer():
                 array_col.append(
-                                 [item.start_node_name,
-                                  item.end_node_name])
+                                 [item.sNode,
+                                  item.eNode])
         except ValueError:
             print("Error in __inzidenzmatrix_HeatSink, no heatsink loaded?")
         return inzidenzmatrix(self.heatgrid.v_nodes_name, array_col,
@@ -109,8 +89,8 @@ class DistrictHeatingSystem():
         array_col = []
         try:
             for item in self.heatsource.producer():
-                array_col.append([item.start_node_name,
-                                  item.end_node_name])
+                array_col.append([item.sNode,
+                                  item.eNode])
         except ValueError:
             print("Error in __inzidenzmatrix_HeatSource, \
                   no heatsource loaded?")
@@ -124,17 +104,17 @@ class DistrictHeatingSystem():
         try:
             for item in self.heatgrid.pipes():
                 array_col.append(
-                                 [item.start_node_name,
-                                  item.end_node_name])
+                                 [item.sNode,
+                                  item.eNode])
 
             for item in self.heatsink.consumer():
                 array_col.append(
-                                 [item.start_node_name,
-                                  item.end_node_name])
+                                 [item.sNode,
+                                  item.eNode])
 
             for item in self.heatsource.producer():
-                array_col.append([item.start_node_name,
-                                  item.end_node_name])
+                array_col.append([item.sNode,
+                                  item.eNode])
         except ValueError:
             print("Error in __inzidenzmatrix")
         return inzidenzmatrix(self.heatgrid.v_nodes_name, array_col,
@@ -152,13 +132,37 @@ class DistrictHeatingSystem():
                                  self.heatsink,
                                  self.heatsource))
 
+
+        for m, Pa, Pb, Q, Ta, Tb in zip(
+                solution[0:self._elements],
+
+                solution[self._elements + self._nodes:\
+                         self._elements*2 + self._nodes],
+                solution[self._elements*2 + self._nodes:\
+                         self._elements*3 + self._nodes],
+                solution[self._elements*3 + self._nodes:\
+                         self._elements*4 + self._nodes],
+
+                solution[self._elements*4 + self._nodes*2:\
+                         self._elements*5 + self._nodes*2],
+                solution[self._elements*5 + self._nodes*2:\
+                         self._elements*6 + self._nodes*2]):
+            print("Q: %12.3f m: %10.3f  Ta: %3.2f  Tb: %3.2f "
+                  "Pa: %2.3f Pb: %2.3f " % (Q, m, Ta, Tb, Pa, Pb))
+
+        for P, T in zip(solution[self._elements:\
+                       self._elements + self._nodes],
+                       solution[self._elements*4 + self._nodes:\
+                       self._elements*4 + self._nodes*2]):
+                print("T: %3.2f P: %2.3f " % (T, P))
+
         return None
 
 
 if __name__ == "__main__":
     from DataIO import DataIO
     import Dictionary
-    print('DistrictHeatingSystem run directly')
+    print('DistrictHeatingSystem \t run directly \n')
 
 
     DataIO = DataIO(
@@ -195,4 +199,4 @@ if __name__ == "__main__":
 
     DHS1.calculateDHS()
 else:
-    print('DistrictHeatingSystem was imported into another module')
+    print('DistrictHeatingSystem \t was imported into another module')

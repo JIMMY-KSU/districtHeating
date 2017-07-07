@@ -198,7 +198,7 @@ class DataIO():
 
     def str2date(self, columnofdate = None, dateformat = None):
         if columnofdate == None or dateformat == None:
-             print("In def str2date: self.__columnofdate == None or self.__dateformat == None")
+#             print("In def str2date: self.__columnofdate == None or self.__dateformat == None \n")
              return None
         else:
 #            print(self.__columnofdate, self.__dateformat)

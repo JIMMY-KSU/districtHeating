@@ -38,8 +38,8 @@ class HeatGrid():
         self.v_pipes_start_y = self.__pipes()[2]
         self.v_pipes_end_x = self.__pipes()[3]
         self.v_pipes_end_y = self.__pipes()[4]
-        self.v_pipes_start_node_name = self.__pipes()[5]
-        self.v_pipes_end_node_name = self.__pipes()[6]
+        self.v_pipes_sNode = self.__pipes()[5]
+        self.v_pipes_eNode = self.__pipes()[6]
         self.v_pipes_length = self.__pipes()[7]
         self.v_pipes_diameter_inner = self.__pipes()[8]
         self.v_pipes_diamter_outer = self.__pipes()[9]
@@ -55,8 +55,8 @@ class HeatGrid():
         self.v_nodes_height = self.__nodes()[4]
         self.v_nodes_sprp = self.__nodes()[5]
 
-        self.v_pipes_start_end_node_name = np.column_stack(
-                (self.v_pipes_start_node_name, self.v_pipes_end_node_name))
+        self.v_pipes_seNode = np.column_stack(
+                (self.v_pipes_sNode, self.v_pipes_eNode))
         self.__set_sprp(
                 self.__get_sprp(nodeSupply))
 
@@ -75,16 +75,16 @@ class HeatGrid():
         '''
         search_list = []
         for item in self.pipes():
-            search_list.append(item.start_end_node_name)
+            search_list.append(item.start_eNode)
         arr = Finder().findAllItems(nodeSupply,
-                                    self.v_pipes_start_end_node_name)
+                                    self.v_pipes_seNode)
         return arr
 
     def __set_sprp(self, arr):
         '''
         names all Pipes at sp_rp with 1 for supply pipe and 0 for return pipe
         '''
-        arr_pipes = self.v_pipes_start_end_node_name
+        arr_pipes = self.v_pipes_seNode
 
         for index, item in enumerate(arr_pipes):
             for item1 in arr:
@@ -113,8 +113,8 @@ class HeatGrid():
         retarr_start_y = [0]*length
         retarr_end_x = [0]*length
         retarr_end_y = [0]*length
-        retarr_start_node_name = [0]*length
-        retarr_end_node_name = [0]*length
+        retarr_sNode = [0]*length
+        retarr_eNode = [0]*length
         retarr_length = [0]*length
         retarr_diameter_inner = [0]*length
         retarr_diameter_outer = [0]*length
@@ -128,8 +128,8 @@ class HeatGrid():
             retarr_start_y[index] = item.start_y
             retarr_end_x[index] = item.end_x
             retarr_end_y[index] = item.end_y
-            retarr_start_node_name[index] = item.start_node_name
-            retarr_end_node_name[index] = item.end_node_name
+            retarr_sNode[index] = item.sNode
+            retarr_eNode[index] = item.eNode
             retarr_length[index] = item.length
             retarr_diameter_inner[index] = item.diameter_inner
             retarr_diameter_outer[index] = item.diameter_outer
@@ -138,7 +138,7 @@ class HeatGrid():
             retarr_roughness[index] = item.roughness
             retarr_sprp[index] = item.sprp
         return retarr_index, retarr_start_x, retarr_start_y, retarr_end_x,\
-            retarr_end_y, retarr_start_node_name, retarr_end_node_name,\
+            retarr_end_y, retarr_sNode, retarr_eNode,\
             retarr_length, retarr_diameter_inner, retarr_diameter_outer,\
             retarr_start_height, retarr_end_height, retarr_roughness,\
             retarr_sprp
@@ -162,17 +162,20 @@ class HeatGrid():
 
     def __str__(self):
         for item in self.pipes():
-            print("Pipe: RP/SP %s sNode %s eNode %s"
+            print("Pipe: SP/RP %s sNode %s eNode %s"
                   % (str(item.sprp),
-                     item.start_node_name,
-                     item.end_node_name))
-        print("%i Pipes ----> OK\n" % (len(self.pipes())))
+                     item.sNode, item.eNode))
+        print("%i Pipes \t----> OK\n" % (len(self.pipes())))
+        
+        for item in self.nodes():
+            print("Nodes: name %s SP/RP %s" % (item.name, item.sprp))
+        print("%i Pipes \t----> OK\n" % (len(self.nodes())))
 
 if __name__ == "__main__":
     from DataIO import DataIO
     import Dictionary
 
-    print('HeatGrid run directly')
+    print('HeatGrid \t\t run directly')
 
     DataIO = DataIO(os.path.dirname(os.getcwd()) + os.sep + 'input',
                     os.path.dirname(os.getcwd()) + os.sep + 'output')
@@ -191,6 +194,6 @@ if __name__ == "__main__":
 
 
 else:
-    print('HeatGrid was imported into another module')
+    print('HeatGrid \t\t was imported into another module')
     sys.path.append(os.getcwd())
 #    print(os.getcwd())

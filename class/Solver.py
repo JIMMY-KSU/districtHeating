@@ -42,14 +42,14 @@ class Solver():
                                       self.__I_source.shape[1])
 
         self.Tamb = 5+273.15  # [K]
-        self.producer_v_Pa_set = 10  # dont change this, it
+        self.v_producer_Pa_set = 5  # dont change this, it
                                      # is not yet implemented in the dependecies!
         
-        self.producer_v_Pb_set = 5  # dont change this, 
+        self.v_producer_Pb_set = 2  # dont change this, 
                                     # it is not yet implemented in the dependecies!
-        self.producer_v_Tb_set = 130+273.15  # [K]
-        self.consumer_v_Tb_set = 273.15 + 60  # [K]
-        self.consumer_v_Q_set = 12000  # [W]
+        self.v_producer_Tb_set = 130+273.15  # [K]
+        self.v_consumer_Tb_set = np.asarray([273.15 + 60] * 3)  # [K]
+        self.v_consumer_Q_set = np.asarray([-75000, -100000, -50000])  # [W]
 
 
     def gridCalculation(self, x):
@@ -87,7 +87,6 @@ class Solver():
         # temperature towards node
         v_Tb = x[i: i + self.edges]
 
-
         v_Tab = np.zeros_like(v_m)
         v_ma = [1 if i >= 0 else 0 for i in v_m]
         v_mb = [-1 if i < 0 else 0 for i in v_m]
@@ -112,8 +111,8 @@ class Solver():
                                              v_Tb, self.__I_minus, v_Ta)
 
         # energy balance 2 (-1 * I_minus.T * T - T^a)
-        energyBalance_2 = bl.energyBalance_2(Iab, v_T, v_Tab)
-
+#        energyBalance_2 = bl.energyBalance_2(Iab, v_T, v_Tab)
+        energyBalance_2 = bl.energyBalance_2(self.__I_minus_T, v_T, v_Ta)
         # impulse balance 1 (-1*I_minus.T*P - P^a)
         impulseBalance_1 = bl.impulseBalance_1(self.__I_minus_T, v_P, v_Pa)
 
@@ -147,20 +146,20 @@ class Solver():
                                   v_m[self.__I_grid_slice])
 
 #        producer_Pa = dp.producer_press(
-#                                  producer_v_Pa_set,
+#                                  v_producer_Pa_set,
 #                                  v_Pb[self.__I_source_slice])
 
         producer_Tb = dp.producer_temp(
-                              self.producer_v_Tb_set,
+                              self.v_producer_Tb_set,
                               v_Tb[self.__I_source_slice])
 
         producer_Pb = dp.producer_press(
-                                  self.producer_v_Pb_set,
+                                  self.v_producer_Pb_set,
                                   v_Pa[self.__I_source_slice])
 
         # temperatur
         consumer_Tb = dp.consumer_temp(
-                                  self.consumer_v_Tb_set,
+                                  self.v_consumer_Tb_set,
                                   v_Tb[self.__I_sink_slice])
 
         # heatflow
@@ -170,7 +169,7 @@ class Solver():
                                   v_Tb[self.__I_grid_slice])
 
         consumer_Q = dp.consumer_heatflow(
-                                  self.consumer_v_Q_set,
+                                  self.v_consumer_Q_set,
                                   v_Q[self.__I_sink_slice])
 
         F = np.concatenate((
@@ -186,10 +185,10 @@ class Solver():
 
     def getGuess(self, heatgrid, heatsink, heatsource):
         #  TODO update getGuess so it works.
-
-        '''
-        vector of massflows by guess
-        '''
+#
+#        '''
+#        vector of massflows by guess
+#        '''
         v_m = np.zeros(self.edges)
         # massflow
         v_m[self.__I_grid_slice] = -(np.average(heatsink.v_consumers_m))
@@ -202,10 +201,9 @@ class Solver():
         '''
         v_Q = np.zeros(self.edges)
         # heatflows
-        v_Q[self.__I_grid_slice] = np.average(heatsink.v_consumers_m)
-           #  TODO how to get an array of all heatflows of the consumers?
+        v_Q[self.__I_grid_slice] = np.average(heatsink.v_consumers_Q)
         v_Q[self.__I_sink_slice] = heatsink.v_consumers_Q
-        v_Q[self.__I_source_slice] = -(np.sum(heatsink.v_consumers_m) / 
+        v_Q[self.__I_source_slice] = -(np.sum(heatsink.v_consumers_Q) / 
                                        len(heatsource.producer()))
 
         '''
@@ -214,14 +212,14 @@ class Solver():
         v_T = np.zeros(self.nodes)
         # temperature from node away
         v_Ta = np.zeros(self.edges)
-        v_Ta[self.__I_grid_slice] = self.producer_v_Tb_set
-        v_Ta[self.__I_sink_slice] = self.producer_v_Tb_set
-        v_Ta[self.__I_source_slice] = self.producer_v_Tb_set
+        v_Ta[self.__I_grid_slice] = self.v_producer_Tb_set
+        v_Ta[self.__I_sink_slice] = self.v_producer_Tb_set
+        v_Ta[self.__I_source_slice] = self.v_producer_Tb_set
         # temperature towards node
         v_Tb = np.zeros(self.edges)
-        v_Tb[self.__I_grid_slice] = self.producer_v_Tb_set
-        v_Tb[self.__I_sink_slice] = self.producer_v_Tb_set
-        v_Tb[self.__I_source_slice] = self.producer_v_Tb_set
+        v_Tb[self.__I_grid_slice] = self.v_producer_Tb_set
+        v_Tb[self.__I_sink_slice] = self.v_producer_Tb_set
+        v_Tb[self.__I_source_slice] = self.v_producer_Tb_set
 
         '''
         vector of pressures by guess
@@ -229,15 +227,149 @@ class Solver():
         v_P = np.zeros(self.nodes)
         # pressure from node away
         v_Pa = np.zeros(self.edges)
-        v_Pa[self.__I_grid_slice] = self.producer_v_Pa_set
-        v_Pa[self.__I_sink_slice] = self.producer_v_Pa_set
-        v_Pa[self.__I_source_slice] = self.producer_v_Pa_set
+        v_Pa[self.__I_grid_slice] = self.v_producer_Pa_set
+        v_Pa[self.__I_sink_slice] = self.v_producer_Pa_set
+        v_Pa[self.__I_source_slice] = self.v_producer_Pa_set
         # pressure towards node
         v_Pb = np.zeros(self.edges)
-        v_Pb[self.__I_grid_slice] = self.producer_v_Pb_set
-        v_Pb[self.__I_sink_slice] = self.producer_v_Pb_set
-        v_Pb[self.__I_source_slice] = self.producer_v_Pb_set
-        print(v_m)
+        v_Pb[self.__I_grid_slice] = self.v_producer_Pb_set
+        v_Pb[self.__I_sink_slice] = self.v_producer_Pb_set
+        v_Pb[self.__I_source_slice] = self.v_producer_Pb_set
+        
         arr = np.concatenate((v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb))
-        print(arr)
+
         return arr
+#        pipes_v_m = [1842.5, 614.2, -2763.8, -1842.5, -614.2, 2763.8]
+#        consumer_v_m = [921.263, 1228.35, 614.175]
+#        producer_v_m = [2764]
+#        v_m = pipes_v_m + consumer_v_m + producer_v_m
+#    
+#        nodes_v_P = [5, 5, 5, 5, 2, 2, 2, 2]
+#        v_P = nodes_v_P
+#    
+#        pipes_v_Pa = [5, 5, 2, 2, 2, 5]
+#        consumer_v_Pa = [5, 5, 5]
+#        producer_v_Pa = [2]
+#        v_Pa = pipes_v_Pa + consumer_v_Pa + producer_v_Pa
+#    
+#        pipes_v_Pb = [5, 5, 2, 2, 2, 5]
+#        consumer_v_Pb = [2, 2, 2]
+#        producer_v_Pb = [5]
+#        v_Pb = pipes_v_Pb + consumer_v_Pb + producer_v_Pb
+#    
+#        pipes_v_Q = [0, 0, 0, 0, 0, 0]
+#        consumer_v_Q = [-75000, -100000, -50000]
+#        producer_v_Q = [225000]
+#        v_Q = pipes_v_Q + consumer_v_Q + producer_v_Q
+#    
+#    
+#        nodes_v_T = [130, 130, 130, 130, 60, 60, 60, 60]
+#        v_T = nodes_v_T
+#    
+#        pipes_v_Ta = [130, 130, 60, 60, 60, 130]
+#        consumer_v_Ta = [130, 130, 130]
+#        producer_v_Ta = [60]
+#        v_Ta = pipes_v_Ta + consumer_v_Ta + producer_v_Ta
+#        
+#        pipes_v_Tb = [130, 130, 60, 60, 60, 130]
+#        consumer_v_Tb = [60, 60, 60]
+#        producer_v_Tb = [130]
+#        v_Tb = pipes_v_Tb + consumer_v_Tb + producer_v_Tb
+#        
+#        print(len(v_m))
+#        print(len(v_P))
+#        print(len(v_Pa))
+#        print(len(v_Pb))
+#        print(len(v_Q))
+#        print(len(v_T))
+#        print(len(v_Ta))
+#        print(len(v_Tb))
+#        arr = np.concatenate((v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb))
+#        print(len(arr))
+#        return arr
+
+
+if __name__ == "__main__":
+    from DataIO import DataIO
+    import Dictionary
+    print("Solver \t\t\t run directly \n")
+
+    DataIO = DataIO(
+                os.path.dirname(os.getcwd()) + os.sep + 'input',
+                os.path.dirname(os.getcwd()) + os.sep + 'output')
+
+    heatgrid_nodes = DataIO.importDBF(
+            'TestNetz' + os.sep + 'KTestNetz.DBF',
+            Dictionary.HeatGrid_node_dtype,
+            Dictionary.HeatGrid_STANET_nodes_allocation)
+
+    heatgrid_pipes = DataIO.importDBF(
+            'TestNetz' + os.sep + 'STestNetz.DBF',
+            Dictionary.HeatGrid_pipe_dtype,
+            Dictionary.HeatGrid_STANET_pipes_allocation)
+
+    heatsink = DataIO.importDBF(
+            'TestNetz' + os.sep + 'WTestNetz.DBF',
+            Dictionary.HeatSink_consumer_dtype,
+            Dictionary.HeatSink_STANET_consumer_allocation)
+
+    heatsource = DataIO.importCSV(
+            'TestNetz' + os.sep + 'WTestNetz.csv',
+            dtype=Dictionary.HeatSource_producer_dtype,
+            startrow=1,
+            columnofdate=None,
+            dateformat='None')
+
+    testSolver = Solver(self._inzidenzmatrix,
+                               self._inzidenzmatrix_HeatGrid,
+                               self._inzidenzmatrix_HeatSink,
+                               self._inzidenzmatrix_HeatSource)
+
+    solution = fsolve(testSolver.gridCalculation,
+                        Solver_fsolve.getGuess(self.heatgrid,
+                                 self.heatsink,
+                                 self.heatsource))
+
+
+    pipes_v_m = [1842.5, 614.2, -2763.8, -1842,5, -614.2, 2763.8]
+    consumer_v_m = [921.263, 1228.35, 614.175]
+    producer_v_m = [2764]
+    v_m = pipes_v_m + consumer_v_m + producer_v_m
+
+    nodes_v_P = [5, 5, 5, 5, 2, 2, 2, 2]
+    v_P = nodes_v_P
+
+    pipes_v_Pa = [5, 5, 5, 5]
+    consumer_v_Pa = [5, 5, 5]
+    producer_v_Pa = [2]
+    v_Pa = pipes_v_Pa + consumer_v_Pa + producer_v_Pa
+
+    pipes_v_Pb = [2, 2, 2, 2]
+    consumer_v_Pb = [2, 2, 2]
+    producer_v_Pb = [5]
+    v_Pb = pipes_v_Pb + consumer_v_Pb + producer_v_Pb
+
+    pipes_v_Q = [0, 0, 0, 0, 0, 0]
+    consumer_v_Q = [-75000, -100000, -50000]
+    producer_v_Q = [225000]
+    v_Q = pipes_v_Q + consumer_v_Q + producer_v_Q
+
+
+    nodes_v_T = [130, 130, 130, 130, 60, 60, 60, 60]
+    v_T = nodes_v_T
+
+    pipes_v_Ta = [130, 130, 130]
+    consumer_v_Ta = [130, 130, 130,]
+    producer_v_Ta = [60]
+    v_Ta = pipes_v_Ta + consumer_v_Ta + producer_v_Ta
+    
+    pipes_v_Tb = [60, 60, 60]
+    consumer_v_Tb = [60, 60, 60]
+    producer_v_Tb = [130]
+    v_Tb = pipes_v_Tb + consumer_v_Tb + producer_v_Tb
+
+    np.concatenate((v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb))
+
+    
+else:
+    print("Solver \t\t\t was imported into another module")

@@ -10,9 +10,9 @@ class Producer():
         
         self.name = producerValues['name']
         self.power = producerValues['power']
-        self.start_node_name = producerValues['start_node_name']
+        self.sNode = producerValues['sNode']
             # name of point in return pipe
-        self.end_node_name = producerValues['end_node_name']
+        self.eNode = producerValues['eNode']
             # name of point in supply pipe
         self.supply_pressure = 7
         self.return_pressure = 1

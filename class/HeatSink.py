@@ -21,7 +21,6 @@ class HeatSink():
             tabelOfConsumer = [] # contains all Consumer of network, \
                 allocation Dictionary can be found in Dictionary
         '''
-
         self._instancesConsumer = self.__importConsumer(tableOfConsumer)
 
         self.v_consumers_index = self.__consumers()[0]
@@ -29,8 +28,8 @@ class HeatSink():
         self.v_consumers_start_y = self.__consumers()[2]
         self.v_consumers_end_x = self.__consumers()[3]
         self.v_consumers_end_y = self.__consumers()[4]
-        self.v_consumers_start_node_name = self.__consumers()[5]
-        self.v_consumers_end_node_name = self.__consumers()[6]
+        self.v_consumers_sNode = self.__consumers()[5]
+        self.v_consumers_eNode = self.__consumers()[6]
         self.v_consumers_heat_profile = self.__consumers()[7]
         self.v_consumers_heat_average = self.__consumers()[8]
         self.v_consumers_m = self.__consumers()[9]
@@ -57,58 +56,60 @@ class HeatSink():
 
     def __consumers(self):
         length = len(self.consumer())
-        retarr_index = [0]*length
-        retarr_start_x = [0]*length
-        retarr_start_y = [0]*length
-        retarr_end_x = [0]*length
-        retarr_end_y = [0]*length
-        retarr_start_node_name = [0]*length
-        retarr_end_node_name = [0]*length
-        retarr_heat_profile = [0]*length
-        retarr_heat_average = [0]*length
-        retarr_m = [0]*length
-        retarr_Q = [0]*length
-        retarr_cp = [0]*length
-        retarr_Ta = [0]*length
-        retarr_Tb = [0]*length
+        retarr = np.zeros(length)
+        retarr_str = [0]*length
+        retarr_index = retarr
+        retarr_start_x = retarr
+        retarr_start_y = retarr
+        retarr_end_x = retarr
+        retarr_end_y = retarr
+        retarr_sNode = retarr_str
+        retarr_eNode = retarr_str
+        retarr_heat_profile = retarr_str
+        retarr_heat_average = retarr_str
+        retarr_m = retarr
+        retarr_Q = retarr
+        retarr_cp = retarr
+        retarr_Ta = retarr
+        retarr_Tb = retarr
 
         for index, item in enumerate(self.consumer()):
             retarr_index[index] = item.index
-            retarr_start_x = item.start_x
-            retarr_start_y = item.start_y
-            retarr_end_x = item.end_x
-            retarr_end_y = item.end_y
-            retarr_start_node_name = item.start_node_name
-            retarr_end_node_name = item.end_node_name
-            retarr_heat_profile = item.heat_profile
-            retarr_heat_average = item.heat_average
-            retarr_m = item.m
-            retarr_Q = item.Q
-            retarr_cp = item.cp
-            retarr_Ta = item.Ta
-            retarr_Tb = item.Tb
+            retarr_start_x[index] = item.start_x
+            retarr_start_y[index] = item.start_y
+            retarr_end_x[index] = item.end_x
+            retarr_end_y[index] = item.end_y
+            retarr_sNode[index]= item.sNode
+            retarr_eNode[index] = item.eNode
+            retarr_heat_profile[index] = item.heat_profile
+            retarr_heat_average[index] = item.heat_average
+            retarr_m[index] = item.m
+            retarr_Q[index] = item.Q
+            retarr_cp[index] = item.cp
+            retarr_Ta[index] = item.Ta
+            retarr_Tb[index] = item.Tb
         return retarr_index, retarr_start_x, retarr_start_y, retarr_end_x,\
-            retarr_end_y, retarr_start_node_name, retarr_end_node_name,\
+            retarr_end_y, retarr_sNode, retarr_eNode,\
             retarr_heat_profile, retarr_heat_average, retarr_m, retarr_Q,\
             retarr_cp, retarr_Ta, retarr_Tb
 
     def __importConsumer(self, arr):
-        retArr = [0]*len(arr)
-        for index, item in enumerate(arr):
-            retArr[index] = Consumer(item)
-        return np.asarray(retArr)
+        retArr = []
+        for item in arr:
+            retArr.append(Consumer(item))
+        return retArr
 
     def __str__(self):
         for item in self.consumer():
-            print("Consumer: index %i heatexchanger %s sNode %s eNode %s m %f"
-                  % (item.index, item.heat_exchangerModel,
-                  item.start_node_name, item.end_node_name, item.m))
-        print("%i Consumer  ----> OK \n" % (len(self.consumer())))
+            print("Consumer: index %3i Q %7.0f m %4.1f Tb_set %3.2f Ta_set %3.2f"
+                  % (item.index, item.Q, item.m, item.Tb, item.Ta))
+
+        print("%i Consumer \t----> OK \n" % (len(self.consumer())))
 
 if __name__ == "__main__":
     from DataIO import DataIO
     import Dictionary
-    print('HeatSink run directly')
+    print('HeatSink \t\t run directly')
     
     DataIO = DataIO(os.path.dirname(os.getcwd()) + os.sep + 'input',
                     os.path.dirname(os.getcwd()) + os.sep + 'output')
@@ -122,4 +123,4 @@ if __name__ == "__main__":
 
 
 else:
-    print('HeatGrid was imported into another module')
+    print('HeatSink \t\t was imported into another module')

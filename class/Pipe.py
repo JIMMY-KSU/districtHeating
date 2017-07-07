@@ -29,9 +29,9 @@ class Pipe():
         self.start_y = pipeValues['start_y']
         self.end_x = pipeValues['end_x']
         self.end_y = pipeValues['end_y']
-        self.start_node_name = pipeValues['start_node_name']
-        self.end_node_name = pipeValues['end_node_name']
-        self.start_end_node_name = [self.start_node_name, self.end_node_name]
+        self.sNode = pipeValues['sNode']
+        self.eNode = pipeValues['eNode']
+        self.start_eNode = [self.sNode, self.eNode]
         self.length = pipeValues['length'] #[mm]
         self.diameter_inner = pipeValues['diameter_inner']
         self.diameter_outer = pipeValues['diameter_outer']
@@ -220,6 +220,6 @@ class Pipe():
         pass
 
 if __name__=="__main__":
-    print('class Pipe run directly')
+    print('Pipe \t\t\t run directly')
 else:
-    print('class Pipe was imported into another module')
+    print('Pipe \t\t\t was imported into another module')

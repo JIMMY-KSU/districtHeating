@@ -12,8 +12,8 @@ HeatGrid_pipe_dtype =    {'names':(
                                 'start_y',
                                 'end_x',
                                 'end_y',
-                                'start_node_name',
-                                'end_node_name',
+                                'sNode',
+                                'eNode',
                                 'length',
                                 'diameter_inner',
                                 'diameter_outer',
@@ -78,8 +78,8 @@ HeatGrid_node_dtype =    {'names': (
 HeatSink_consumer_dtype ={'names': (
                                 'index',
                                 'heat_exchangerModel',
-                                'start_node_name',
-                                'end_node_name',
+                                'sNode',
+                                'eNode',
                                 'start_x',
                                 'start_y',
                                 'end_x',
@@ -108,8 +108,8 @@ HeatSink_consumer_dtype ={'names': (
 HeatGrid_pump_dtype =    {'names': (
                                 'index',
                                 'profil',
-                                'start_node_name',
-                                'end_node_name',
+                                'sNode',
+                                'eNode',
                                 'start_x',
                                 'start_y',
                                 'end_x',
@@ -128,8 +128,8 @@ HeatGrid_pump_dtype =    {'names': (
                                }
 
 HeatSource_producer_dtype = {'names': (
-                                     'start_node_name',
-                                     'end_node_name',
+                                     'sNode',
+                                     'eNode',
                                      'name',
                                      'power',
                                      ),
@@ -156,8 +156,8 @@ STANET_nodes =          {'names': (
                                }
 
 STANET_pipes =          {'names': (
-                                'start_node_name',
-                                'end_node_name',
+                                'sNode',
+                                'eNode',
                                 'length',
                                 'heatTransitionCoefficient',
                                 'roughness'
@@ -173,8 +173,8 @@ STANET_pipes =          {'names': (
 
 STANET_consumer =       {'names': (
                                 'index',
-                                'start_node_name',
-                                'end_node_name'
+                                'sNode',
+                                'eNode'
                                 ),
                        'formats': (
                                 'i',
@@ -211,8 +211,8 @@ HeatGrid_STANET_pipes_allocation = {
                                 'start_y': 0,
                                 'end_x': 0,
                                 'end_y': 0,
-                                'start_node_name': 'ANFNAM',
-                                'end_node_name': 'ENDNAM',
+                                'sNode': 'ANFNAM',
+                                'eNode': 'ENDNAM',
                                 'length': 'RORL',
                                 'diameter_inner': 'DM',
                                 'diameter_outer': 0,
@@ -233,8 +233,8 @@ HeatGrid_STANET_pipes_allocation = {
 
 HeatSink_STANET_consumer_allocation = {
                                 'index': 0,
-                                'start_node_name': 'ANFNAM',
-                                'end_node_name': 'ENDNAM',
+                                'sNode': 'ANFNAM',
+                                'eNode': 'ENDNAM',
                                 'heat_demand': 'WAERMEMENG',
                                 'flow': 'FLUSS'
                                 }
@@ -242,16 +242,16 @@ HeatSink_STANET_consumer_allocation = {
 Pump_STANET_consumer_allocation = {
                                 'index': 0,
                                 'profil': 'PUMPENTYP',
-                                'start_node_name': 'ANFNAM',
-                                'end_node_name': 'ENDNAM',
+                                'sNode': 'ANFNAM',
+                                'eNode': 'ENDNAM',
                                 }
 
 HeatSource_STANET_producer_allocation = {
                                          'index': 0,
                                          'name': 'NAME',
                                          'power': 'Power',
-                                         'start_node_name': 'ANFNAM',
-                                         'end_node_name': 'ENDNAM',
+                                         'sNode': 'ANFNAM',
+                                         'eNode': 'ENDNAM',
                                          'start_x': 0,
                                          'start_y': 0,
                                          'end_x': 0,

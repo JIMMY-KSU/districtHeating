@@ -12,7 +12,7 @@ cp = 4182
 
 # pipe
 def pipe_massflow(m, Ta, Tb, Q, cp=cp):
-    res = m * cp * (Tb - Ta) - Q
+    res = m * cp * (Ta - Tb) - Q
     return res
 
 
@@ -25,19 +25,19 @@ def pipe_press(Pa, Pb, m, Ha=0, Hb=0):
 
 
 def pipe_heatflow(Q, Ta, Tb, A=1, k=1, Tamb=273.15 + 10):
-    res = (-k*A)*((Tb + Ta)/2 - Tamb) - Q
+    res = (k*A)*((Tb + Ta)/2 - Tamb) - Q
     return res
 
 
 # consumer
 def consumer_massflow(m, Ta, Tb, Q, cp=cp):
-    res = m * cp * (Tb - Ta) - Q
+    res = m * cp * (Ta - Tb) - Q
     return res
 
 
 def consumer_press(Pa, Pb, m):
     zeta = 0
-    res = 5  # (Pb - Pa) - zeta * math.pow(m, 2)
+    res = (Pa - Pb) - zeta * m * abs(m)
     return res
 
 
@@ -53,7 +53,7 @@ def consumer_heatflow(Q_set, Q):
 
 # producer
 def producer_massflow(m, Ta, Tb, Q, cp=cp):
-    res = m * cp * (Tb - Ta) + Q
+    res = m * cp * (Ta - Tb) + Q
     return res
 
 

@@ -50,10 +50,10 @@ class DistrictHeatingSystem():
         self._elements = len(self._inzidenzmatrix[0])
 
 
-        logger.debug("This is a debug log")
-        logger.critical("This is critical")
-        logger.error("An error occurred")
-        logger.info("This is an info log")
+#        logger.debug("This is a debug log")
+#        logger.critical("This is critical")
+#        logger.error("An error occurred")
+#        logger.info("This is an info log")
 
     def __inzidenzmatrix_HeatGrid(self):
         '''returns an inzidenzmatrix of HeatGrid, where pipes are col
@@ -121,7 +121,7 @@ class DistrictHeatingSystem():
                               inzidenzmatrix_name="all")
 
     def calculateDHS(self):
-
+        print("---->\tstart to calculate heatgrid\n")
         Solver_fsolve = Solver(self._inzidenzmatrix,
                                self._inzidenzmatrix_HeatGrid,
                                self._inzidenzmatrix_HeatSink,

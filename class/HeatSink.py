@@ -23,20 +23,22 @@ class HeatSink():
         '''
         self._instancesConsumer = self.__importConsumer(tableOfConsumer)
 
-        self.v_consumers_index = self.__consumers()[0]
-        self.v_consumers_start_x = self.__consumers()[1]
-        self.v_consumers_start_y = self.__consumers()[2]
-        self.v_consumers_end_x = self.__consumers()[3]
-        self.v_consumers_end_y = self.__consumers()[4]
-        self.v_consumers_sNode = self.__consumers()[5]
-        self.v_consumers_eNode = self.__consumers()[6]
-        self.v_consumers_heat_profile = self.__consumers()[7]
-        self.v_consumers_heat_average = self.__consumers()[8]
-        self.v_consumers_m = self.__consumers()[9]
-        self.v_consumers_Q = self.__consumers()[10]
-        self.v_consumers_cp = self.__consumers()[11]
-        self.v_consumers_Ta = self.__consumers()[12]
-        self.v_consumers_Tb = self.__consumers()[13]
+        arr = self.__consumers()
+        self.v_consumers_index = arr[0]
+        self.v_consumers_start_x = arr[1]
+        self.v_consumers_start_y = arr[2]
+        self.v_consumers_end_x = arr[3]
+        self.v_consumers_end_y = arr[4]
+        self.v_consumers_sNode = arr[5]
+        self.v_consumers_eNode = arr[6]
+        self.v_consumers_heat_profile = arr[7]
+        self.v_consumers_heat_average = arr[8]
+        self.v_consumers_m = np.asarray(arr[9])
+        self.v_consumers_Q = np.asarray(arr[10])
+        self.v_consumers_cp = np.asarray(arr[11])
+        self.v_consumers_Ta = np.asarray(arr[12])
+        self.v_consumers_Tb = np.asarray(arr[13])
+
 
         self.__str__()
 
@@ -56,22 +58,22 @@ class HeatSink():
 
     def __consumers(self):
         length = len(self.consumer())
-        retarr = np.zeros(length)
-        retarr_str = [0]*length
-        retarr_index = retarr
-        retarr_start_x = retarr
-        retarr_start_y = retarr
-        retarr_end_x = retarr
-        retarr_end_y = retarr
-        retarr_sNode = retarr_str
-        retarr_eNode = retarr_str
-        retarr_heat_profile = retarr_str
-        retarr_heat_average = retarr_str
-        retarr_m = retarr
-        retarr_Q = retarr
-        retarr_cp = retarr
-        retarr_Ta = retarr
-        retarr_Tb = retarr
+        retarr_index = [0]*length
+        retarr_start_x = [0]*length
+        retarr_start_y = [0]*length
+        retarr_end_x = [0]*length
+        retarr_end_y = [0]*length
+        retarr_sNode = [0]*length
+        retarr_eNode = [0]*length
+        retarr_heat_profile = [0]*length
+        retarr_heat_average = [0]*length
+        retarr_m = [0]*length
+        retarr_Q = [0]*length
+        retarr_cp = [0]*length
+        retarr_Ta = [0]*length
+        retarr_Tb = [0]*length
+        for item in self.consumer():
+            print(item.index, item.Q)
 
         for index, item in enumerate(self.consumer()):
             retarr_index[index] = item.index
@@ -100,11 +102,13 @@ class HeatSink():
         return retArr
 
     def __str__(self):
-        for item in self.consumer():
-            print("Consumer: index %3i Q %7.0f m %4.1f Tb_set %3.2f Ta_set %3.2f"
-                  % (item.index, item.Q, item.m, item.Tb, item.Ta))
+        for i, Q, m, Tb, Ta in zip(self.v_consumers_index, self.v_consumers_Q,
+                                   self.v_consumers_m, self.v_consumers_Tb,
+                                   self.v_consumers_Ta):
+            print("Consumer: index %3i Q %7.0f m %4.1f Tb %3.2f Ta %3.2f"
+                  % (i, Q, m, Tb, Ta))
 
-        print("%i Consumer \t----> OK \n" % (len(self.consumer())))
+        print("%i Consumer \t----> OK \n" % (len(self.v_consumers_index)))
 
 if __name__ == "__main__":
     from DataIO import DataIO

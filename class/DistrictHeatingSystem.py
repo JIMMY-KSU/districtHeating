@@ -132,7 +132,6 @@ class DistrictHeatingSystem():
                                  self.heatsink,
                                  self.heatsource))
 
-
         for m, Pa, Pb, Q, Ta, Tb in zip(
                 solution[0:self._elements],
 
@@ -147,7 +146,7 @@ class DistrictHeatingSystem():
                          self._elements*5 + self._nodes*2],
                 solution[self._elements*5 + self._nodes*2:\
                          self._elements*6 + self._nodes*2]):
-            print("Q: %12.3f m: %10.3f  Ta: %3.2f  Tb: %3.2f "
+            print("Q: %11.3f m: %9.3f  Ta: %3.2f  Tb: %3.2f "
                   "Pa: %2.3f Pb: %2.3f " % (Q, m, Ta, Tb, Pa, Pb))
 
         for P, T in zip(solution[self._elements:\
@@ -198,5 +197,6 @@ if __name__ == "__main__":
             heatsource)
 
     DHS1.calculateDHS()
+    
 else:
     print('DistrictHeatingSystem \t was imported into another module')

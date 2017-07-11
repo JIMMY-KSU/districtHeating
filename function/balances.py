@@ -32,20 +32,20 @@ def energyBalance_1(I_plus, v_m, v_Tb,
     return arr
 
 
-# def energyBalance_2(I_ab, v_T, v_Tab):
-    # '''
-    # energy balance (I_ab.T * v_T + v_Tab)
-    # '''
-    # arr = np.dot(I_ab.T, v_T) + v_Tab
-    # return arr
+def energyBalance_2(I_ab, v_T, v_Tab):
+     '''
+     energy balance (I_ab.T * v_T + v_Tab)
+     '''
+     arr = np.dot(I_ab.T, v_T) + v_Tab
+     return arr
 
 
-def energyBalance_2(inzidenzmatrix_minus_T, v_T, v_Ta):
-   '''
-   energy balance (-1 * I_minus.T * T - T^a)
-   '''
-   arr = np.dot(np.dot(-1, inzidenzmatrix_minus_T), v_T) - v_Ta
-   return arr
+#def energyBalance_2(inzidenzmatrix_minus_T, v_T, v_Ta):
+#   '''
+#   energy balance (-1 * I_minus.T * T - T^a)
+#   '''
+#   arr = np.dot(np.dot(-1, inzidenzmatrix_minus_T), v_T) - v_Ta
+#   return arr
 
 
 def impulseBalance_1(inzidenzmatrix_minus_T, v_P, v_Pa):

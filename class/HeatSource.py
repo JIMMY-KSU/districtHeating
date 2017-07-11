@@ -44,7 +44,8 @@ class HeatSource():
     
     def __str__(self):
         for item in self.producer():
-            print("Producer: name %s power %5.0f sNode %s eNode %s sP %2.1f rP %2.1f "
+            print("Producer: name %s power %5.0f sNode %s eNode %s "
+                  "sP %2.1f rP %2.1f "
                   "sT %3.2f" % (item.name, item.power, item.sNode,
                   item.eNode, item.supply_pressure,
                   item.return_pressure, item.supply_temperature))

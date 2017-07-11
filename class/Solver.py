@@ -111,8 +111,8 @@ class Solver():
                                              v_Tb, self.__I_minus, v_Ta)
 
         # energy balance 2 (-1 * I_minus.T * T - T^a)
-#        energyBalance_2 = bl.energyBalance_2(Iab, v_T, v_Tab)
-        energyBalance_2 = bl.energyBalance_2(self.__I_minus_T, v_T, v_Ta)
+        energyBalance_2 = bl.energyBalance_2(Iab, v_T, v_Tab)
+#        energyBalance_2 = bl.energyBalance_2(self.__I_minus_T, v_T, v_Ta)
         # impulse balance 1 (-1*I_minus.T*P - P^a)
         impulseBalance_1 = bl.impulseBalance_1(self.__I_minus_T, v_P, v_Pa)
 
@@ -121,56 +121,50 @@ class Solver():
         '''
         constitutive relations
         '''
-        # vector of massflow
+        # dependencies for pipes
         pipeMassflow = dp.pipe_massflow(
                                   v_m[self.__I_grid_slice],
                                   v_Ta[self.__I_grid_slice],
                                   v_Tb[self.__I_grid_slice],
                                   v_Q[self.__I_grid_slice])
+        pipeQ = dp.pipe_heatflow(
+                          v_Q[self.__I_grid_slice],
+                          v_Ta[self.__I_grid_slice],
+                          v_Tb[self.__I_grid_slice])
+        pipePress = dp.pipe_press(
+                          v_Pa[self.__I_grid_slice],
+                          v_Pb[self.__I_grid_slice],
+                          v_m[self.__I_grid_slice])
 
+        # dependencies for consumer
         consumerMassflow = dp.consumer_massflow(
                                   v_m[self.__I_sink_slice],
                                   v_Ta[self.__I_sink_slice],
                                   v_Tb[self.__I_sink_slice],
                                   v_Q[self.__I_sink_slice])
+        consumer_Q = dp.consumer_heatflow(
+                                  self.v_consumer_Q_set,
+                                  v_Q[self.__I_sink_slice])
+        consumer_Tb = dp.consumer_temp(
+                                  self.v_consumer_Tb_set,
+                                  v_Tb[self.__I_sink_slice])
+        consumer_Pb = dp.consumer_press(v_Pa[self.__I_sink_slice],
+                                        v_Pb[self.__I_sink_slice],
+                                        v_m[self.__I_sink_slice])
 
+        # dependencies for producer
         producerMassflow = dp.producer_massflow(
                                   v_m[self.__I_source_slice],
                                   v_Ta[self.__I_source_slice],
                                   v_Tb[self.__I_source_slice],
                                   v_Q[self.__I_source_slice])
-
-        pipePress = dp.pipe_press(
-                                  v_Pa[self.__I_grid_slice],
-                                  v_Pb[self.__I_grid_slice],
-                                  v_m[self.__I_grid_slice])
-
-#        producer_Pa = dp.producer_press(
-#                                  v_producer_Pa_set,
-#                                  v_Pb[self.__I_source_slice])
-
         producer_Tb = dp.producer_temp(
                               self.v_producer_Tb_set,
                               v_Tb[self.__I_source_slice])
-
         producer_Pb = dp.producer_press(
-                                  self.v_producer_Pb_set,
-                                  v_Pa[self.__I_source_slice])
+                          self.v_producer_Pb_set,
+                          v_Pb[self.__I_source_slice])
 
-        # temperatur
-        consumer_Tb = dp.consumer_temp(
-                                  self.v_consumer_Tb_set,
-                                  v_Tb[self.__I_sink_slice])
-
-        # heatflow
-        pipeQ = dp.pipe_heatflow(
-                                  v_Q[self.__I_grid_slice],
-                                  v_Ta[self.__I_grid_slice],
-                                  v_Tb[self.__I_grid_slice])
-
-        consumer_Q = dp.consumer_heatflow(
-                                  self.v_consumer_Q_set,
-                                  v_Q[self.__I_sink_slice])
 
         F = np.concatenate((
                          massBalance,

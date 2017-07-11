@@ -33,27 +33,29 @@ class HeatGrid():
         self._instancesPipe = self.__importPipes(tableOfPipes)
         self._instancesNode = self.__importNodes(tableOfNodes)
 
-        self.v_pipes_index = self.__pipes()[0]
-        self.v_pipes_start_x = self.__pipes()[1]
-        self.v_pipes_start_y = self.__pipes()[2]
-        self.v_pipes_end_x = self.__pipes()[3]
-        self.v_pipes_end_y = self.__pipes()[4]
-        self.v_pipes_sNode = self.__pipes()[5]
-        self.v_pipes_eNode = self.__pipes()[6]
-        self.v_pipes_length = self.__pipes()[7]
-        self.v_pipes_diameter_inner = self.__pipes()[8]
-        self.v_pipes_diamter_outer = self.__pipes()[9]
-        self.v_pipes_start_height = self.__pipes()[10]
-        self.v_pipes_end_height = self.__pipes()[11]
-        self.v_pipes_roughness = self.__pipes()[12]
-        self.v_pipes_sprp = self.__pipes()[13]
-
-        self.v_nodes_index = self.__nodes()[0]
-        self.v_nodes_x = self.__nodes()[1]
-        self.v_nodes_y = self.__nodes()[2]
-        self.v_nodes_name = self.__nodes()[3]
-        self.v_nodes_height = self.__nodes()[4]
-        self.v_nodes_sprp = self.__nodes()[5]
+        arr = self.__pipes()
+        self.v_pipes_index = arr[0]
+        self.v_pipes_start_x = arr[1]
+        self.v_pipes_start_y = arr[2]
+        self.v_pipes_end_x = arr[3]
+        self.v_pipes_end_y = arr[4]
+        self.v_pipes_sNode = arr[5]
+        self.v_pipes_eNode = arr[6]
+        self.v_pipes_length = np.asarray(arr[7])
+        self.v_pipes_diameter_inner = np.asarray(arr[8])
+        self.v_pipes_diamter_outer = np.asarray(arr[9])
+        self.v_pipes_start_height = np.asarray(arr[10])
+        self.v_pipes_end_height = np.asarray(arr[11])
+        self.v_pipes_roughness = np.asarray(arr[12])
+        self.v_pipes_sprp = arr[13]
+        
+        arr = self.__nodes()
+        self.v_nodes_index = arr[0]
+        self.v_nodes_x = arr[1]
+        self.v_nodes_y = arr[2]
+        self.v_nodes_name = arr[3]
+        self.v_nodes_height = np.asarray(arr[4])
+        self.v_nodes_sprp = arr[5]
 
         self.v_pipes_seNode = np.column_stack(
                 (self.v_pipes_sNode, self.v_pipes_eNode))
@@ -144,12 +146,13 @@ class HeatGrid():
             retarr_sprp
 
     def __nodes(self):
-        retarr_index = [0]*len(self.nodes())
-        retarr_x = [0]*len(self.nodes())
-        retarr_y = [0]*len(self.nodes())
-        retarr_name = [0]*len(self.nodes())
-        retarr_height = [0]*len(self.nodes())
-        retarr_sprp = [0]*len(self.nodes())
+        length = len(self.nodes())
+        retarr_index = [0]*length
+        retarr_x = [0]*length
+        retarr_y = [0]*length
+        retarr_name = [0]*length
+        retarr_height = [0]*length
+        retarr_sprp = [0]*length
         for index, item in enumerate(self.nodes()):
             retarr_index[index] = item.index
             retarr_x[index] = item.x
@@ -161,15 +164,21 @@ class HeatGrid():
             retarr_name, retarr_height, retarr_sprp
 
     def __str__(self):
-        for item in self.pipes():
-            print("Pipe: SP/RP %s sNode %s eNode %s"
-                  % (str(item.sprp),
-                     item.sNode, item.eNode))
-        print("%i Pipes \t----> OK\n" % (len(self.pipes())))
+        for sprp, sNode, eNode, length, diameter_inner, diameter_outer,\
+            in zip(self.v_pipes_sprp,
+                                      self.v_pipes_sNode, self.v_pipes_eNode,
+                                      self.v_pipes_length,
+                                      self.v_pipes_diameter_inner,
+                                      self.v_pipes_diamter_outer):
+            print("Pipe: SP/RP %s sNode %s eNode %s length %4.3f "
+                  "diam_outer %4.3f diam_inner %4.3f"
+                  % (str(sprp),
+                     sNode, eNode, length, diameter_inner, diameter_outer))
+        print("%i Pipes \t----> OK\n" % (len(self.v_pipes_index)))
         
-        for item in self.nodes():
-            print("Nodes: name %s SP/RP %s" % (item.name, item.sprp))
-        print("%i Pipes \t----> OK\n" % (len(self.nodes())))
+        for name, sprp in zip(self.v_nodes_name, self.v_nodes_sprp):
+            print("Nodes: name %s SP/RP %s" % (name, sprp))
+        print("%i Pipes \t----> OK\n" % (len(self.v_nodes_index)))
 
 if __name__ == "__main__":
     from DataIO import DataIO

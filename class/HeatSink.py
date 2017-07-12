@@ -38,7 +38,7 @@ class HeatSink():
         self.v_consumers_cp = np.asarray(arr[11])
         self.v_consumers_Ta = np.asarray(arr[12])
         self.v_consumers_Tb = np.asarray(arr[13])
-
+        self.v_consumers_element = arr[14]
 
         self.__str__()
 
@@ -72,8 +72,7 @@ class HeatSink():
         retarr_cp = [0]*length
         retarr_Ta = [0]*length
         retarr_Tb = [0]*length
-        for item in self.consumer():
-            print(item.index, item.Q)
+        retarr_element = [0]*length
 
         for index, item in enumerate(self.consumer()):
             retarr_index[index] = item.index
@@ -90,10 +89,11 @@ class HeatSink():
             retarr_cp[index] = item.cp
             retarr_Ta[index] = item.Ta
             retarr_Tb[index] = item.Tb
+            retarr_element[index] = item.element
         return retarr_index, retarr_start_x, retarr_start_y, retarr_end_x,\
             retarr_end_y, retarr_sNode, retarr_eNode,\
             retarr_heat_profile, retarr_heat_average, retarr_m, retarr_Q,\
-            retarr_cp, retarr_Ta, retarr_Tb
+            retarr_cp, retarr_Ta, retarr_Tb, retarr_element
 
     def __importConsumer(self, arr):
         retArr = []
@@ -102,13 +102,16 @@ class HeatSink():
         return retArr
 
     def __str__(self):
-        for i, Q, m, Tb, Ta in zip(self.v_consumers_index, self.v_consumers_Q,
-                                   self.v_consumers_m, self.v_consumers_Tb,
-                                   self.v_consumers_Ta):
-            print("Consumer: index %3i Q %7.0f m %4.1f Tb %3.2f Ta %3.2f"
-                  % (i, Q, m, Tb, Ta))
+        for element, i, Q, m, Tb, Ta in zip(self.v_consumers_element,
+                                            self.v_consumers_index,
+                                            self.v_consumers_Q,
+                                            self.v_consumers_m,
+                                            self.v_consumers_Tb,
+                                            self.v_consumers_Ta):
+            print("%s: index %3i Q %7.0f m %4.1f Tb %3.2f Ta %3.2f"
+                  % (element, i, Q, m, Tb, Ta))
 
-        print("%i Consumer \t----> OK \n" % (len(self.v_consumers_index)))
+        print("%i consumer \t----> OK \n" % (len(self.v_consumers_index)))
 
 if __name__ == "__main__":
     from DataIO import DataIO

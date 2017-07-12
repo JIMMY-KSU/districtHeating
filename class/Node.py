@@ -14,3 +14,4 @@ class Node():
         self.name = nodeValues['name']
         self.height = nodeValues['height']
         self.sprp = nodeValues['sprp']
+        self.element = "node"

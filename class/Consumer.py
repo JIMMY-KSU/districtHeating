@@ -7,6 +7,7 @@ Created on Sat Jan 07 17:04:27 2017
 import os
 from DataIO import DataIO
 from HeatSink_Consumptionprofiles import HeatSink_Consumptionprofiles
+import numpy as np
 
 class Consumer():
 
@@ -22,7 +23,7 @@ class Consumer():
         self.heat_profile = consumerValues['heat_consumptionProfile']
         self.heat_average = consumerValues['heat_consumptionAverage']
 
-        self.Q = consumerValues['heat_demand']
+        self.Q = np.abs(consumerValues['heat_demand'])
 
         self.flow = consumerValues['flow']
         self.Ta = 130 + 273.15
@@ -30,6 +31,7 @@ class Consumer():
         self.cp = 4.1
         self.m = self.__massflow(self.Q, self.cp, self.Ta, self.Tb) # t/h
 
+        self.element = "consumer"
         # TODO implement function for massflow
 
 

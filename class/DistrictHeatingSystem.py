@@ -35,8 +35,11 @@ class DistrictHeatingSystem():
         self.heatsource = HeatSource(heatsource)
         self.heatgrid = HeatGrid(heatgrid_pipes,
                                  heatgrid_nodes,
-                                 nodeSupply = 
-                                     self.heatsource.eNodes)
+                                 nodeSupply=np.column_stack((
+                                     self.heatsource.v_producers_eNode,
+                                     np.array([None]*len(
+                                         self.heatsource.v_producers_eNode)))))
+
 #        self.consumersLocationinMatrix = self.__consumersLocationinMatrix()
 #        self.producersLocationinMatrix = self.__producersLocationinMatrix()
 #        self.pipesLocationinMatrix = self.__pipesLocationinMatrix()
@@ -88,7 +91,7 @@ class DistrictHeatingSystem():
         and nodes are row'''
         array_col = []
         try:
-            for item in self.heatsource.producer():
+            for item in self.heatsource.producers():
                 array_col.append([item.sNode,
                                   item.eNode])
         except ValueError:
@@ -112,7 +115,7 @@ class DistrictHeatingSystem():
                                  [item.sNode,
                                   item.eNode])
 
-            for item in self.heatsource.producer():
+            for item in self.heatsource.producers():
                 array_col.append([item.sNode,
                                   item.eNode])
         except ValueError:
@@ -131,29 +134,13 @@ class DistrictHeatingSystem():
                         Solver_fsolve.getGuess(self.heatgrid,
                                  self.heatsink,
                                  self.heatsource))
-
-        for m, Pa, Pb, Q, Ta, Tb in zip(
-                solution[0:self._elements],
-
-                solution[self._elements + self._nodes:\
-                         self._elements*2 + self._nodes],
-                solution[self._elements*2 + self._nodes:\
-                         self._elements*3 + self._nodes],
-                solution[self._elements*3 + self._nodes:\
-                         self._elements*4 + self._nodes],
-
-                solution[self._elements*4 + self._nodes*2:\
-                         self._elements*5 + self._nodes*2],
-                solution[self._elements*5 + self._nodes*2:\
-                         self._elements*6 + self._nodes*2]):
-            print("Q: %11.3f m: %9.3f  Ta: %3.2f  Tb: %3.2f "
-                  "Pa: %2.3f Pb: %2.3f " % (Q, m, Ta, Tb, Pa, Pb))
-
-        for P, T in zip(solution[self._elements:\
-                       self._elements + self._nodes],
-                       solution[self._elements*4 + self._nodes:\
-                       self._elements*4 + self._nodes*2]):
-                print("T: %3.2f P: %2.3f " % (T, P))
+        
+        Solver_fsolve.print_x(self.heatgrid, self.heatsink, self.heatsource,
+                              Solver_fsolve.getGuess(self.heatgrid,
+                                                     self.heatsink,
+                                                     self.heatsource), "guess")
+        Solver_fsolve.print_x(self.heatgrid, self.heatsink, self.heatsource,
+                              solution, "solution")
 
         return None
 

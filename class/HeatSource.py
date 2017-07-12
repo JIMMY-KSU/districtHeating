@@ -10,46 +10,89 @@ class HeatSource():
 
     def __init__(self, tableOfProducer):
 
-        self._instancesProducer = []
-        self.__importProducer(tableOfProducer)
+        self._instancesProducer = self.__importProducers(tableOfProducer)
         
         self.nodes = self.__nodes()
         self.sNodes = self.__sNodes()
         self.eNodes = self.__eNodes()
         
-        self.__str__()
-        
-    def __importProducer(self, tableOfProducer):
-        self._instancesProducer.append(Producer(tableOfProducer))
+        self.supply_pressure = 7
+        self.return_pressure = 1
+        self.supply_temperature = 130 + 273.15
 
-    def producer(self, i=slice(None,None)):
+        arr = self.__producers()
+        self.v_producers_name = arr[0]
+        self.v_producers_power = arr[1]
+        self.v_producers_sNode = arr[2]
+        self.v_producers_eNode = arr[3]
+        self.v_producers_Pb = arr[4]  # supply pressure
+        self.v_producers_Pa = arr[5]  # return pressure
+        self.v_producers_Tb = arr[6]  #supply temperature
+        self.v_producers_element = arr[7]
+
+
+        self.__str__()
+
+    def producers(self, i=slice(None,None)):
         return self._instancesProducer[i]
         
     def __nodes(self):
-        arr = [[0,0]]*len(self.producer())
-        for index, item in enumerate(self.producer()):
+        arr = [[0,0]]*len(self.producers())
+        for index, item in enumerate(self.producers()):
             arr[index] = [item.sNode, item.eNode]
         return arr
     def __sNodes(self):
-        arr = [[None,None]]*len(self.producer())
-        for index, item in enumerate(self.producer()):
+        arr = [[None,None]]*len(self.producers())
+        for index, item in enumerate(self.producers()):
             arr[index] = [item.sNode, None]
         return arr
     
     def __eNodes(self):
-        arr = [[None,None]]*len(self.producer())
-        for index, item in enumerate(self.producer()):
+        arr = [[None,None]]*len(self.producers())
+        for index, item in enumerate(self.producers()):
             arr[index] = [item.eNode, None]
         return arr
-    
+
+    def __producers(self):
+        length = len(self.producers())
+        retarr_name = [0]*length
+        retarr_power = [0]*length
+        retarr_sNode = [0]*length
+        retarr_eNode = [0]*length
+        retarr_Pb = [0]*length  # Pb is supply pressure
+        retarr_Pa = [0]*length  # Pa is return pressure
+        retarr_Tb = [0]*length  # Tb is supply temperature
+        retarr_element = [0]*length
+        for index, item in enumerate(self.producers()):
+            retarr_name[index] = item.name
+            retarr_power[index] = item.power
+            retarr_sNode[index] = item.sNode
+            retarr_eNode[index] = item.eNode
+            retarr_Pb[index] = item.Pb
+            retarr_Pa[index] = item.Pa
+            retarr_Tb[index] = item.Tb
+            retarr_element[index] = item.element
+        return retarr_name, retarr_power, retarr_sNode, retarr_eNode,\
+            retarr_Pb, retarr_Pa, retarr_Tb, retarr_element
+
+    def __importProducers(self, tableOfProducer):
+        print(tableOfProducer)
+        arr = []
+        for item in [tableOfProducer]:
+            arr.append(Producer(tableOfProducer))
+        return arr
+
     def __str__(self):
-        for item in self.producer():
-            print("Producer: name %s power %5.0f sNode %s eNode %s "
-                  "sP %2.1f rP %2.1f "
-                  "sT %3.2f" % (item.name, item.power, item.sNode,
-                  item.eNode, item.supply_pressure,
-                  item.return_pressure, item.supply_temperature))
-        print("%i Producer \t----> OK \n" % (len(self.producer())))
+        for element, name, power, sNode, eNode, Pb, Pa, Tb in zip(
+                self.v_producers_element, self.v_producers_name,
+                self.v_producers_power, self.v_producers_sNode,
+                self.v_producers_eNode, self.v_producers_Pb,
+                self.v_producers_Pa, self.v_producers_Tb):
+            print("%s: name %s power %5.0f sNode %s eNode %s "
+                  "Pb %2.1f Pa %2.1f "
+                  "Tb %3.2f" % (element, name, power,
+                                sNode, eNode, Pb, Pa, Tb))
+        print("%i producer \t----> OK \n" % (len(self.producers())))
 
 if __name__ == "__main__":
     from DataIO import DataIO

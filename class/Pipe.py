@@ -31,7 +31,7 @@ class Pipe():
         self.end_y = pipeValues['end_y']
         self.sNode = pipeValues['sNode']
         self.eNode = pipeValues['eNode']
-        self.start_eNode = [self.sNode, self.eNode]
+        self.seNode = [self.sNode, self.eNode]
         self.length = pipeValues['length'] #[mm]
         self.diameter_inner = pipeValues['diameter_inner']
         self.diameter_outer = pipeValues['diameter_outer']
@@ -39,6 +39,7 @@ class Pipe():
         self.end_height = pipeValues['end_height']
         self.roughness = pipeValues['roughness']
         self.sprp = pipeValues['sprp']
+        self.element = "pipe"
 
         if 'heatTransitionCoefficient' in pipeValues:    
             self.heatTransitionCoefficient = pipeValues['heatTransitionCoefficient'] #[W/m]

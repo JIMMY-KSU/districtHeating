@@ -33,6 +33,7 @@ class HeatGrid():
         self._instancesPipe = self.__importPipes(tableOfPipes)
         self._instancesNode = self.__importNodes(tableOfNodes)
 
+
         arr = self.__pipes()
         self.v_pipes_index = arr[0]
         self.v_pipes_start_x = arr[1]
@@ -47,20 +48,21 @@ class HeatGrid():
         self.v_pipes_start_height = np.asarray(arr[10])
         self.v_pipes_end_height = np.asarray(arr[11])
         self.v_pipes_roughness = np.asarray(arr[12])
-        self.v_pipes_sprp = arr[13]
-        
+        self.v_pipes_element = arr[13]
+
         arr = self.__nodes()
         self.v_nodes_index = arr[0]
         self.v_nodes_x = arr[1]
         self.v_nodes_y = arr[2]
         self.v_nodes_name = arr[3]
         self.v_nodes_height = np.asarray(arr[4])
+        #  TODO self.v_nodes_sprp import must be designed like self.v_pipes_seNode!
         self.v_nodes_sprp = arr[5]
+        self.v_nodes_element = arr[6]
 
         self.v_pipes_seNode = np.column_stack(
-                (self.v_pipes_sNode, self.v_pipes_eNode))
-        self.__set_sprp(
-                self.__get_sprp(nodeSupply))
+                                    (self.v_pipes_sNode, self.v_pipes_eNode))
+        self.v_pipes_sprp = self.__set_sprp(self.__get_sprp(nodeSupply))
 
         self.__str__()
 
@@ -77,7 +79,7 @@ class HeatGrid():
         '''
         search_list = []
         for item in self.pipes():
-            search_list.append(item.start_eNode)
+            search_list.append(item.seNode)
         arr = Finder().findAllItems(nodeSupply,
                                     self.v_pipes_seNode)
         return arr
@@ -95,6 +97,12 @@ class HeatGrid():
                     break
                 else:
                     self.pipes(index).sprp = 0
+
+        retarr_sprp = [0]*len(self.pipes())
+        for index, item in enumerate(self.pipes()):
+            retarr_sprp[index] = item.sprp
+
+        return retarr_sprp
 
     def __importPipes(self, arr):
         retArr = []
@@ -123,7 +131,7 @@ class HeatGrid():
         retarr_start_height = [0]*length
         retarr_end_height = [0]*length
         retarr_roughness = [0]*length
-        retarr_sprp = [0]*length
+        retarr_element = [0]*length
         for index, item in enumerate(self.pipes()):
             retarr_index[index] = item.index
             retarr_start_x[index] = item.start_x
@@ -138,12 +146,12 @@ class HeatGrid():
             retarr_start_height[index] = item.start_height
             retarr_end_height[index] = item.end_height
             retarr_roughness[index] = item.roughness
-            retarr_sprp[index] = item.sprp
+            retarr_element[index] = item.element
         return retarr_index, retarr_start_x, retarr_start_y, retarr_end_x,\
             retarr_end_y, retarr_sNode, retarr_eNode,\
             retarr_length, retarr_diameter_inner, retarr_diameter_outer,\
             retarr_start_height, retarr_end_height, retarr_roughness,\
-            retarr_sprp
+            retarr_element
 
     def __nodes(self):
         length = len(self.nodes())
@@ -153,6 +161,7 @@ class HeatGrid():
         retarr_name = [0]*length
         retarr_height = [0]*length
         retarr_sprp = [0]*length
+        retarr_element = [0]*length
         for index, item in enumerate(self.nodes()):
             retarr_index[index] = item.index
             retarr_x[index] = item.x
@@ -160,25 +169,28 @@ class HeatGrid():
             retarr_name[index] = item.name
             retarr_height[index] = item.height
             retarr_sprp[index] = item.sprp
+            retarr_element[index] = item.element
         return retarr_index, retarr_x, retarr_y,\
-            retarr_name, retarr_height, retarr_sprp
+            retarr_name, retarr_height, retarr_sprp, retarr_element
 
     def __str__(self):
-        for sprp, sNode, eNode, length, diameter_inner, diameter_outer,\
-            in zip(self.v_pipes_sprp,
-                                      self.v_pipes_sNode, self.v_pipes_eNode,
-                                      self.v_pipes_length,
-                                      self.v_pipes_diameter_inner,
-                                      self.v_pipes_diamter_outer):
-            print("Pipe: SP/RP %s sNode %s eNode %s length %4.3f "
-                  "diam_outer %4.3f diam_inner %4.3f"
-                  % (str(sprp),
-                     sNode, eNode, length, diameter_inner, diameter_outer))
-        print("%i Pipes \t----> OK\n" % (len(self.v_pipes_index)))
-        
-        for name, sprp in zip(self.v_nodes_name, self.v_nodes_sprp):
-            print("Nodes: name %s SP/RP %s" % (name, sprp))
-        print("%i Pipes \t----> OK\n" % (len(self.v_nodes_index)))
+        for element, sprp, sNode, eNode, length, diameter_inner,\
+            diameter_outer, sprp in zip(self.v_pipes_element, self.v_pipes_sprp,
+                                  self.v_pipes_sNode, self.v_pipes_eNode,
+                                  self.v_pipes_length,
+                                  self.v_pipes_diameter_inner,
+                                  self.v_pipes_diamter_outer,
+                                  self.v_pipes_sprp):
+            print("%s: SP/RP %s sNode %s eNode %s length %4.3f "
+                  "diam_outer %4.3f diam_inner %4.3f sprp %s"
+                  % (element, str(sprp), sNode, eNode, length, diameter_inner,
+                     diameter_outer, sprp))
+        print("%i pipes \t----> OK\n" % (len(self.v_pipes_index)))
+
+        for element, name, sprp in zip(self.v_nodes_element,
+                              self.v_nodes_name, self.v_nodes_sprp):
+            print("%s: name %s SP/RP %s" % (element, name, sprp))
+        print("%i nodes \t----> OK\n" % (len(self.v_nodes_index)))
 
 if __name__ == "__main__":
     from DataIO import DataIO

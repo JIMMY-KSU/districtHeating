@@ -37,7 +37,11 @@ class Pipe():
         self.diameter_outer = pipeValues['diameter_outer']
         self.start_height = pipeValues['start_height']
         self.end_height = pipeValues['end_height']
-        self.roughness = pipeValues['roughness']
+        if pipeValues['roughness'] == '':
+            self.roughness = 0.0013 #  k in [mm] from "Druckverluste
+                                    #  in Rohrleitungen"
+        else:
+            self.roughness = pipeValues['roughness']
         self.sprp = pipeValues['sprp']
         self.element = "pipe"
 
@@ -87,6 +91,49 @@ class Pipe():
 
 # CALCULATIONS:
 
+
+    def heat_transferCoefficient(self,
+                                 transferCoefficients,
+                                 layer_heat_conductivities,
+                                 layer_thicknesses):
+        '''
+        array of transferCoefficients = alpha [W / m²*K]
+        array of heat_conductivities = lamda [W / m*K]
+        '''
+        h_tC = 0
+
+        for layer_thickness, layer_heat_conductivity in \
+                zip(layer_thicknesses, layer_heat_conductivities):
+            h_tC += layer_thickness / layer_heat_conductivity
+        return h_tC
+
+#    def heatloss(self):
+## TODO Berechungen überprüfen
+#        var = 0
+#
+#        var += 1 / (self.__heat_transferCoefficients[0] * (self.diameter_inner / 2 ))
+##        print(str(self.__heat_transferCoefficients[0]) + '|' + str(self.diameter_inner) + '| var0= ' +str(var))
+#        var += 1 / (self.__heat_transferCoefficients[1] * (self.diameter_outer / 2))
+##        print(str(self.__heat_transferCoefficients[1]) + '|' + str(self.diameter_outer) + '| var1= ' +str(var))
+#        var += ((1 / self.__heat_conductivities[0]) *
+#                (math.log((self.__diameters[0] / 2) /
+#                          (self.diameter_inner / 2))))
+##        print(str(self.__heat_conductivities[0]) + '|' + str(self.__diameters[0]) + '| var2= ' +str(var))
+#        var += ((1 / self.__heat_conductivities[1]) *
+#                (math.log((self.__diameters[1] / 2) /
+#                 (self.__diameters[1 - 1] / 2))))
+##        print(str(self.__heat_conductivities[1]) + '|' + str(self.__diameters[1]) + '| var3= ' +str(var))
+#        var += ((1 / self.__heat_conductivities[2]) *
+#                (math.log((self.__diameters[2] / 2) /
+#                 (self.__diameters[2 - 1] / 2))))
+##        print(str(self.__heat_conductivities[2]) + '|' + str(self.__diameters[2]) + '| var4= ' +str(var))
+#        heatloss = (
+#                    (2 * math.pi * self.length *
+#                     (self.fluid_temp - self.ambient_temp)) /
+#                    var
+#                    )
+#        return heatloss
+
     def start_flowspeed(self):
         """
         calculation of flow speed
@@ -112,48 +159,6 @@ class Pipe():
                          self.__kinvis)  # dimensionless
         return reynoldnumber
 
-    def heat_transferCoefficient(self,
-                                 transferCoefficients,
-                                 layer_heat_conductivities,
-                                 layer_thicknesses):
-        '''
-        array of transferCoefficients = alpha [W / m²*K]
-        array of heat_conductivities = lamda [W / m*K]
-        '''
-        h_tC = 0
-
-        for layer_thickness, layer_heat_conductivity in \
-                zip(layer_thicknesses, layer_heat_conductivities):
-            h_tC += layer_thickness / layer_heat_conductivity
-        return h_tC
-
-    def heatloss(self):
-# TODO Berechungen überprüfen
-        var = 0
-
-        var += 1 / (self.__heat_transferCoefficients[0] * (self.diameter_inner / 2 ))
-#        print(str(self.__heat_transferCoefficients[0]) + '|' + str(self.diameter_inner) + '| var0= ' +str(var))
-        var += 1 / (self.__heat_transferCoefficients[1] * (self.diameter_outer / 2))
-#        print(str(self.__heat_transferCoefficients[1]) + '|' + str(self.diameter_outer) + '| var1= ' +str(var))
-        var += ((1 / self.__heat_conductivities[0]) *
-                (math.log((self.__diameters[0] / 2) /
-                          (self.diameter_inner / 2))))
-#        print(str(self.__heat_conductivities[0]) + '|' + str(self.__diameters[0]) + '| var2= ' +str(var))
-        var += ((1 / self.__heat_conductivities[1]) *
-                (math.log((self.__diameters[1] / 2) /
-                 (self.__diameters[1 - 1] / 2))))
-#        print(str(self.__heat_conductivities[1]) + '|' + str(self.__diameters[1]) + '| var3= ' +str(var))
-        var += ((1 / self.__heat_conductivities[2]) *
-                (math.log((self.__diameters[2] / 2) /
-                 (self.__diameters[2 - 1] / 2))))
-#        print(str(self.__heat_conductivities[2]) + '|' + str(self.__diameters[2]) + '| var4= ' +str(var))
-        heatloss = (
-                    (2 * math.pi * self.length *
-                     (self.fluid_temp - self.ambient_temp)) /
-                    var
-                    )
-        return heatloss
-
     def pipe_lambda(self):
         """
         Calculation of lambda
@@ -161,7 +166,7 @@ class Pipe():
         else if the flow is turbulent...
         """
 
-        if self.reynold() < 2300:
+        if self.reynold() < 2320:
             """
             #calculation of lambda for laminar flow
             """
@@ -204,21 +209,6 @@ class Pipe():
     def end_pressure(self, start_pressure):
         end_pressure = start_pressure - self.pressure_difference()
         return end_pressure  # Pa
-
-    def end_volumeStream(self):
-#        #volumeStream_end =  # (m^3)/h
-#        return volumeStream_end
-        pass
-
-    def end_flowspeed(self):
-#        #end_flowspeed =  # m/s
-#        return flowspeed_end
-        pass
-    
-    def volume(self):
-#        #volume =  # m^3
-#        return volume
-        pass
 
 if __name__=="__main__":
     print('Pipe \t\t\t run directly')

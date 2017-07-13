@@ -11,7 +11,7 @@ class Producer():
     def __init__(self, producerValues):
         
         self.name = producerValues['name']
-        self.power = np.abs(producerValues['power'])
+        self.power = producerValues['power']
         self.sNode = producerValues['sNode']
             # name of point in return pipe
         self.eNode = producerValues['eNode']

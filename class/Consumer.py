@@ -23,7 +23,7 @@ class Consumer():
         self.heat_profile = consumerValues['heat_consumptionProfile']
         self.heat_average = consumerValues['heat_consumptionAverage']
 
-        self.Q = np.abs(consumerValues['heat_demand'])
+        self.Q = consumerValues['heat_demand']
 
         self.flow = consumerValues['flow']
         self.Ta = 130 + 273.15
@@ -47,7 +47,7 @@ class Consumer():
         return self.__dataArray['heat_consumptionAverage'][i]
 
     def __massflow(self, Q, cp, Ta, Tb):
-        val = Q / (cp * (Ta - Tb))
+        val = Q / (cp * (Tb - Ta))
         return val
 
 if __name__ == "__main__":

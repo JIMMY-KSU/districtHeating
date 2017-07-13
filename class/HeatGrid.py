@@ -45,8 +45,8 @@ class HeatGrid():
         self.v_pipes_length = np.asarray(arr[7])
         self.v_pipes_diameter_inner = np.asarray(arr[8])
         self.v_pipes_diamter_outer = np.asarray(arr[9])
-        self.v_pipes_start_height = np.asarray(arr[10])
-        self.v_pipes_end_height = np.asarray(arr[11])
+        self.v_pipes_sHeight = np.asarray(arr[10])
+        self.v_pipes_eHeight = np.asarray(arr[11])
         self.v_pipes_roughness = np.asarray(arr[12])
         self.v_pipes_element = arr[13]
 
@@ -56,14 +56,13 @@ class HeatGrid():
         self.v_nodes_y = arr[2]
         self.v_nodes_name = arr[3]
         self.v_nodes_height = np.asarray(arr[4])
-        #  TODO self.v_nodes_sprp import must be designed like self.v_pipes_seNode!
-        self.v_nodes_sprp = arr[5]
-        self.v_nodes_element = arr[6]
+        self.v_nodes_element = arr[5]
 
         self.v_pipes_seNode = np.column_stack(
                                     (self.v_pipes_sNode, self.v_pipes_eNode))
-        self.v_pipes_sprp = self.__set_sprp(self.__get_sprp(nodeSupply))
-
+        seNodes_sprp = self.__get_pipes_sprp(nodeSupply)
+        self.v_pipes_sprp = self.__set_pipes_sprp(seNodes_sprp)
+        self.v_nodes_sprp = self.__set_nodes_sprp(seNodes_sprp)
         self.__str__()
 
     def pipes(self, i=slice(None, None)):
@@ -72,7 +71,7 @@ class HeatGrid():
     def nodes(self, i=slice(None, None)):
         return self._instancesNode[i]
 
-    def __get_sprp(self, nodeSupply):
+    def __get_pipes_sprp(self, nodeSupply):
         '''
         gets an arr of all supply pipes,
         find by class Finder method findAllItems
@@ -84,9 +83,9 @@ class HeatGrid():
                                     self.v_pipes_seNode)
         return arr
 
-    def __set_sprp(self, arr):
+    def __set_pipes_sprp(self, arr):
         '''
-        names all Pipes at sp_rp with 1 for supply pipe and 0 for return pipe
+        names all pipes at sp_rp with 1 for supply pipe and 0 for return pipe
         '''
         arr_pipes = self.v_pipes_seNode
 
@@ -100,6 +99,26 @@ class HeatGrid():
 
         retarr_sprp = [0]*len(self.pipes())
         for index, item in enumerate(self.pipes()):
+            retarr_sprp[index] = item.sprp
+
+        return retarr_sprp
+
+    def __set_nodes_sprp(self, arr):
+        '''
+        names all nodes at sprp with 1 for supply node and 0 for return node
+        '''
+        arr_nodes = self.v_nodes_name
+        for index, item in enumerate(arr_nodes):
+            for item1 in arr:
+                if np.array_equal(item, item1[0])\
+                    or np.array_equal(item, item1[1]):
+                    self.nodes(index).sprp = 1
+                    break
+                else:
+                    self.nodes(index).sprp = 0
+
+        retarr_sprp = [0]*len(self.nodes())
+        for index, item in enumerate(self.nodes()):
             retarr_sprp[index] = item.sprp
 
         return retarr_sprp
@@ -160,7 +179,6 @@ class HeatGrid():
         retarr_y = [0]*length
         retarr_name = [0]*length
         retarr_height = [0]*length
-        retarr_sprp = [0]*length
         retarr_element = [0]*length
         for index, item in enumerate(self.nodes()):
             retarr_index[index] = item.index
@@ -168,10 +186,9 @@ class HeatGrid():
             retarr_y[index] = item.y
             retarr_name[index] = item.name
             retarr_height[index] = item.height
-            retarr_sprp[index] = item.sprp
             retarr_element[index] = item.element
         return retarr_index, retarr_x, retarr_y,\
-            retarr_name, retarr_height, retarr_sprp, retarr_element
+            retarr_name, retarr_height, retarr_element
 
     def __str__(self):
         for element, sprp, sNode, eNode, length, diameter_inner,\
@@ -189,7 +206,7 @@ class HeatGrid():
 
         for element, name, sprp in zip(self.v_nodes_element,
                               self.v_nodes_name, self.v_nodes_sprp):
-            print("%s: name %s SP/RP %s" % (element, name, sprp))
+            print("%s: name %s sprp %s" % (element, name, sprp))
         print("%i nodes \t----> OK\n" % (len(self.v_nodes_index)))
 
 if __name__ == "__main__":

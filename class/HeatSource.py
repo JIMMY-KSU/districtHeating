@@ -76,7 +76,6 @@ class HeatSource():
             retarr_Pb, retarr_Pa, retarr_Tb, retarr_element
 
     def __importProducers(self, tableOfProducer):
-        print(tableOfProducer)
         arr = []
         for item in [tableOfProducer]:
             arr.append(Producer(tableOfProducer))

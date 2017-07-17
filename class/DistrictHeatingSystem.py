@@ -13,9 +13,8 @@ from scipy.optimize import fsolve
 #sys.path.append(os.getcwd())
 #print(os.getcwd())
     
-sys.path.append(os.getcwd() + os.sep + 'function')
-print(sys.path.append(os.getcwd() + os.sep + 'function'))
-
+sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
+print(os.path.dirname(os.getcwd()) + os.sep + 'function')
 import dependencies as dp 
 
 from HeatGrid import HeatGrid
@@ -60,8 +59,6 @@ class DistrictHeatingSystem():
 
 
 if __name__ == "__main__":
-    
-    sys.path.append(os.path.dirname(os.getcwd()) + os.sep + 'function')
     from DataIO import DataIO
     import Dictionary
     print('DistrictHeatingSystem \t run directly \n')
@@ -102,5 +99,8 @@ if __name__ == "__main__":
     DHS1.calculateDHS()
     
 else:
-
+    import os
+    import sys
+    sys.path.append(os.getcwd() + os.sep + 'function')
+    print(sys.path.append(os.getcwd() + os.sep + 'function'))
     print('DistrictHeatingSystem \t was imported into another module')

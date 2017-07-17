@@ -51,9 +51,9 @@ class Solver():
         self.Tamb = 5+273.15  # [K]
         self.v_producer_Pa_set = self.heatsource.v_producers_Pa
         self.v_producer_Pb_set = self.heatsource.v_producers_Pb
-        self.v_producer_Tb_set = 130+273.15  # [K]
-        self.v_consumer_Tb_set = np.asarray([273.15 + 60] * 3)  # [K]
-        self.v_consumer_Q_set = np.asarray([-75000, -100000, -50000])  # [W]
+#        self.v_producer_Tb_set = 130+273.15  # [K]
+#        self.v_consumer_Tb_set = np.asarray([273.15 + 60] * 3)  # [K]
+#        self.v_consumer_Q_set = np.asarray([-75000, -100000, -50000])  # [W]
 
         
     def __inzidenzmatrix_HeatGrid(self):
@@ -216,10 +216,10 @@ class Solver():
                                   v_Tb[self.__I_sink_slice],
                                   v_Q[self.__I_sink_slice])
         consumer_Q = dp.consumer_heatflow(
-                                  self.v_consumer_Q_set,
+                                  self.heatsink.v_consumers_Q,
                                   v_Q[self.__I_sink_slice])
         consumer_Tb = dp.consumer_temp(
-                                  self.v_consumer_Tb_set,
+                                  self.heatsink.v_consumers_Tb,
                                   v_Tb[self.__I_sink_slice])
 
         # dependencies for producer
@@ -229,7 +229,7 @@ class Solver():
                                   v_Tb[self.__I_source_slice],
                                   v_Q[self.__I_source_slice])
         producer_Tb = dp.producer_temp(
-                              self.v_producer_Tb_set,
+                              self.heatsource.v_producers_Tb,
                               v_Tb[self.__I_source_slice])
         producer_Pb = dp.producer_press(
                           self.v_producer_Pb_set,

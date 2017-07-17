@@ -143,9 +143,13 @@ class DataIO():
         return:
            array with dtype
         '''
-        dataArray = DBF(self.__filepath_import +
+        try:
+            dataArray = DBF(self.__filepath_import +
                         os.sep + filename_import, encoding='cp437', load=True)
-
+        except:
+            print("If you import STANET DBF, please make sure to clean"
+                  "STANET-File with STANTE-Programm. Former deleted nodes will"
+                  "cause error")
         returnArray = np.empty(len(dataArray), dtype=dtype)
         for index, record in enumerate(dataArray):
             for item in dtype['names']:
@@ -153,7 +157,6 @@ class DataIO():
                     returnArray[index][item] = record[dtypeAllocation[item]]
                 except:
                     pass
-
         return returnArray
 
 

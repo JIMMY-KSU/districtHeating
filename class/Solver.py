@@ -10,6 +10,7 @@ import balances as bl
 import numpy as np
 from inzidenzmatrix import inzidenzmatrix
 
+
 class Solver():
     def __init__(self, heatgrid, heatsink, heatsource):
 
@@ -20,10 +21,10 @@ class Solver():
         self._inzidenzmatrix_HeatSink = self.__inzidenzmatrix_HeatSink()
         self._inzidenzmatrix_HeatSource = self.__inzidenzmatrix_HeatSource()
         self._inzidenzmatrix = self.__inzidenzmatrix()
-        
+
         self._elements = np.shape(self._inzidenzmatrix)[1]
         self._nodes = np.shape(self._inzidenzmatrix)[0]
-        
+
         '''
         sets up all necessary inzmatrices
         '''
@@ -51,11 +52,7 @@ class Solver():
         self.Tamb = 5+273.15  # [K]
         self.v_producer_Pa_set = self.heatsource.v_producers_Pa
         self.v_producer_Pb_set = self.heatsource.v_producers_Pb
-#        self.v_producer_Tb_set = 130+273.15  # [K]
-#        self.v_consumer_Tb_set = np.asarray([273.15 + 60] * 3)  # [K]
-#        self.v_consumer_Q_set = np.asarray([-75000, -100000, -50000])  # [W]
 
-        
     def __inzidenzmatrix_HeatGrid(self):
         '''
         returns an inzidenzmatrix of HeatGrid, where pipes are col
@@ -128,7 +125,7 @@ class Solver():
         vector of massflows by solver
         '''
         i = 0
-        
+
         v_m = x[i: i + self._elements]
         i = i + self._elements
         '''
@@ -193,7 +190,7 @@ class Solver():
         constitutive relations
         '''
         # dependencies for pipes
-        pipeMassflow = dp.pipe_massflow(
+        pipe_m = dp.pipe_massflow(
                                   v_m[self.__I_grid_slice],
                                   v_Ta[self.__I_grid_slice],
                                   v_Tb[self.__I_grid_slice],
@@ -210,7 +207,7 @@ class Solver():
                           self.heatgrid.v_pipes_eHeight)
 
         # dependencies for consumer
-        consumerMassflow = dp.consumer_massflow(
+        consumer_m = dp.consumer_massflow(
                                   v_m[self.__I_sink_slice],
                                   v_Ta[self.__I_sink_slice],
                                   v_Tb[self.__I_sink_slice],
@@ -223,7 +220,7 @@ class Solver():
                                   v_Tb[self.__I_sink_slice])
 
         # dependencies for producer
-        producerMassflow = dp.producer_massflow(
+        producer_m = dp.producer_massflow(
                                   v_m[self.__I_source_slice],
                                   v_Ta[self.__I_source_slice],
                                   v_Tb[self.__I_source_slice],
@@ -242,7 +239,7 @@ class Solver():
                          massBalance,
                          energyBalance_1, energyBalance_2,
                          impulseBalance_1, impulseBalance_2,
-                         pipeMassflow, consumerMassflow, producerMassflow,
+                         pipe_m, consumer_m, producer_m,
                          pipePress, producer_Pb, producer_Pa,
                          consumer_Tb, producer_Tb,
                          pipeQ, consumer_Q))
@@ -258,16 +255,16 @@ class Solver():
         v_m[self.__I_grid_slice] = np.average(self.heatsink.v_consumers_m)
         v_m[self.__I_sink_slice] = self.heatsink.v_consumers_m
         v_m[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_m) /
-                                       len(self.heatsource.producers()))
+                                      len(self.heatsource.producers()))
         '''
         vector of heatflows by guess
         '''
         v_Q = np.zeros(self._elements)
         # heatflows
-        v_Q[self.__I_grid_slice] = 0
+        v_Q[self.__I_grid_slice] = self.heatgrid.v_pipes_Q
         v_Q[self.__I_sink_slice] = self.heatsink.v_consumers_Q
-        v_Q[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_Q) / 
-                                       len(self.heatsource.producers()))
+        v_Q[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_Q) /
+                                      len(self.heatsource.producers()))
 
         '''
         vector of temperatures by guess
@@ -284,11 +281,10 @@ class Solver():
                     v_T[index] = np.average(self.heatsource.v_producers_Tb)
                 elif item == 0:
                     v_T[index] = np.sum(self.heatsink.v_consumers_Tb *
-                                       self.heatsink.v_consumers_m) /\
-                                       np.sum(self.heatsink.v_consumers_m)
+                                        self.heatsink.v_consumers_m) /\
+                                        np.sum(self.heatsink.v_consumers_m)
             except ValueError:
                 print("Guess for temperature of nodes failed!")
-
 
         '''set guess temperature for supply and return pipes'''
         for index, item in enumerate(self.heatgrid.v_pipes_sprp):
@@ -302,9 +298,9 @@ class Solver():
 
                 elif item == 0:
                     v_Ta[self.__I_grid_slice][index] =\
-                            np.sum(self.heatsink.v_consumers_Tb *
-                                        self.heatsink.v_consumers_m) /\
-                                   np.sum(self.heatsink.v_consumers_m)
+                         np.sum(self.heatsink.v_consumers_Tb *
+                                self.heatsink.v_consumers_m) /\
+                         np.sum(self.heatsink.v_consumers_m)
                     v_Tb[self.__I_grid_slice][index] =\
                         v_Ta[self.__I_grid_slice][index]
             except ValueError:
@@ -313,8 +309,8 @@ class Solver():
         '''temperature Ta'''
         v_Ta[self.__I_sink_slice] = np.average(self.heatsource.v_producers_Tb)
         v_Ta[self.__I_source_slice] = np.sum(self.heatsink.v_consumers_m *
-                                            self.heatsink.v_consumers_Tb) /\
-                                            np.sum(self.heatsink.v_consumers_m)
+                                             self.heatsink.v_consumers_Tb) /\
+            np.sum(self.heatsink.v_consumers_m)
         '''temperature Tb'''
         v_Tb[self.__I_sink_slice] = self.heatsink.v_consumers_Tb
         v_Tb[self.__I_source_slice] = self.heatsource.v_producers_Tb
@@ -323,10 +319,10 @@ class Solver():
         vector of pressures by guess
         '''
         v_P = np.zeros(self._nodes)
-        
+
         v_Pa = np.zeros(self._elements)
         v_Pb = np.zeros(self._elements)
-        
+
         '''set guess temperature for supply and return nodes'''
         for index, item in enumerate(self.heatgrid.v_nodes_sprp):
             try:
@@ -339,7 +335,7 @@ class Solver():
 
         '''set guess temperature for supply and return pipes'''
         for index, item in enumerate(self.heatgrid.v_pipes_sprp):
-            
+
             try:
                 if item == 1:
                     v_Pa[self.__I_grid_slice][index] =\
@@ -353,58 +349,103 @@ class Solver():
                         v_Pa[self.__I_grid_slice][index]
             except ValueError:
                 print("Guess for pressure of pipes failed!")
-        
+
         # pressure Pa
         v_Pa[self.__I_sink_slice] = np.average(self.heatsource.v_producers_Pb)
         v_Pa[self.__I_source_slice] = self.heatsource.v_producers_Pa
         # pressure Pb
         v_Pb[self.__I_sink_slice] = np.average(self.heatsource.v_producers_Pa)
-        v_Pb[self.__I_source_slice] = np.average(self.heatsource.v_producers_Pb)
-        
+        v_Pb[self.__I_source_slice] = np.average(
+                self.heatsource.v_producers_Pb)
+
         arr = np.concatenate((v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb))
 
         return arr
+
+    def save_x(self, arr, name):
+        v_m = arr[0:self._elements]
+        v_Pa = arr[self._elements + self._nodes:self._elements*2 + self._nodes]
+        v_Pb = arr[self._elements*2 + self._nodes:
+                   self._elements*3 + self._nodes]
+        v_Q = arr[self._elements*3 + self._nodes:
+                  self._elements*4 + self._nodes]
+        v_Ta = arr[self._elements*4 + self._nodes*2:
+                   self._elements*5 + self._nodes*2]
+        v_Tb = arr[self._elements*5 + self._nodes*2:
+                   self._elements*6 + self._nodes*2]
+
+        v_P = arr[self._elements:self._elements + self._nodes]
+        v_T = arr[self._elements*4 + self._nodes:
+                  self._elements*4 + self._nodes*2]
+
+        self.heatgrid.v_pipes_m = v_m[self.__I_grid_slice]
+        self.heatgrid.v_pipes_Q = v_Q[self.__I_grid_slice]
+        self.heatgrid.v_pipes_Ta = v_Ta[self.__I_grid_slice]
+        self.heatgrid.v_pipes_Tb = v_Tb[self.__I_grid_slice]
+        self.heatgrid.v_pipes_Pa = v_Pa[self.__I_grid_slice]
+        self.heatgrid.v_pipes_Pb = v_Pb[self.__I_grid_slice]
+
+        self.heatgrid.v_nodes_P = v_P
+        self.heatgrid.v_nodes_T = v_T
+
+        self.heatsink.v_consumers_m = v_m[self.__I_sink_slice]
+        self.heatsink.v_consumers_Q = v_Q[self.__I_sink_slice]
+        self.heatsink.v_consumers_Ta = v_Ta[self.__I_sink_slice]
+        self.heatsink.v_consumers_Tb = v_Tb[self.__I_sink_slice]
+        self.heatsink.v_consumers_Pa = v_Pa[self.__I_sink_slice]
+        self.heatsink.v_consumers_Pb = v_Pb[self.__I_sink_slice]
+
+        self.heatsource.v_producers_m = v_m[self.__I_source_slice]
+        self.heatsource.v_producers_Q = v_Q[self.__I_source_slice]
+        self.heatsource.v_producers_Ta = v_Ta[self.__I_source_slice]
+        self.heatsource.v_producers_Tb = v_Tb[self.__I_source_slice]
+        self.heatsource.v_producers_Pa = v_Pa[self.__I_source_slice]
+        self.heatsource.v_producers_Pb = v_Pb[self.__I_source_slice]
+#   TODO save_x for pipes, plus how to print pretty.
+#  TODO save_x to file.
 
     def print_x(self, arr, name):
         v_sprp = self.heatgrid.v_pipes_sprp + [''] * 2*self._elements
 
         for element, sprp, m, Pa, Pb, Q, Ta, Tb in zip(
-                                self.heatgrid.v_pipes_element+\
-                                self.heatsink.v_consumers_element+\
+                                self.heatgrid.v_pipes_element +
+                                self.heatsink.v_consumers_element +
                                 self.heatsource.v_producers_element,
                                 v_sprp,
                                 arr[0:self._elements],
                                 arr[self._elements + self._nodes:
-                                         self._elements*2 + self._nodes],
+                                    self._elements*2 + self._nodes],
                                 arr[self._elements*2 + self._nodes:
-                                         self._elements*3 + self._nodes],
+                                    self._elements*3 + self._nodes],
                                 arr[self._elements*3 + self._nodes:
-                                         self._elements*4 + self._nodes],
+                                    self._elements*4 + self._nodes],
                                 arr[self._elements*4 + self._nodes*2:
-                                         self._elements*5 + self._nodes*2],
+                                    self._elements*5 + self._nodes*2],
                                 arr[self._elements*5 + self._nodes*2:
-                                         self._elements*6 + self._nodes*2]):
+                                    self._elements*6 + self._nodes*2]):
             if sprp != '':
-                print("%s: sprp %i Q %11.3f m %9.3f  Ta %3.2f  Tb %3.2f "
-                          "Pa %2.3f Pb %2.3f " % (element, sprp,
+                print("%s: sprp %i \t Q %11.3f [W] m %7.3f [m/s] Ta %3.2f [K] "
+                      "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa]" % (
+                                                  element, sprp,
                                                   Q, m,
                                                   Ta, Tb,
                                                   Pa, Pb))
             elif sprp == '':
-                 print("%s: Q %11.3f m %9.3f  Ta %3.2f  Tb %3.2f "
-                          "Pa %2.3f Pb %2.3f " % (element,
+                print("%s: \t Q %11.3f [W] m %7.3f [m/s] Ta %3.2f [K] "
+                      "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa]" % (
+                                                  element,
                                                   Q, m,
                                                   Ta, Tb,
                                                   Pa, Pb))
-            
 
         for element, sprp, P, T in zip(self.heatgrid.v_nodes_element,
                                        self.heatgrid.v_nodes_sprp,
-                                 arr[self._elements:
-                                     self._elements + self._nodes],
-                               arr[self._elements*4 + self._nodes:
-                                     self._elements*4 + self._nodes*2]):
-            print("%s: sprp %i T %3.2f P %2.3f " % (element, sprp, T, P))
+                                       arr[self._elements:
+                                           self._elements + self._nodes],
+                                       arr[self._elements*4 + self._nodes:
+                                           self._elements*4 + self._nodes*2]):
+            print("%s: sprp %i \t\t\t\t\t\t T %3.2f [K] \t\t P %6.f [Pa]" % (
+                                                 element, sprp, T, P))
         print("values of %s \t ----> OK\n" % name)
 
 if __name__ == "__main__":

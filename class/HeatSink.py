@@ -108,7 +108,7 @@ class HeatSink():
                                             self.v_consumers_m,
                                             self.v_consumers_Tb,
                                             self.v_consumers_Ta):
-            print("%s: index %3i Q %7.0f m %4.1f Tb %3.2f Ta %3.2f"
+            print("%s: index %3i Q %7.0f [W] m %4.1f [m/s] Tb %3.2f [K] Ta %3.2f [K]"
                   % (element, i, Q, m, Tb, Ta))
 
         print("%i consumer \t----> OK \n" % (len(self.v_consumers_index)))

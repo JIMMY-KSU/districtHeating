@@ -44,25 +44,25 @@ class DistrictHeatingSystem():
 #        logger.error("An error occurred")
 #        logger.info("This is an info log")
 
-
-
     def calculateDHS(self):
         print("---->\tstart to calculate heatgrid\n")
         solver = Solver(self.heatgrid, self.heatsink, self.heatsource)
         guess = solver.getGuess()
         solution = fsolve(solver.gridCalculation, guess)
-        
-        solver.print_x(guess,"guess")
-        solver.print_x(solution, "solution")
 
+        solver.print_x(guess, "guess")
+        solver.print_x(solution, "solution")
+        
+        solver.save_x(solution, 'test')
+        self.heatgrid.__str__()
         return None
+
 
 
 if __name__ == "__main__":
     from DataIO import DataIO
     import Dictionary
     print('DistrictHeatingSystem \t run directly \n')
-
 
     DataIO = DataIO(
                 os.path.dirname(os.getcwd()) + os.sep + 'input',
@@ -97,7 +97,7 @@ if __name__ == "__main__":
             heatsource)
 
     DHS1.calculateDHS()
-    
+
 else:
     import os
     import sys

@@ -11,10 +11,9 @@ import math
 
 class Pipe():
     def __init__(self, pipeValues):
-
-        self.ambient_temp = 15  # °C
-        self.fluid_temp = 80  # °C
-        self.__heat_capacity = 4.183
+        self.ambient_temp = 273.15 + 15 #  in Kelvin
+        self.fluid_temp = 273.15 + 80 #  in Kelvin
+        self.__heat_capacity = 4183 #  J/(kg*K)
         self.__kinvis = 0.48724 * 0.000001
         self.__dynvis = 0.00046659  # kg / (s * m)
         """
@@ -37,6 +36,14 @@ class Pipe():
         self.diameter_outer = pipeValues['diameter_outer']
         self.start_height = pipeValues['start_height']
         self.end_height = pipeValues['end_height']
+
+        self.Q = 0  # [Watt]
+        self.m = 0  # [kg/s]
+        self.Ta = 0  # [K]
+        self.Tb = 0  # [K]
+        self.Pa = 0  # [Pa]
+        self.Pb = 0  # [Pb]
+        
         if pipeValues['roughness'] == '':
             self.roughness = 0.0013 #  k in [mm] from "Druckverluste
                                     #  in Rohrleitungen"

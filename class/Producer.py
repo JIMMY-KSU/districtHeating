@@ -5,19 +5,24 @@ Created on Tue Feb 28 12:22:53 2017
 @author: jpelda
 """
 
-import numpy as np
 
 class Producer():
     def __init__(self, producerValues):
-        
+
+        self.cp = 4183  # J/(kg*K)
+
         self.name = producerValues['name']
-        self.power = producerValues['power']
-        self.sNode = producerValues['sNode']
-            # name of point in return pipe
-        self.eNode = producerValues['eNode']
-            # name of point in supply pipe
-        self.Pb = 7  # supply pressure
-        self.Pa = 1  # return pressure
+        self.sNode = producerValues['sNode']  # name of point in return pipe
+        self.eNode = producerValues['eNode']  # name of point in supply pipe
+
+        self.Q = producerValues['power']
+        self.Pa = 100000  # return pressure [Pa] 1bar = 100000Pa
+        self.Pb = 700000  # supply pressure [Pa] 1bar = 100000Pa
         self.Tb = 130 + 273.15  # supply temperature
+        self.Ta = 0
+        self.m = self.__massflow(self.Q, self.cp, self.Ta, self.Tb)  # t/h
         self.element = "producer"
 
+    def __massflow(self, Q, cp, Ta, Tb):
+        val = Q / (cp * (Tb - Ta))
+        return val

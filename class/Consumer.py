@@ -23,7 +23,7 @@ class Consumer():
         self.heat_profile = consumerValues['heat_consumptionProfile']
         self.heat_average = consumerValues['heat_consumptionAverage']
 
-        self.Q = consumerValues['heat_demand']
+        self.Q = consumerValues['heat_demand'] #Watt
 
         self.flow = consumerValues['flow']
         self.Ta = 130 + 273.15

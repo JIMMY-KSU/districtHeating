@@ -22,7 +22,7 @@ class HeatSource():
 
         arr = self.__producers()
         self.v_producers_name = arr[0]
-        self.v_producers_power = arr[1]
+        self.v_producers_Q = arr[1]
         self.v_producers_sNode = arr[2]
         self.v_producers_eNode = arr[3]
         self.v_producers_Pb = arr[4]  # supply pressure
@@ -56,7 +56,7 @@ class HeatSource():
     def __producers(self):
         length = len(self.producers())
         retarr_name = [0]*length
-        retarr_power = [0]*length
+        retarr_Q = [0]*length
         retarr_sNode = [0]*length
         retarr_eNode = [0]*length
         retarr_Pb = [0]*length  # Pb is supply pressure
@@ -65,14 +65,14 @@ class HeatSource():
         retarr_element = [0]*length
         for index, item in enumerate(self.producers()):
             retarr_name[index] = item.name
-            retarr_power[index] = item.power
+            retarr_Q[index] = item.Q
             retarr_sNode[index] = item.sNode
             retarr_eNode[index] = item.eNode
             retarr_Pb[index] = item.Pb
             retarr_Pa[index] = item.Pa
             retarr_Tb[index] = item.Tb
             retarr_element[index] = item.element
-        return retarr_name, retarr_power, retarr_sNode, retarr_eNode,\
+        return retarr_name, retarr_Q, retarr_sNode, retarr_eNode,\
             retarr_Pb, retarr_Pa, retarr_Tb, retarr_element
 
     def __importProducers(self, tableOfProducer):
@@ -82,15 +82,14 @@ class HeatSource():
         return arr
 
     def __str__(self):
-        for element, name, power, sNode, eNode, Pb, Pa, Tb in zip(
+        for element, name, Q, sNode, eNode, Pb, Pa, Tb in zip(
                 self.v_producers_element, self.v_producers_name,
-                self.v_producers_power, self.v_producers_sNode,
+                self.v_producers_Q, self.v_producers_sNode,
                 self.v_producers_eNode, self.v_producers_Pb,
                 self.v_producers_Pa, self.v_producers_Tb):
-            print("%s: name %s power %5.0f sNode %s eNode %s "
-                  "Pb %2.1f Pa %2.1f "
-                  "Tb %3.2f" % (element, name, power,
-                                sNode, eNode, Pb, Pa, Tb))
+            print("%s: name %s Q  %5.0f  [W] Tb %3.2f [K] "
+                  "Pa %9.1f [Pa] Pb %9.1f [Pa]  sNode %s eNode %s "
+                  % (element, name, Q, Tb, Pa, Pb, sNode, eNode))
         print("%i producer \t----> OK \n" % (len(self.producers())))
 
 if __name__ == "__main__":

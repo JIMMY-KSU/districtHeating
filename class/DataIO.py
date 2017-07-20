@@ -205,6 +205,13 @@ class DataIO():
                 pyfile.write("\n")
             pyfile.close()
 
+    def exportNumpyArr(self, filename, arr):
+        np.save(self.__filepath_export + os.sep + filename, arr)
+
+    def importNumpyArr(self, filename, arr):
+        np.load(self.__filepath_import + os.sep + filename, arr)
+        return arr
+
     def exportFig(self, filename, fig):
         '''
         exports matplotlib grafik as pdf and png\n

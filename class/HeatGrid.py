@@ -73,7 +73,12 @@ class HeatGrid():
         self.v_nodes_T = 0
         self.v_nodes_P = 0
 
-        self.__str__()
+        self.__str__(nodes=0)
+        print("%i pipes \t----> OK" % (len(self.v_pipes_index)))
+        self.__str__(pipes=0)
+        print("%i nodes \t----> OK\n" % (len(self.v_nodes_index)))
+    
+        self._calcVals = []
 
     def pipes(self, i=slice(None, None)):
         return self._instancesPipe[i]
@@ -195,27 +200,27 @@ class HeatGrid():
             retarr_element, retarr_Q, retarr_m, retarr_Ta, retarr_Tb,\
             retarr_Pa, retarr_Pb
 
-    def set_calculatedValuesIntoPipes(self, Q, m, Ta, Tb, Pa, Pb):
-        '''
-        sets customized or calculated values into pipes of HeatGrid:
-            Q, m, Ta, Tb, Pa, Pb
-        '''
-        self.v_pipes_Q = Q
-        self.v_pipes_m = m
-        self.v_pipes_Ta = Ta
-        self.v_pipes_Tb = Tb
-        self.v_pipes_Pa = Pa
-        self.v_pipes_Pb = Pb
+#    def set_calculatedValuesIntoPipes(self, Q, m, Ta, Tb, Pa, Pb):
+#        '''
+#        sets customized or calculated values into pipes of HeatGrid:
+#            Q, m, Ta, Tb, Pa, Pb
+#        '''
+#        self.v_pipes_Q = Q
+#        self.v_pipes_m = m
+#        self.v_pipes_Ta = Ta
+#        self.v_pipes_Tb = Tb
+#        self.v_pipes_Pa = Pa
+#        self.v_pipes_Pb = Pb
 
-    def set_calculatedValuesIntoNodes(self, T, P):
-        '''
-        sets customized or calculated values into nodes of HeatGrid:
-            T, P
-        '''
-        self.v_nodes_T = T
-        self.v_nodes_P = P
-        
-        
+#    def set_calculatedValuesIntoNodes(self, T, P):
+#        '''
+#        sets customized or calculated values into nodes of HeatGrid:
+#            T, P
+#        '''
+#        self.v_nodes_T = T
+#        self.v_nodes_P = P
+#        
+#        
     def __nodes(self):
         length = len(self.nodes())
         retarr_index = [0]*length
@@ -234,30 +239,47 @@ class HeatGrid():
         return retarr_index, retarr_x, retarr_y,\
             retarr_name, retarr_height, retarr_element
 
-    def __str__(self):
-        for element, sprp, Q, m, Ta, Tb, Pa, Pb, sNode, eNode, length,\
-            diameter_inner, diameter_outer, sprp in zip(
-                    self.v_pipes_element, self.v_pipes_sprp,
-                    self.v_pipes_Q, self.v_pipes_m,
-                    self.v_pipes_Ta, self.v_pipes_Tb,
-                    self.v_pipes_Pa, self.v_pipes_Pb,
-                    self.v_pipes_sNode, self.v_pipes_eNode,
-                    self.v_pipes_length,
-                    self.v_pipes_diameter_inner,
-                    self.v_pipes_diamter_outer,
-                    self.v_pipes_sprp):
-            print("%s: sprp %i Q %6.f [W] m %7.3f [m/s] Ta %3.2f [K] "
-                  "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa] \n \t\t\t\t\t\t\t\t l %4.1f [m] "
-                  "d_i %4.2f [m] d_o %4.2f [m] sNode %s "
-                  "eNode %s" % (element, sprp, Q, m, Ta, Tb, Pa, Pb,
-                                length, diameter_inner, diameter_outer,
-                                sNode, eNode))
-        print("%i pipes \t----> OK\n" % (len(self.v_pipes_index)))
+    def setCalculations(self):
+        attr = self.__dict__
+        attr = {item: attr[item] for item in attr if item not in
+                ("_instancesPipe",
+                 "_instancesNode",
+                 "__str__",
+                 "calcVals")}
+        self._calcVals.append(attr)
 
-        for element, name, sprp in zip(self.v_nodes_element,
-                              self.v_nodes_name, self.v_nodes_sprp):
-            print("%s: sprp %s \t\t\t\t\t\t\t\t\t Node %s" % (element, sprp, name))
-        print("%i nodes \t----> OK\n" % (len(self.v_nodes_index)))
+
+    def getCalculations(self, i=slice(None,None)):
+        return self._calcVals[i]
+
+    def __str__(self, pipes=1, nodes=1):
+        if pipes is 1:
+
+            for element, sprp, Q, m, Ta, Tb, Pa, Pb, sNode, eNode, length,\
+                diameter_inner, diameter_outer, sprp in zip(
+                        self.v_pipes_element, self.v_pipes_sprp,
+                        self.v_pipes_Q, self.v_pipes_m,
+                        self.v_pipes_Ta, self.v_pipes_Tb,
+                        self.v_pipes_Pa, self.v_pipes_Pb,
+                        self.v_pipes_sNode, self.v_pipes_eNode,
+                        self.v_pipes_length,
+                        self.v_pipes_diameter_inner,
+                        self.v_pipes_diamter_outer,
+                        self.v_pipes_sprp):
+                print("%s: sprp %i Q %6.f [W] m %7.3f [m/s] Ta %3.2f [K] "
+                      "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa] \n"
+                      "\t\t\t\t\t\t\t\t l %4.1f [m] "
+                      "d_i %4.2f [m] d_o %4.2f [m] sNode %s "
+                      "eNode %s" % (element, sprp, Q, m, Ta, Tb, Pa, Pb,
+                                    length, diameter_inner, diameter_outer,
+                                    sNode, eNode))
+        if nodes is 1:
+            for element, name, sprp in zip(
+                                            self.v_nodes_element,
+                                            self.v_nodes_name,
+                                            self.v_nodes_sprp):
+                        print("%s: sprp %s \t\t\t\t\t\t\t\t\t Node %s" % (
+                                element, sprp, name))
 
 if __name__ == "__main__":
     from DataIO import DataIO

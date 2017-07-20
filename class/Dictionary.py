@@ -130,7 +130,7 @@ HeatGrid_pump_dtype =    {'names': (
 HeatSource_producer_dtype = {'names': (
                                      'sNode',
                                      'eNode',
-                                     'name',
+                                     'index',
                                      'power',
                                      ),
                             'formats': (
@@ -160,11 +160,19 @@ STANET_pipes =          {'names': (
                                 'eNode',
                                 'length',
                                 'heatTransitionCoefficient',
-                                'roughness'
+                                'roughness',
+                                'XRA',
+                                'YHA',
+                                'XRB',
+                                'YHB'
                                 ),
                        'formats': (
                                 'U10',
                                 'U10',
+                                'f',
+                                'f',
+                                'f',
+                                'f',
                                 'f',
                                 'f',
                                 'f'
@@ -207,10 +215,10 @@ HeatGrid_STANET_nodes_allocation = {
 
 HeatGrid_STANET_pipes_allocation = {
                                 'index': 0,
-                                'start_x': 0,
-                                'start_y': 0,
-                                'end_x': 0,
-                                'end_y': 0,
+                                'start_x': 'XRA',
+                                'start_y': 'YHA',
+                                'end_x': 'XRB',
+                                'end_y': 'YHB',
                                 'sNode': 'ANFNAM',
                                 'eNode': 'ENDNAM',
                                 'length': 'RORL',
@@ -247,8 +255,7 @@ Pump_STANET_consumer_allocation = {
                                 }
 
 HeatSource_STANET_producer_allocation = {
-                                         'index': 0,
-                                         'name': 'NAME',
+                                         'index': 'NAME',
                                          'power': 'Power',
                                          'sNode': 'ANFNAM',
                                          'eNode': 'ENDNAM',

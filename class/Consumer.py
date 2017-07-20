@@ -28,6 +28,8 @@ class Consumer():
         self.flow = consumerValues['flow']
         self.Ta = 130 + 273.15
         self.Tb = 60 + 273.15
+        self.Pa = 0
+        self.Pb = 0
         self.cp = 4.1
         self.m = self.__massflow(self.Q, self.cp, self.Ta, self.Tb) # t/h
 

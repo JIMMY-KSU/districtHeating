@@ -53,6 +53,10 @@ class Solver():
         self.v_producer_Pa_set = self.heatsource.v_producers_Pa
         self.v_producer_Pb_set = self.heatsource.v_producers_Pb
 
+        self.getGuessFirstRun = 1  # if this value is 1, then the guess is
+# calculated, otherwise guess comes from the former calculated values
+# from heatsink, heatsource and heatgrid.
+
     def __inzidenzmatrix_HeatGrid(self):
         '''
         returns an inzidenzmatrix of HeatGrid, where pipes are col
@@ -247,122 +251,147 @@ class Solver():
         return F
 
     def getGuess(self):
-        '''
-        vector of massflows by guess
-        '''
-        v_m = np.zeros(self._elements)
-        # massflow
-        v_m[self.__I_grid_slice] = np.average(self.heatsink.v_consumers_m)
-        v_m[self.__I_sink_slice] = self.heatsink.v_consumers_m
-        v_m[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_m) /
-                                      len(self.heatsource.producers()))
-        '''
-        vector of heatflows by guess
-        '''
-        v_Q = np.zeros(self._elements)
-        # heatflows
-        v_Q[self.__I_grid_slice] = self.heatgrid.v_pipes_Q
-        v_Q[self.__I_sink_slice] = self.heatsink.v_consumers_Q
-        v_Q[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_Q) /
-                                      len(self.heatsource.producers()))
+        if self.getGuessFirstRun is 1:
+            
+            '''
+            vector of massflows by guess in the first run
+            '''
+            v_m = np.zeros(self._elements)
+            # massflow
+            v_m[self.__I_grid_slice] = np.average(self.heatsink.v_consumers_m)
+            v_m[self.__I_sink_slice] = self.heatsink.v_consumers_m
+            v_m[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_m) /
+                                          len(self.heatsource.producers()))
+            '''
+            vector of heatflows by guess
+            '''
+            v_Q = np.zeros(self._elements)
+            # heatflows
+            v_Q[self.__I_grid_slice] = self.heatgrid.v_pipes_Q
+            v_Q[self.__I_sink_slice] = self.heatsink.v_consumers_Q
+            v_Q[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_Q) /
+                                          len(self.heatsource.producers()))
+    
+            '''
+            vector of temperatures by guess
+            '''
+            v_T = np.zeros(self._nodes)
+            v_Ta = np.zeros(self._elements)
+            v_Tb = np.zeros(self._elements)
+    
+            '''set guess temperature for supply and return pipes'''
+            for index, item in enumerate(self.heatgrid.v_nodes_sprp):
+    
+                try:
+                    if item == 1:
+                        v_T[index] = np.average(self.heatsource.v_producers_Tb)
+                    elif item == 0:
+                        v_T[index] = np.sum(self.heatsink.v_consumers_Tb *
+                                            self.heatsink.v_consumers_m) /\
+                                            np.sum(self.heatsink.v_consumers_m)
+                except ValueError:
+                    print("Guess for temperature of nodes failed!")
+    
+            '''set guess temperature for supply and return pipes'''
+            for index, item in enumerate(self.heatgrid.v_pipes_sprp):
+    
+                try:
+                    if item == 1:
+                        v_Ta[self.__I_grid_slice][index] =\
+                            np.average(self.heatsource.v_producers_Tb)
+                        v_Tb[self.__I_grid_slice][index] =\
+                            v_Ta[self.__I_grid_slice][index]
+    
+                    elif item == 0:
+                        v_Ta[self.__I_grid_slice][index] =\
+                             np.sum(self.heatsink.v_consumers_Tb *
+                                    self.heatsink.v_consumers_m) /\
+                             np.sum(self.heatsink.v_consumers_m)
+                        v_Tb[self.__I_grid_slice][index] =\
+                            v_Ta[self.__I_grid_slice][index]
+                except ValueError:
+                    print("Guess for temperature of pipes failed!")
+    
+            '''temperature Ta'''
+            v_Ta[self.__I_sink_slice] = np.average(
+                    self.heatsource.v_producers_Tb)
+            v_Ta[self.__I_source_slice] = np.sum(
+                    self.heatsink.v_consumers_m *
+                    self.heatsink.v_consumers_Tb) /\
+                np.sum(self.heatsink.v_consumers_m)
+            '''temperature Tb'''
+            v_Tb[self.__I_sink_slice] = self.heatsink.v_consumers_Tb
+            v_Tb[self.__I_source_slice] = self.heatsource.v_producers_Tb
 
-        '''
-        vector of temperatures by guess
-        '''
-        v_T = np.zeros(self._nodes)
-        v_Ta = np.zeros(self._elements)
-        v_Tb = np.zeros(self._elements)
-
-        '''set guess temperature for supply and return pipes'''
-        for index, item in enumerate(self.heatgrid.v_nodes_sprp):
-
-            try:
-                if item == 1:
-                    v_T[index] = np.average(self.heatsource.v_producers_Tb)
-                elif item == 0:
-                    v_T[index] = np.sum(self.heatsink.v_consumers_Tb *
-                                        self.heatsink.v_consumers_m) /\
-                                        np.sum(self.heatsink.v_consumers_m)
-            except ValueError:
-                print("Guess for temperature of nodes failed!")
-
-        '''set guess temperature for supply and return pipes'''
-        for index, item in enumerate(self.heatgrid.v_pipes_sprp):
-
-            try:
-                if item == 1:
-                    v_Ta[self.__I_grid_slice][index] =\
-                        np.average(self.heatsource.v_producers_Tb)
-                    v_Tb[self.__I_grid_slice][index] =\
-                        v_Ta[self.__I_grid_slice][index]
-
-                elif item == 0:
-                    v_Ta[self.__I_grid_slice][index] =\
-                         np.sum(self.heatsink.v_consumers_Tb *
-                                self.heatsink.v_consumers_m) /\
-                         np.sum(self.heatsink.v_consumers_m)
-                    v_Tb[self.__I_grid_slice][index] =\
-                        v_Ta[self.__I_grid_slice][index]
-            except ValueError:
-                print("Guess for temperature of pipes failed!")
-
-        '''temperature Ta'''
-        v_Ta[self.__I_sink_slice] = np.average(self.heatsource.v_producers_Tb)
-        v_Ta[self.__I_source_slice] = np.sum(self.heatsink.v_consumers_m *
-                                             self.heatsink.v_consumers_Tb) /\
-            np.sum(self.heatsink.v_consumers_m)
-        '''temperature Tb'''
-        v_Tb[self.__I_sink_slice] = self.heatsink.v_consumers_Tb
-        v_Tb[self.__I_source_slice] = self.heatsource.v_producers_Tb
-
-        '''
-        vector of pressures by guess
-        '''
-        v_P = np.zeros(self._nodes)
-
-        v_Pa = np.zeros(self._elements)
-        v_Pb = np.zeros(self._elements)
-
-        '''set guess temperature for supply and return nodes'''
-        for index, item in enumerate(self.heatgrid.v_nodes_sprp):
-            try:
-                if item == 1:
-                    v_P[index] = np.average(self.heatsource.v_producers_Pb)
-                elif item == 0:
-                    v_P[index] = np.average(self.heatsource.v_producers_Pa)
-            except ValueError:
-                print("Guess for pressure of nodes faile!")
-
-        '''set guess temperature for supply and return pipes'''
-        for index, item in enumerate(self.heatgrid.v_pipes_sprp):
-
-            try:
-                if item == 1:
-                    v_Pa[self.__I_grid_slice][index] =\
-                        np.average(self.heatsource.v_producers_Pb)
-                    v_Pb[self.__I_grid_slice][index] =\
-                        v_Pa[self.__I_grid_slice][index]
-                elif item == 0:
-                    v_Pa[self.__I_grid_slice][index] =\
-                        np.average(self.heatsource.v_producers_Pa)
-                    v_Pb[self.__I_grid_slice][index] =\
-                        v_Pa[self.__I_grid_slice][index]
-            except ValueError:
-                print("Guess for pressure of pipes failed!")
-
-        # pressure Pa
-        v_Pa[self.__I_sink_slice] = np.average(self.heatsource.v_producers_Pb)
-        v_Pa[self.__I_source_slice] = self.heatsource.v_producers_Pa
-        # pressure Pb
-        v_Pb[self.__I_sink_slice] = np.average(self.heatsource.v_producers_Pa)
-        v_Pb[self.__I_source_slice] = np.average(
-                self.heatsource.v_producers_Pb)
+            '''
+            vector of pressures by guess
+            '''
+            v_P = np.zeros(self._nodes)
+    
+            v_Pa = np.zeros(self._elements)
+            v_Pb = np.zeros(self._elements)
+    
+            '''set guess temperature for supply and return nodes'''
+            for index, item in enumerate(self.heatgrid.v_nodes_sprp):
+                try:
+                    if item == 1:
+                        v_P[index] = np.average(self.heatsource.v_producers_Pb)
+                    elif item == 0:
+                        v_P[index] = np.average(self.heatsource.v_producers_Pa)
+                except ValueError:
+                    print("Guess for pressure of nodes faile!")
+    
+            '''set guess temperature for supply and return pipes'''
+            for index, item in enumerate(self.heatgrid.v_pipes_sprp):
+    
+                try:
+                    if item == 1:
+                        v_Pa[self.__I_grid_slice][index] =\
+                            np.average(self.heatsource.v_producers_Pb)
+                        v_Pb[self.__I_grid_slice][index] =\
+                            v_Pa[self.__I_grid_slice][index]
+                    elif item == 0:
+                        v_Pa[self.__I_grid_slice][index] =\
+                            np.average(self.heatsource.v_producers_Pa)
+                        v_Pb[self.__I_grid_slice][index] =\
+                            v_Pa[self.__I_grid_slice][index]
+                except ValueError:
+                    print("Guess for pressure of pipes failed!")
+    
+            # pressure Pa
+            v_Pa[self.__I_sink_slice] = np.average(self.heatsource.v_producers_Pb)
+            v_Pa[self.__I_source_slice] = self.heatsource.v_producers_Pa
+            # pressure Pb
+            v_Pb[self.__I_sink_slice] = np.average(self.heatsource.v_producers_Pa)
+            v_Pb[self.__I_source_slice] = np.average(
+                    self.heatsource.v_producers_Pb)
+        elif self.getGuessFirstRun is 0:
+            v_m = self.heatgrid.v_pipes_m +\
+                self.heatsink.v_consumers_m +\
+                self.heatsource.v_producers_m
+            v_P = self.heatgrid.v_nodes_P
+            v_Pa = self.heatgrid.v_pipes_Pa +\
+                self.heatsink.v_consumers_Pa +\
+                self.heatsource.v_producers_Pa
+            v_Pb = self.heatgrid.v_pipes_Pb +\
+                self.heatsink.v_consumers_Pb +\
+                self.heatsource.v_producers_Pb
+            v_Q = self.heatgrid.v_pipes_Q +\
+                self.heatsink.v_consumers_Q +\
+                self.heatsource.v_producers_Q
+            v_T = self.heatgrid.v_nodes_T
+            v_Ta = self.heatgrid.v_pipes_Ta +\
+                self.heatsink.v_consumers_Ta +\
+                self.heatsource.v_producers_Ta
+            v_Tb = self.heatgrid.v_pipes_Tb +\
+                self.heatsink.v_consumers_Tb +\
+                self.heatsource.v_producers_Tb
 
         arr = np.concatenate((v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb))
 
         return arr
 
-    def save_x(self, arr, name):
+    def save_x(self, arr):
         v_m = arr[0:self._elements]
         v_Pa = arr[self._elements + self._nodes:self._elements*2 + self._nodes]
         v_Pb = arr[self._elements*2 + self._nodes:
@@ -401,8 +430,8 @@ class Solver():
         self.heatsource.v_producers_Tb = v_Tb[self.__I_source_slice]
         self.heatsource.v_producers_Pa = v_Pa[self.__I_source_slice]
         self.heatsource.v_producers_Pb = v_Pb[self.__I_source_slice]
+
 #   TODO save_x for pipes, plus how to print pretty.
-#  TODO save_x to file.
 
     def print_x(self, arr, name):
         v_sprp = self.heatgrid.v_pipes_sprp + [''] * 2*self._elements
@@ -456,6 +485,7 @@ if __name__ == "__main__":
     from HeatSink import HeatSink
     from HeatSource import HeatSource
     from scipy.optimize import fsolve
+    import time
     print('DistrictHeatingSystem \t run directly \n')
 
     DataIO = DataIO(
@@ -497,6 +527,7 @@ if __name__ == "__main__":
 
     solver.print_x(guess, "guess")
     solver.print_x(solution, "solution")
+    solver.save_x(solution)
 
 else:
     print("Solver \t\t\t was imported into another module")

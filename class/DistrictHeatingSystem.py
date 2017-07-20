@@ -9,6 +9,7 @@ import sys
 import os
 import numpy as np
 from scipy.optimize import fsolve
+import time
 
 #sys.path.append(os.getcwd())
 #print(os.getcwd())
@@ -20,6 +21,7 @@ import dependencies as dp
 from HeatGrid import HeatGrid
 from HeatSink import HeatSink
 from HeatSource import HeatSource
+from Plotter import Plotter
 from scipy.optimize import root
 from Solver import Solver
 
@@ -49,12 +51,8 @@ class DistrictHeatingSystem():
         solver = Solver(self.heatgrid, self.heatsink, self.heatsource)
         guess = solver.getGuess()
         solution = fsolve(solver.gridCalculation, guess)
+        solver.save_x(solution)
 
-        solver.print_x(guess, "guess")
-        solver.print_x(solution, "solution")
-        
-        solver.save_x(solution, 'test')
-        self.heatgrid.__str__()
         return None
 
 
@@ -95,8 +93,31 @@ if __name__ == "__main__":
             heatgrid_nodes,
             heatsink,
             heatsource)
+    i = 0
+    while i < 2:
+        print(i)
+        DHS1.calculateDHS()
+        endTime = time.time()
+        DHS1.heatgrid.__str__()
+#        DHS1.heatsink.__str__()
+#        DHS1.heatsource.__str__()
+        
+#        solver.print_x(guess, "guess")
+#        solver.print_x(solution, "solution")
+        DHS1.heatgrid.setCalculations()
+        DHS1.heatsink.setCalculations()
+        DHS1.heatsource.setCalculations()
+        i = i + 1
+    
 
-    DHS1.calculateDHS()
+    DataIO.exportNumpyArr("HeatGrid", DHS1.heatgrid.getCalculations())
+    DataIO.exportNumpyArr("HeatSink", DHS1.heatsink.getCalculations())
+    DataIO.exportNumpyArr("HeatSouce", DHS1.heatsource.getCalculations())
+    DHS1_Plotter = Plotter(DHS1.heatgrid, DHS1.heatsink, DHS1.heatsource)
+
+    DHS1_Plotter.plot_DHS(DHS1.heatgrid.getCalculations(1),
+                          DHS1.heatsink.getCalculations(1),
+                          DHS1.heatsource.getCalculations(1))
 
 else:
     import os

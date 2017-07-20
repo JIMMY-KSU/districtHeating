@@ -10,10 +10,16 @@ It inherits from Plotter_helper
 yAxis must be importet as array always.
 """
 import numpy as np
+import pandas as pd
+import geopandas as gp
+from shapely.geometry import Point
+from shapely.geometry import LineString
+#from shapely.geometry import MultiLineString
 #from datetime import datetime
 #import matplotlib.dates as mdates
 from matplotlib import pyplot as plt
 from matplotlib import dates as mdates
+import matplotlib as mpl
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.ticker
 
@@ -23,42 +29,44 @@ import sys
 import datetime
 from DataIO import DataIO
 from matplotlib.ticker import FormatStrFormatter
-import math
+
+
 
 class Plotter():
 
-    def __init__(self):
+    def __init__(self, heatgrid, heatsink, heatsource, title=''):
         self.title = ''
-        
-        
+        self.heatgrid = heatgrid
+        self.heatsink = heatsink
+        self.heatsource = heatsource
+
     def grid(self):
         pass
-        
-        
-        
+
     def color(self, i):
-     self.__color = [
-                ['black',                '#000000'],
-                ['hawk_red',             '#C24C43'],
-                ['hawk_blue',            '#43B9C2'],
-                ['hawk_green',           '#B9C243'],
-                ['orange',               '#FFA500'],
-                ['blue',                 '#0000FF'],
-                ['hawk_magenta',         '#C243B9'],                        
-                ['olive',                '#808000'],
-                ]
-     return self.__color[i][1]
-     
-    def scatter(self, x, y, s = 2  # 0 to 15 point radii
-                , c = 'blue', alha = 0.5):
-        plt.scatter(x, y, s, c, alpha =0.5)
+        self.__color = [
+                        ['black',                '#000000'],
+                        ['hawk_red',             '#C24C43'],
+                        ['hawk_blue',            '#43B9C2'],
+                        ['hawk_green',           '#B9C243'],
+                        ['orange',               '#FFA500'],
+                        ['blue',                 '#0000FF'],
+                        ['hawk_magenta',         '#C243B9'],
+                        ['olive',                '#808000'],
+                        ]
+        return self.__color[i][1]
+
+    def scatter(self, x, y, s=2,  # 0 to 15 point radii
+                c='blue', alha=0.5):
+        plt.scatter(x, y, s, c, alpha=0.5)
         plt.show()
+
     def plot_xyLine(self,
                     xAxis, yAxis,
-                    lineStyle = "-",
-                    xLabel = '', yLabel = '',
-                    title = '', legend = '',
-                    position = "upper right",rotation= None,
+                    lineStyle="-",
+                    xLabel='', yLabel='',
+                    title='', legend='',
+                    position="upper right", rotation=None,
                     pltStyle='latex-classic'):
         """
         Parameters
@@ -97,7 +105,8 @@ class Plotter():
                     ax.xaxis.set_minor_locator(days)
                     for index, item in enumerate(self.__yAxis):
                         if item is not None:
-                            plt.plot(self.__xAxis, item, color=self.color(index))
+                            plt.plot(self.__xAxis, item,
+                                     color=self.color(index))
                         else:
                             break
                 else:
@@ -129,12 +138,11 @@ class Plotter():
     #            for index, item in enumerate(self.__yAxis):
     #                if item is not None:
     #                    ax.plot(np.arange(len(xAxis)), item, self.__lineStyle)
-                        
+
     #            ax.set_xlim(xmin = self.__xMin, xmax = self.__xMax)
     #            ax.set_ylim(self.__yMin, self.__yMax)
         except:
             raise
-
 
         plt.show()
         return fig
@@ -160,8 +168,8 @@ class Plotter():
         self.__yAxis = yData
         self.__title = title
         self.__lineStyle = ['-', '--', ':']
-        fig = plt.figure(figsize = (12.6, 7.09))
-        rcParams["figure.figsize"] = 8, 4.5
+        fig = plt.figure(figsize=(12.6, 7.09))
+        mpl.rcParams["figure.figsize"] = 8, 4.5
 #        Plotter_Helper.font(self)
 
         plt.style.use(pltStyle)
@@ -181,13 +189,13 @@ class Plotter():
                 ax_0.xaxis.set_minor_locator(days)
                 for index, item in enumerate(self.__yAxis):
                     if item is not None:
-                        ax_0.plot(self.__xAxis[index], item, 
+                        ax_0.plot(self.__xAxis[index], item,
                                   color=self.color(index))
                     else:
                         break
             elif isinstance(float(self.__xAxis[0][0]), float):
                 '''loops through all y values
-                and adds them to the figure'''      
+                and adds them to the figure'''
                 ax_0.tick_params(direction="out", top="off",
                                  right="off", pad=5)
                 ax_1.tick_params(direction="out", top="off",
@@ -200,72 +208,89 @@ class Plotter():
                         for index, item in enumerate(item0):
                             if item is not None:
                                 if index == 0 or index % 2 != 0:
-                                   '''checks for the legend setting'''
-                                   ax_0.plot(self.__xAxis[index], item,
-                                             self.__lineStyle[index0],
-                                             linewidth = 3,
-                                             color=self.color(
+                                    '''checks for the legend setting'''
+                                    ax_0.plot(self.__xAxis[index], item,
+                                              self.__lineStyle[index0],
+                                              linewidth=3,
+                                              color=self.color(
                                                      round(index / 2 + 0.40)),
-                                             label=legend[index0]
-                                             [legend_index])
-                                   legend_index = legend_index + 1
+                                              label=legend[index0]
+                                              [legend_index])
+                                    legend_index = legend_index + 1
                                 else:
                                     ax_0.plot(self.__xAxis[index],
                                               item, self.__lineStyle[index0],
                                               linewidth=3,
-                                              color = self.color(
+                                              color=self.color(
                                                       round(index / 2 + 0.40)))
                         ax_0.set_yticks(self.__yAxis[0][0])
                     elif index0 == 1:
                         for index, item in enumerate(item0):
                             if item is not None:
                                 if index == 0 or index % 2 != 0:
-                                    
-                                   print(legend[index0][legend_index])
-                                   '''checks for the legend setting'''
-                                   ax_1.plot(self.__xAxis[index], item, self.__lineStyle[index0],
-                                             linewidth = 1,
-                                             color = self.color(round(index / 2 + 0.40)),
-                                             label = legend[index0][legend_index])
-                                   legend_index +=1
+                                    print(legend[index0][legend_index])
+                                    '''checks for the legend setting'''
+                                    ax_1.plot(self.__xAxis[index], item,
+                                              self.__lineStyle[index0],
+                                              linewidth=1,
+                                              color=self.color(
+                                                     round(index / 2 + 0.40)),
+                                              label=legend[index0]
+                                              [legend_index])
+                                    legend_index += 1
                                 else:
-                                    ax_1.plot(self.__xAxis[index], item, self.__lineStyle[index0], linewidth = 1, color = self.color(round(index / 2 + 0.40)))
+                                    ax_1.plot(self.__xAxis[index],
+                                              item, self.__lineStyle[index0],
+                                              linewidth=1,
+                                              color=self.color(
+                                                      round(index / 2 + 0.40)))
 
-                        ax_0.set_yticks(self.__yAxis[0][0] + self.__yAxis[1][0])                    
+                        ax_0.set_yticks(self.__yAxis[0][0] +
+                                        self.__yAxis[1][0])
                     elif index0 == 2:
                         for index, item in enumerate(item0):
                             if item is not None:
                                 if index == 0 or index % 2 != 0:
-                                   '''checks for the legend setting'''
-                                   ax_2.plot(self.__xAxis[index], item, self.__lineStyle[index0],
-                                             linewidth = 1.5,
-                                             color = self.color(round(index / 2 + 0.40)),
-                                             label = legend[index0][legend_index])
-                                   legend_index += 1
+                                    '''checks for the legend setting'''
+                                    ax_2.plot(self.__xAxis[index],
+                                              item, self.__lineStyle[index0],
+                                              linewidth=1.5,
+                                              color=self.color(
+                                                      round(index / 2 + 0.40)),
+                                              label=legend[index0]
+                                              [legend_index])
+                                    legend_index += 1
                                 else:
-                                   ax_2.plot(self.__xAxis[index], item, self.__lineStyle[index0],
-                                             linewidth = 1.5,
-                                             color = self.color(round(index / 2 + 0.40)))
-                        ax_0.set_yticks(self.__yAxis[0][0] + self.__yAxis[1][0] + self.__yAxis[2][0])
-                          
-  #        elif isinstance(str(self.__xAxis[0]), str):
+                                    ax_2.plot(self.__xAxis[index],
+                                              item, self.__lineStyle[index0],
+                                              linewidth=1.5,
+                                              color=self.color(
+                                                      round(index / 2 + 0.40)))
+                        ax_0.set_yticks(self.__yAxis[0][0] +
+                                        self.__yAxis[1][0] +
+                                        self.__yAxis[2][0])
+
+    #        elif isinstance(str(self.__xAxis[0]), str):
     #            plt.xticks(np.arange(len(xAxis)), xAxis)
     #            for index, item in enumerate(self.__yAxis):
     #                if item is not None:
     #                    ax.plot(np.arange(len(xAxis)), item, self.__lineStyle)
-                        
+
     #            ax.set_xlim(xmin = self.__xMin, xmax = self.__xMax)
         except:
             print("in Plotter.plot_xyLine: No format for xAxis found")
 
-        
-        Plotter_Helper.figureLabelingXYLineHVLine(self, xLabel, yLabel, title, ax_0,rotation, bbox = len(self.__yAxis))
+
+#        Plotter_Helper.figureLabelingXYLineHVLine(self, xLabel,
+#                                                  yLabel, title,
+#                                                  ax_0,rotation,
+#                                                  bbox = len(self.__yAxis))
 #        Plotter_Helper.font(self)
-        
+
         ax_0.set_xticks(self.__xAxis[0])
-        ax_0.annotate("Teilnetz Vogelstang", xy = (100,400), xytext=(100,400))
-        ax_1.annotate("Teilnetz Nord", xy = (100, 699), xytext=(100,699))
-        ax_2.annotate("Teilnetz Ost", xy = (100, 1026), xytext = (100, 1026))
+        ax_0.annotate("Teilnetz Vogelstang", xy=(100, 400), xytext=(100, 400))
+        ax_1.annotate("Teilnetz Nord", xy=(100, 699), xytext=(100, 699))
+        ax_2.annotate("Teilnetz Ost", xy=(100, 1026), xytext=(100, 1026))
 #        ax_0.set_xlim(0, yMax)
 #        ax_1.set_yticks(self.__yAxis[1][0])
 #        ax_2.set_yticks(self.__yAxis[2][0])
@@ -274,9 +299,12 @@ class Plotter():
         plt.grid("off")
         plt.show()
         return fig
-    def plot_xyyLine(self, xAxis, yAxis0, yAxis1, legend0, legend1, xLabel = "", yLabel0 = "", yLabel1 = "",
-                     title = "", rotation = 0, lineStyle0 = "-", lineStyle1 = ["-","-","-"], 
-                     kind = None, alpha0 = 1, pltStyle='latex-classic'):
+
+    def plot_xyyLine(self, xAxis, yAxis0, yAxis1, legend0, legend1,
+                     xLabel="", yLabel0="", yLabel1="",
+                     title="", rotation=0, lineStyle0="-",
+                     lineStyle1=["-", "-", "-"],
+                     kind=None, alpha0=1, pltStyle='latex-classic'):
         """
         xAxis must be of []
         yAxis0 must be of [[]]
@@ -284,17 +312,19 @@ class Plotter():
         legends must be of []
         kind can be of bar, then first yAxis is a bar-plot
         """
-        self.__xAxis = xAxis 
+        self.__xAxis = xAxis
         self.__yAxis0 = yAxis0
         self.__yAxis1 = yAxis1
         self.__lineStyle0 = lineStyle0
         self.__lineStyle1 = lineStyle1
-        
+
 #        Plotter_Helper.font(self)
         plt.style.use(pltStyle)
-        fig = plt.figure(figsize = (12.6,7.09))
-              
-        plt.xticks(np.arange(len(self.__xAxis)), self.__xAxis, rotation = rotation) #stays here, otherwise no rotation
+        fig = plt.figure(figsize=(12.6, 7.09))
+
+        plt.xticks(np.arange(len(self.__xAxis)),
+                   self.__xAxis,
+                   rotation=rotation)  # stays here, otherwise no rotation
 
         ax_0 = fig.add_subplot(111)
         ax_1 = ax_0.twinx()
@@ -314,35 +344,107 @@ class Plotter():
             ax_1.xaxis.set_minor_locator(days)
 
         else:
-            '''loops through all y values and adds them to the figure'''              
-      
-        ax_0.tick_params(direction="out", pad = 5)
-        ax_1.tick_params(direction = "out", pad = 5)
-        
+            '''loops through all y values and adds them to the figure'''
+
+        ax_0.tick_params(direction="out", pad=5)
+        ax_1.tick_params(direction="out", pad=5)
+
         index0 = 0
         for index0, item in enumerate(self.__yAxis0):
-            if item is not None:            
-                if kind == None:
-                    ax_0.plot(np.arange(len(self.__xAxis)), item, self.__lineStyle0, color= self.color(index0), label = legend0[index0])
+            if item is not None:
+                if kind is None:
+                    ax_0.plot(np.arange(len(self.__xAxis)), item,
+                              self.__lineStyle0, color=self.color(index0),
+                              label=legend0[index0])
                 elif kind == "bar":
-                    ax_0.bar(np.arange(len(self.__xAxis)), item, width = 0.3, align = "center", color = self.color(index0),alpha = alpha0, label = legend0[index0])
-        
+                    ax_0.bar(np.arange(len(self.__xAxis)), item, width=0.3,
+                             align="center", color=self.color(index0),
+                             alpha=alpha0, label=legend0[index0])
         index0 = 0
         index1 = 0
+
         for index1, item1 in enumerate(self.__yAxis1):
                 if item is not None:
-                   ax_1.plot(np.arange(len(self.__xAxis)), item1, self.__lineStyle1[index1], color = self.color(index0 + index1 +1), label = legend1[index1], markersize = 10)                
-                
-        
+                    ax_1.plot(np.arange(len(self.__xAxis)), item1,
+                              self.__lineStyle1[index1],
+                              color=self.color(index0 + index1 + 1),
+                              label=legend1[index1], markersize=10)
+
 #      # automatically update ylim of ax2 when ylim of ax1 changes.
 ##        ax_0.callbacks.connect("ylim_changed", convert_ax_1_to_celsius)
 #        ax_0.plot(np.linspace(-40, 120, 100))
 #        ax_1.set_ylim(0, 6)
-        
-        Plotter_Helper.figureLabelingXYYLine(self, ax_0, ax_1, xLabel = xLabel, yLabel0 = yLabel0, yLabel1 = yLabel1, title = title)
+
+#        Plotter_Helper.figureLabelingXYYLine(self, ax_0, ax_1, xLabel=xLabel,
+#                                             yLabel0=yLabel0,
+#                                             yLabel1=yLabel1, title=title)
 #        Plotter_Helper.font(self)
 #        plt.tight_layout()
         plt.show()
-        
+
         return fig
+
+    def plot_DHS(self, arr_heatgrid, arr_heatsink, arr_heatsource, title=''):
+        if title is '':
+            title=self.title
+        fig = self.plot_HeatGrid(arr_heatgrid)
+#        fig.show()
         
+        
+
+    def plot_HeatGrid(self,
+                      arr=None,
+                      title=None):
+        '''Plots all pipes and nodes of Heatgrid.
+        Either pass heatgrid.getCalculations() or
+        pass DataIO.importNumpyArr[i]'''
+        if arr is None:
+            arr = self.heatgrid.getCalculations()
+        if title is None:
+            title = self.title
+
+        pipes_startPointsXY = [Point(xy) for xy in zip(
+                                                    arr['v_pipes_start_x'],
+                                                    arr['v_pipes_start_y'])]
+        pipes_endPointsXY = [Point(xy) for xy in zip(
+                                                    arr['v_pipes_end_x'],
+                                                    arr['v_pipes_end_y'])]
+        pipes_LineStrings = [LineString(xy) for xy in zip(
+                                                    pipes_startPointsXY,
+                                                    pipes_endPointsXY)]
+            
+        df = gp.GeoDataFrame({'sPoints': pipes_startPointsXY,
+                      'ePoints': pipes_endPointsXY,
+                      'pipe_lines': pipes_LineStrings,
+                      'Q': np.abs(arr['v_pipes_Q'])}, geometry='pipe_lines')
+        print(df)
+        fig, ax = plt.subplots()
+        df = df.set_geometry('pipe_lines')
+        df.plot(ax=ax, column='Q', k=3, legend=True, cmap='cool', scheme='quantiles')
+        df = df.set_geometry('sPoints')
+        df.plot(ax=ax, color='red', marker='o')
+#        fig.colorbar(ax)
+#        plt.show()
+
+        fig.savefig('test')
+        return plt
+
+#
+#
+#        df_pipes = df.drop(['start_x', 'start_y', 'end_x', 'end_y'], axis=1)
+#        crs = {'init': 'epsg:4326'}
+#        
+#        geo_df = gp.GeoDataFrame(df_pipes, crs=crs,
+#                                 geometry=pipes_startPointsXY,
+#                                 geometry=pipes_endPointsXY)
+#        geo_df = gp.GeoDataFrame(df_pipes_end, crs=crs, geometry=geo_pipes_end)
+#        print(geo_df)
+        
+
+
+                
+#        pipes = [Line(xy) type':'LineString', 'coordinates': [
+#                arr['v_pipes_start_x'], arr['v_pipes_start_y']]}
+
+
+        return(df)

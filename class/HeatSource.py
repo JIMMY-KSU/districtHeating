@@ -4,6 +4,8 @@ Created on Tue Feb 28 10:55:48 2017
 
 @author: jpelda
 """
+
+import numpy as np
 from Producer import Producer
 
 class HeatSource():
@@ -21,17 +23,22 @@ class HeatSource():
         self.supply_temperature = 130 + 273.15
 
         arr = self.__producers()
-        self.v_producers_name = arr[0]
-        self.v_producers_Q = arr[1]
-        self.v_producers_sNode = arr[2]
-        self.v_producers_eNode = arr[3]
-        self.v_producers_Pb = arr[4]  # supply pressure
-        self.v_producers_Pa = arr[5]  # return pressure
-        self.v_producers_Tb = arr[6]  #supply temperature
-        self.v_producers_element = arr[7]
-
+        self.v_producers_index = arr[0]
+        self.v_producers_Q = np.asarray(arr[1])
+        self.v_producers_m = np.asarray(arr[2])
+        self.v_producers_Ta = np.asarray(arr[3])
+        self.v_producers_Tb = np.asarray(arr[4])  #supply temperature
+        self.v_producers_Pb = np.asarray(arr[5])  # supply pressure
+        self.v_producers_Pa = np.asarray(arr[6])  # return pressure
+        self.v_producers_sNode = arr[7]
+        self.v_producers_eNode = arr[8]
+        self.v_producers_element = arr[9]
 
         self.__str__()
+        print("%i producer \t----> OK \n" % (len(self.producers())))
+
+        self.calcVals = []
+
 
     def producers(self, i=slice(None,None)):
         return self._instancesProducer[i]
@@ -55,25 +62,30 @@ class HeatSource():
 
     def __producers(self):
         length = len(self.producers())
-        retarr_name = [0]*length
+        retarr_index = [0]*length
         retarr_Q = [0]*length
+        retarr_m = [0]*length
+        retarr_Ta = [0]*length
+        retarr_Tb = [0]*length  # Tb is supply temperature
+        retarr_Pa = [0]*length  # Pa is return pressure
+        retarr_Pb = [0]*length  # Pb is supply pressure
         retarr_sNode = [0]*length
         retarr_eNode = [0]*length
-        retarr_Pb = [0]*length  # Pb is supply pressure
-        retarr_Pa = [0]*length  # Pa is return pressure
-        retarr_Tb = [0]*length  # Tb is supply temperature
         retarr_element = [0]*length
         for index, item in enumerate(self.producers()):
-            retarr_name[index] = item.name
+            retarr_index[index] = item.index
             retarr_Q[index] = item.Q
+            retarr_m[index] = item.m
+            retarr_Ta[index] = item.Ta
+            retarr_Tb[index] = item.Tb
+            retarr_Pa[index] = item.Pa
+            retarr_Pb[index] = item.Pb
             retarr_sNode[index] = item.sNode
             retarr_eNode[index] = item.eNode
-            retarr_Pb[index] = item.Pb
-            retarr_Pa[index] = item.Pa
-            retarr_Tb[index] = item.Tb
             retarr_element[index] = item.element
-        return retarr_name, retarr_Q, retarr_sNode, retarr_eNode,\
-            retarr_Pb, retarr_Pa, retarr_Tb, retarr_element
+        return retarr_index, retarr_Q, retarr_m, retarr_Ta, retarr_Tb,\
+            retarr_Pa, retarr_Pb,\
+            retarr_sNode, retarr_eNode, retarr_element
 
     def __importProducers(self, tableOfProducer):
         arr = []
@@ -81,18 +93,35 @@ class HeatSource():
             arr.append(Producer(tableOfProducer))
         return arr
 
+    def setCalculations(self):
+        attr = self.__dict__
+        attr = {item: attr[item] for item in attr if item not in
+                ("_instancesProducers",
+                 "__str__",
+                 "calcVals")}
+        self.calcVals.append(attr)
+
+    def getCalculations(self, i=slice(None,None)):
+        return self.calcVals[i]
+
     def __str__(self):
-        for element, name, Q, sNode, eNode, Pb, Pa, Tb in zip(
-                self.v_producers_element, self.v_producers_name,
-                self.v_producers_Q, self.v_producers_sNode,
-                self.v_producers_eNode, self.v_producers_Pb,
-                self.v_producers_Pa, self.v_producers_Tb):
-            print("%s: name %s Q  %5.0f  [W] Tb %3.2f [K] "
-                  "Pa %9.1f [Pa] Pb %9.1f [Pa]  sNode %s eNode %s "
-                  % (element, name, Q, Tb, Pa, Pb, sNode, eNode))
-        print("%i producer \t----> OK \n" % (len(self.producers())))
+        for element, index, Q, m, Ta, Tb, Pa, Pb, sNode, eNode in zip(
+                self.v_producers_element,
+                self.v_producers_index,
+                self.v_producers_Q,
+                self.v_producers_m,
+                self.v_producers_Ta,
+                self.v_producers_Tb,
+                self.v_producers_Pa,
+                self.v_producers_Pb,
+                self.v_producers_sNode,
+                self.v_producers_eNode):
+            print("%s: i %s Q %10.f [W] m %7.3f [m/s] Ta %3.2f [K] "
+                  "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa] sNode %s eNode %s"
+                  % (element, index, Q, m, Ta, Tb, Pa, Pb, sNode, eNode))
 
 if __name__ == "__main__":
+    import os
     from DataIO import DataIO
     import Dictionary
     print('HeatSource \t\t run directly \n')
@@ -109,6 +138,8 @@ if __name__ == "__main__":
         dateformat='None')
     
     testSource = HeatSource(heatsource)
+    testSource.setCalculations()
+    print(testSource.getCalculations())
     
 else:
     print('HeatSource \t\t was imported into another module')

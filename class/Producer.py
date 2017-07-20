@@ -11,7 +11,7 @@ class Producer():
 
         self.cp = 4183  # J/(kg*K)
 
-        self.name = producerValues['name']
+        self.index = producerValues['index']
         self.sNode = producerValues['sNode']  # name of point in return pipe
         self.eNode = producerValues['eNode']  # name of point in supply pipe
 

@@ -14,7 +14,8 @@ import pandas as pd
 import geopandas as gp
 from shapely.geometry import Point
 from shapely.geometry import LineString
-#from shapely.geometry import MultiLineString
+from shapely.geometry import MultiLineString
+from shapely.geometry import Polygon
 #from datetime import datetime
 #import matplotlib.dates as mdates
 from matplotlib import pyplot as plt
@@ -386,18 +387,20 @@ class Plotter():
 
     def plot_DHS(self, arr_heatgrid, arr_heatsink, arr_heatsource, title=''):
         if title is '':
-            title=self.title
-        fig = self.plot_HeatGrid(arr_heatgrid)
-#        fig.show()
-        
-        
+            title = self.title
+
+        fig, ax = plt.subplots()
+        self.plot_HeatGrid(arr_heatgrid, ax=ax)
+        self.plot_HeatSource(arr_heatsource, ax=ax)
+        self.plot_HeatSink(arr_heatsink, ax=ax)
+        return fig
 
     def plot_HeatGrid(self,
                       arr=None,
-                      title=None):
-        '''Plots all pipes and nodes of Heatgrid.
-        Either pass heatgrid.getCalculations() or
-        pass DataIO.importNumpyArr[i]'''
+                      title=None,
+                      fig=plt.figure(), ax=plt.subplot()):
+        '''Plots all pipes and nodes of Heatgrid.\n
+        import heatgrid.getCalculations() or DataIO.importNumpyArr[i]'''
         if arr is None:
             arr = self.heatgrid.getCalculations()
         if title is None:
@@ -412,39 +415,136 @@ class Plotter():
         pipes_LineStrings = [LineString(xy) for xy in zip(
                                                     pipes_startPointsXY,
                                                     pipes_endPointsXY)]
-            
-        df = gp.GeoDataFrame({'sPoints': pipes_startPointsXY,
-                      'ePoints': pipes_endPointsXY,
-                      'pipe_lines': pipes_LineStrings,
-                      'Q': np.abs(arr['v_pipes_Q'])}, geometry='pipe_lines')
-        print(df)
-        fig, ax = plt.subplots()
-        df = df.set_geometry('pipe_lines')
-        df.plot(ax=ax, column='Q', k=3, legend=True, cmap='cool', scheme='quantiles')
-        df = df.set_geometry('sPoints')
-        df.plot(ax=ax, color='red', marker='o')
+        nodes_Points = [Point(xy) for xy in zip(
+                                                arr['v_nodes_x'],
+                                                arr['v_nodes_y'])]
+
+        df_pipes = gp.GeoDataFrame({'sPoints': pipes_startPointsXY,
+                                    'ePoints': pipes_endPointsXY,
+                                    'elements': pipes_LineStrings,
+                                    'Q': np.abs(arr['v_pipes_Q'])},
+                                   geometry='elements')
+
+        df_nodes = gp.GeoDataFrame({'elements': nodes_Points},
+                                   geometry='elements')
+
+        df_pipes.plot(ax=ax, column='Q', k=3, legend=True,
+                      cmap='cool', scheme='quantiles')
+        df_nodes.plot(ax=ax, color='red', marker='o')
+
+#        fig.show()
+#        fig.savefig('test.pdf', formate='pdf')
 #        fig.colorbar(ax)
-#        plt.show()
+        return fig
 
-        fig.savefig('test')
-        return plt
+    def plot_HeatSource(self, arr=None, title=None,
+                        fig=plt.figure(), ax=plt.subplot()):
+        '''Plots all sources of Heatsource.\n
+        import: heatsource.getCalculations() or DataIO.importNumpyArr[i]'''
+        if arr is None:
+            arr = self.heatsource.getCalculations()
+            if title is None:
+                title = self.title
 
-#
-#
-#        df_pipes = df.drop(['start_x', 'start_y', 'end_x', 'end_y'], axis=1)
-#        crs = {'init': 'epsg:4326'}
-#        
-#        geo_df = gp.GeoDataFrame(df_pipes, crs=crs,
-#                                 geometry=pipes_startPointsXY,
-#                                 geometry=pipes_endPointsXY)
-#        geo_df = gp.GeoDataFrame(df_pipes_end, crs=crs, geometry=geo_pipes_end)
-#        print(geo_df)
+        sources_startPointsXY = [Point(xy) for xy in zip(
+                                                arr['v_producers_start_x'],
+                                                arr['v_producers_start_y'])]
+        sources_endPointsXY = [Point(xy) for xy in zip(
+                                                arr['v_producers_end_x'],
+                                                arr['v_producers_end_y'])]
+        sources_LineStrings = [LineString(xy) for xy in zip(
+                                                sources_startPointsXY,
+                                                sources_endPointsXY)]
+
+        df = gp.GeoDataFrame({'sPoints': sources_startPointsXY,
+                              'ePoints': sources_endPointsXY,
+                              'elements': sources_LineStrings,
+                              'Q': np.abs(arr['v_producers_Q'])},
+                             geometry='elements')
+
+        df.plot(ax=ax, column='Q', k=2, legend=True,
+                cmap='hot', scheme='quantiles')
+        return fig
+
+    def plot_HeatSink(self, arr=None, title=None,
+                      fig=plt.figure(), ax=plt.subplot()):
+        '''Plots all sinks of Heatsink.\n
+        import: heatsink.getCalculations() or DataIO.importNumpyArr[i]'''
+        if arr is None:
+            arr = self.heatsink.getCalculations()
+            if title is None:
+                title = self.title
+
+        sinks_startPointsXY = [Point(xy) for xy in zip(
+                                                arr['v_consumers_start_x'],
+                                                arr['v_consumers_start_y'])]
+        sinks_endPointsXY = [Point(xy) for xy in zip(
+                                                arr['v_consumers_end_x'],
+                                                arr['v_consumers_end_y'])]
+        sinks_LineStrings = [LineString(xy) for xy in zip(
+                                                sinks_startPointsXY,
+                                                sinks_endPointsXY)]
+
+        gdf = gp.GeoDataFrame({'sPoints': sinks_startPointsXY,
+                               'ePoints': sinks_endPointsXY,
+                               'elements': sinks_LineStrings,
+                               'Q': np.abs(arr['v_consumers_Q'])},
+                              geometry='elements')
+
+        gdf.plot(ax=ax, legend=True, color='red')
         
+        lines_centroid = gdf.centroid
+        for item in lines_centroid:
+            self.heatExchanger(item)
+#        fig.plot()
 
+        return fig
 
-                
-#        pipes = [Line(xy) type':'LineString', 'coordinates': [
-#                arr['v_pipes_start_x'], arr['v_pipes_start_y']]}
+    def heatExchanger(self, pointXY=Point(0, 0),
+                      fig=plt.figure(),
+                      ax=plt.subplot()):
+        
+        x = pointXY.coords[0][0]
+        y = pointXY.coords[0][1]
+        print(y)
+        
+        middle_circle = (0,0)
+        leftdown = (-0.2, -0.25)
+        leftup = (-0.2, 0.25)
+#        middle_circle = (0, 0)
+        middle_lines = (0.2, 0)
+        rightup = (0.8, 0.25)
+        rightdown = (0.8, -0.25)
 
+        coords = [(leftdown, rightdown),
+                  (leftdown, middle_lines),
+                  (middle_lines, leftup),
+                  (leftup, rightup)]
 
-        return(df)
+        circle = plt.Circle(middle_circle, 0.5, color='black', fill=False)
+
+        lines = MultiLineString(coords)
+
+        gdf = gp.GeoDataFrame({'lines':lines}, geometry='lines')
+        
+        '''################################'''
+        '''next lines for test purposes'''
+#        fig, ax = plt.subplots()
+#        plt.axis('equal')
+#        ax.set_xlim((-1 - x, 1 + x))
+#        ax.set_ylim((-1 - y, 1 + y))
+#
+#        gdf.plot(ax=ax, color='black')
+        ax.add_artist(circle)
+#
+#        fig.show()
+        '''####################'''
+        return fig
+
+if __name__ == "__main__":
+    print('Plotter \t\t run directly \n')
+
+    testPlotter=Plotter(1,1,1)
+    testPlotter.heatExchanger(pointXY=Point(2,2))
+else:
+    print('Plotter \t\t was imported into another module')

@@ -132,12 +132,20 @@ HeatSource_producer_dtype = {'names': (
                                      'eNode',
                                      'index',
                                      'power',
+                                     'start_x',
+                                     'start_y',
+                                     'end_x',
+                                     'end_y'
                                      ),
                             'formats': (
                                         'U10',
                                         'U10',
                                         'U30',
                                         'f',
+                                        'f',
+                                        'f',
+                                        'f',
+                                        'f'
                                         )
                             }
 
@@ -195,12 +203,20 @@ STANET_producer = {'names': (
                             'ANFNAM',
                             'ENDNAM',
                             'NAME',
-                            'Power'
+                            'Power',
+                            'XRA',
+                            'YHA',
+                            'XRB',
+                            'YHB'
                             ),
                     'formats': (
                                 'U10',
                                 'U10',
                                 'U30',
+                                'f',
+                                'f',
+                                'f',
+                                'f',
                                 'f'
                                 )
                     }
@@ -244,7 +260,11 @@ HeatSink_STANET_consumer_allocation = {
                                 'sNode': 'ANFNAM',
                                 'eNode': 'ENDNAM',
                                 'heat_demand': 'WAERMEMENG',
-                                'flow': 'FLUSS'
+                                'flow': 'FLUSS',
+                                'start_x': 'XRECHTS',
+                                'start_y': 'YHOCH',
+                                'end_x': 'XRECHTS2',
+                                'end_y': 'YHOCH2'
                                 }
 
 Pump_STANET_consumer_allocation = {
@@ -259,9 +279,9 @@ HeatSource_STANET_producer_allocation = {
                                          'power': 'Power',
                                          'sNode': 'ANFNAM',
                                          'eNode': 'ENDNAM',
-                                         'start_x': 0,
-                                         'start_y': 0,
-                                         'end_x': 0,
-                                         'end_y': 0,
+                                         'start_x': 'XRA',
+                                         'start_y': 'YHA',
+                                         'end_x': 'XRB',
+                                         'end_y': 'YHB',
                                          'height': 0
                                          }

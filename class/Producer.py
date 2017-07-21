@@ -14,6 +14,11 @@ class Producer():
         self.index = producerValues['index']
         self.sNode = producerValues['sNode']  # name of point in return pipe
         self.eNode = producerValues['eNode']  # name of point in supply pipe
+        self.start_x = producerValues['start_x']
+        self.start_y = producerValues['start_y']
+        self.end_x = producerValues['end_x']
+        self.end_y = producerValues['end_y']
+
 
         self.Q = producerValues['power']
         self.Pa = 100000  # return pressure [Pa] 1bar = 100000Pa

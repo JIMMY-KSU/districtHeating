@@ -101,23 +101,26 @@ if __name__ == "__main__":
         DHS1.heatgrid.__str__()
 #        DHS1.heatsink.__str__()
 #        DHS1.heatsource.__str__()
-        
+
 #        solver.print_x(guess, "guess")
 #        solver.print_x(solution, "solution")
         DHS1.heatgrid.setCalculations()
         DHS1.heatsink.setCalculations()
         DHS1.heatsource.setCalculations()
         i = i + 1
-    
+
 
     DataIO.exportNumpyArr("HeatGrid", DHS1.heatgrid.getCalculations())
     DataIO.exportNumpyArr("HeatSink", DHS1.heatsink.getCalculations())
     DataIO.exportNumpyArr("HeatSouce", DHS1.heatsource.getCalculations())
     DHS1_Plotter = Plotter(DHS1.heatgrid, DHS1.heatsink, DHS1.heatsource)
-
+#    print(DHS1_Plotter.plot_HeatGrid(DHS1.heatgrid.getCalculations(1)))
+#    fig = DHS1_Plotter.plot_HeatGrid(DHS1.heatgrid.getCalculations(1))
+#    DataIO.exportFig("test", fig)
     DHS1_Plotter.plot_DHS(DHS1.heatgrid.getCalculations(1),
                           DHS1.heatsink.getCalculations(1),
                           DHS1.heatsource.getCalculations(1))
+    DHS1_Plotter.heatExchanger()
 
 else:
     import os

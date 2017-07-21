@@ -27,12 +27,16 @@ class HeatSource():
         self.v_producers_Q = np.asarray(arr[1])
         self.v_producers_m = np.asarray(arr[2])
         self.v_producers_Ta = np.asarray(arr[3])
-        self.v_producers_Tb = np.asarray(arr[4])  #supply temperature
+        self.v_producers_Tb = np.asarray(arr[4])  # supply temperature
         self.v_producers_Pb = np.asarray(arr[5])  # supply pressure
         self.v_producers_Pa = np.asarray(arr[6])  # return pressure
         self.v_producers_sNode = arr[7]
         self.v_producers_eNode = arr[8]
         self.v_producers_element = arr[9]
+        self.v_producers_start_x = arr[10]
+        self.v_producers_start_y = arr[11]
+        self.v_producers_end_x = arr[12]
+        self.v_producers_end_y = arr[13]
 
         self.__str__()
         print("%i producer \t----> OK \n" % (len(self.producers())))
@@ -40,22 +44,23 @@ class HeatSource():
         self.calcVals = []
 
 
-    def producers(self, i=slice(None,None)):
+    def producers(self, i=slice(None, None)):
         return self._instancesProducer[i]
-        
+
     def __nodes(self):
-        arr = [[0,0]]*len(self.producers())
+        arr = [[0, 0]]*len(self.producers())
         for index, item in enumerate(self.producers()):
             arr[index] = [item.sNode, item.eNode]
         return arr
+
     def __sNodes(self):
-        arr = [[None,None]]*len(self.producers())
+        arr = [[None, None]]*len(self.producers())
         for index, item in enumerate(self.producers()):
             arr[index] = [item.sNode, None]
         return arr
-    
+
     def __eNodes(self):
-        arr = [[None,None]]*len(self.producers())
+        arr = [[None, None]]*len(self.producers())
         for index, item in enumerate(self.producers()):
             arr[index] = [item.eNode, None]
         return arr
@@ -72,6 +77,10 @@ class HeatSource():
         retarr_sNode = [0]*length
         retarr_eNode = [0]*length
         retarr_element = [0]*length
+        retarr_start_x = [0]*length
+        retarr_start_y = [0]*length
+        retarr_end_x = [0]*length
+        retarr_end_y = [0]*length
         for index, item in enumerate(self.producers()):
             retarr_index[index] = item.index
             retarr_Q[index] = item.Q
@@ -83,9 +92,14 @@ class HeatSource():
             retarr_sNode[index] = item.sNode
             retarr_eNode[index] = item.eNode
             retarr_element[index] = item.element
+            retarr_start_x[index] = item.start_x
+            retarr_start_y[index] = item.start_y
+            retarr_end_x[index] = item.end_x
+            retarr_end_y[index] = item.end_y
         return retarr_index, retarr_Q, retarr_m, retarr_Ta, retarr_Tb,\
             retarr_Pa, retarr_Pb,\
-            retarr_sNode, retarr_eNode, retarr_element
+            retarr_sNode, retarr_eNode, retarr_element,\
+            retarr_start_x, retarr_start_y, retarr_end_x, retarr_end_y
 
     def __importProducers(self, tableOfProducer):
         arr = []

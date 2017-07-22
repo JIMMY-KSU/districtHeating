@@ -495,19 +495,28 @@ class Plotter():
         gdf.plot(ax=ax, legend=True, color='red')
         
         lines_centroid = gdf.centroid
-        print(lines_centroid)
-        for item in lines_centroid:
-            self.heatExchanger(pointXY=item, scale=100, fig=fig, ax=ax)
+        lines_length = gdf.length
+        for center, l, sPoints, ePoints in zip(lines_centroid,
+                                                    lines_length,
+                                                    gdf['sPoints'],
+                                                    gdf['ePoints']):
+            rotation = np.arcsin(l / (sPoints.x-ePoints.x))
+            self.heatExchanger(pointXY=center, scale=l/4, rotation=rotation,
+                               fig=fig, ax=ax)
 #        fig.plot()
 
         return fig
 
     def heatExchanger(self, pointXY=Point(0, 0), scale=1,
+                      rotation=0,
                       fig=plt.figure(),
                       ax=plt.subplot()):
-        
+        # TODO implement plt.collection to speed up
+        # TODO use scale from gepandas to scale all lines
+        # TODO use translate to shift all lines
         x = pointXY.coords[0][0]
         y = pointXY.coords[0][1]
+        
         
         middle_circle = (x,y)
         radius = 0.5 * scale
@@ -535,6 +544,7 @@ class Plotter():
         lines = MultiLineString(coords)
 
         gdf = gp.GeoDataFrame({'lines':lines}, geometry='lines')
+        gdf = gdf.skew(rotation)
         
         '''################################'''
         '''next lines for test purposes'''
@@ -554,6 +564,6 @@ if __name__ == "__main__":
     print('Plotter \t\t run directly \n')
 
     testPlotter=Plotter(1,1,1)
-    testPlotter.heatExchanger(pointXY=Point(2,2), scale=1)
+    testPlotter.heatExchanger(pointXY=Point(2,2), scale=1, rotation=10)
 else:
     print('Plotter \t\t was imported into another module')

@@ -23,6 +23,7 @@ from matplotlib import dates as mdates
 import matplotlib as mpl
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.ticker
+import matplotlib.collections
 
 import os
 import sys
@@ -494,34 +495,42 @@ class Plotter():
         gdf.plot(ax=ax, legend=True, color='red')
         
         lines_centroid = gdf.centroid
+        print(lines_centroid)
         for item in lines_centroid:
-            self.heatExchanger(item)
+            self.heatExchanger(pointXY=item, scale=100, fig=fig, ax=ax)
 #        fig.plot()
 
         return fig
 
-    def heatExchanger(self, pointXY=Point(0, 0),
+    def heatExchanger(self, pointXY=Point(0, 0), scale=1,
                       fig=plt.figure(),
                       ax=plt.subplot()):
         
         x = pointXY.coords[0][0]
         y = pointXY.coords[0][1]
-        print(y)
         
-        middle_circle = (0,0)
-        leftdown = (-0.2, -0.25)
-        leftup = (-0.2, 0.25)
+        middle_circle = (x,y)
+        radius = 0.5 * scale
+        leftdown = (-0.2 * scale + x, -0.25 * scale + y)
+        leftup = (-0.2 * scale + x, 0.25 * scale + y)
 #        middle_circle = (0, 0)
-        middle_lines = (0.2, 0)
-        rightup = (0.8, 0.25)
-        rightdown = (0.8, -0.25)
+        middle = (0.2 * scale + x, 0 * scale + y)
+        middleup = (x, y + radius)
+        middledown = (x, y-radius)
+        top = (middleup[0], middleup[1] + 1 * scale)
+        down = (middledown[0], middledown[1] -1 * scale)
+        rightup = (0.8 * scale + x, 0.25 * scale + y)
+        rightdown = (0.8 * scale + x, -0.25 * scale + y)
 
         coords = [(leftdown, rightdown),
-                  (leftdown, middle_lines),
-                  (middle_lines, leftup),
-                  (leftup, rightup)]
+                  (leftdown, middle),
+                  (middle, leftup),
+                  (leftup, rightup),
+                  (middleup, top),
+                  (middledown, down)]
 
-        circle = plt.Circle(middle_circle, 0.5, color='black', fill=False)
+        circle = plt.Circle(middle_circle, radius,
+                            color='black', fill=False)
 
         lines = MultiLineString(coords)
 
@@ -530,11 +539,11 @@ class Plotter():
         '''################################'''
         '''next lines for test purposes'''
 #        fig, ax = plt.subplots()
-#        plt.axis('equal')
+        plt.axis('equal')
 #        ax.set_xlim((-1 - x, 1 + x))
 #        ax.set_ylim((-1 - y, 1 + y))
 #
-#        gdf.plot(ax=ax, color='black')
+        gdf.plot(ax=ax, color='black')
         ax.add_artist(circle)
 #
 #        fig.show()
@@ -545,6 +554,6 @@ if __name__ == "__main__":
     print('Plotter \t\t run directly \n')
 
     testPlotter=Plotter(1,1,1)
-    testPlotter.heatExchanger(pointXY=Point(2,2))
+    testPlotter.heatExchanger(pointXY=Point(2,2), scale=1)
 else:
     print('Plotter \t\t was imported into another module')

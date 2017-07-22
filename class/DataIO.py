@@ -219,18 +219,15 @@ class DataIO():
         return:\n
             pp.close()
         '''
-        self.__seperator = "\\"
-        if self.__filepath_export == "":
-            self.__seperator = ""
 
-        fig.savefig(self.__filepath_export + self.__seperator + filename +
+        fig.savefig(self.__filepath_export + os.sep + filename +
                     ".png", bbox_inches='tight', dpi=300)
         print("Saved PNG to: " + str(self.__filepath_export +
-                                     self.__seperator + filename + ".png"))
-        fig.savefig(self.__filepath_export + self.__seperator + filename +
+                                     os.sep + filename + ".png"))
+        fig.savefig(self.__filepath_export + os.sep + filename +
                     ".pdf", filetype="pdf", bbox_inches='tight', dpi=300)
         print("Saved PDF to: " + str(self.__filepath_export +
-                                     self.__seperator + filename + ".pdf"))
+                                     os.sep + filename + ".pdf"))
 
     def str2date(self, columnofdate=None, dateformat=None):
         if columnofdate is None or dateformat is None:

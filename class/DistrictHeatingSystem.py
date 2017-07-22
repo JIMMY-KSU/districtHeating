@@ -117,10 +117,10 @@ if __name__ == "__main__":
 #    print(DHS1_Plotter.plot_HeatGrid(DHS1.heatgrid.getCalculations(1)))
 #    fig = DHS1_Plotter.plot_HeatGrid(DHS1.heatgrid.getCalculations(1))
 #    DataIO.exportFig("test", fig)
-    DHS1_Plotter.plot_DHS(DHS1.heatgrid.getCalculations(1),
+    fig=DHS1_Plotter.plot_DHS(DHS1.heatgrid.getCalculations(1),
                           DHS1.heatsink.getCalculations(1),
                           DHS1.heatsource.getCalculations(1))
-    DHS1_Plotter.heatExchanger()
+    DataIO.exportFig('test', fig)
 
 else:
     import os

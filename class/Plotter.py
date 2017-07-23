@@ -10,37 +10,26 @@ It inherits from Plotter_helper
 yAxis must be importet as array always.
 """
 import numpy as np
-import pandas as pd
+
 import geopandas as gp
 from shapely.geometry import Point
 from shapely.geometry import LineString
 from shapely.geometry import MultiLineString
-from shapely.geometry import Polygon
-#from datetime import datetime
-#import matplotlib.dates as mdates
+
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib import dates as mdates
-import matplotlib as mpl
-from matplotlib.backends.backend_pdf import PdfPages
-import matplotlib.ticker
-import matplotlib.collections
-
-import os
-import sys
 
 import datetime
-from DataIO import DataIO
-from matplotlib.ticker import FormatStrFormatter
-
 
 
 class Plotter():
 
-    def __init__(self, heatgrid, heatsink, heatsource, title=''):
+    def __init__(self, title='', figsize=0.6):
+
         self.title = ''
-        self.heatgrid = heatgrid
-        self.heatsink = heatsink
-        self.heatsource = heatsource
+        self.figsize = figsize
+        self._formate()
 
     def grid(self):
         pass
@@ -298,8 +287,7 @@ class Plotter():
 #        ax_2.set_yticks(self.__yAxis[2][0])
 #        ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 #        plt.subplots_adjust(bottom =0.5)
-        plt.grid("off")
-        plt.show()
+#        plt.grid("off")
         return fig
 
     def plot_xyyLine(self, xAxis, yAxis0, yAxis1, legend0, legend1,
@@ -386,20 +374,22 @@ class Plotter():
 
         return fig
 
-    def plot_DHS(self, arr_heatgrid, arr_heatsink, arr_heatsource, title=''):
+    def plot_DHS(self, arr_heatgrid, arr_heatsink, arr_heatsource,
+                 title=''):
         if title is '':
             title = self.title
-
-        fig, ax = plt.subplots()
-        self.plot_HeatGrid(arr_heatgrid, ax=ax)
+        fig, ax = self._newfig(self.figsize)
+#        fig, ax = plt.subplots()
         self.plot_HeatSource(arr_heatsource, ax=ax)
         self.plot_HeatSink(arr_heatsink, ax=ax)
+        self.plot_HeatGrid(arr_heatgrid, ax=ax)
+        # at last to overlay HeatSource and Heatsink
         return fig
 
     def plot_HeatGrid(self,
                       arr=None,
                       title=None,
-                      fig=plt.figure(), ax=plt.subplot()):
+                      fig=plt.subplot(), ax=plt.subplot()):
         '''Plots all pipes and nodes of Heatgrid.\n
         import heatgrid.getCalculations() or DataIO.importNumpyArr[i]'''
         if arr is None:
@@ -436,10 +426,10 @@ class Plotter():
 #        fig.show()
 #        fig.savefig('test.pdf', formate='pdf')
 #        fig.colorbar(ax)
-        return fig
+        return ax
 
     def plot_HeatSource(self, arr=None, title=None,
-                        fig=plt.figure(), ax=plt.subplot()):
+                        fig=plt.subplot(), ax=plt.subplot()):
         '''Plots all sources of Heatsource.\n
         import: heatsource.getCalculations() or DataIO.importNumpyArr[i]'''
         if arr is None:
@@ -457,18 +447,30 @@ class Plotter():
                                                 sources_startPointsXY,
                                                 sources_endPointsXY)]
 
-        df = gp.GeoDataFrame({'sPoints': sources_startPointsXY,
-                              'ePoints': sources_endPointsXY,
-                              'elements': sources_LineStrings,
-                              'Q': np.abs(arr['v_producers_Q'])},
-                             geometry='elements')
+        gdf = gp.GeoDataFrame({
+                'sPoints': sources_startPointsXY,
+                'ePoints': sources_endPointsXY,
+                'elements': sources_LineStrings,
+                'Q': np.abs(arr['v_producers_Q'])},
+                              geometry='elements')
 
-        df.plot(ax=ax, column='Q', k=2, legend=True,
-                cmap='hot', scheme='quantiles')
+        lines_centroid = gdf.centroid
+        lines_length = gdf.length
+        for center, l, sPoints, ePoints, element in zip(
+                lines_centroid,
+                lines_length,
+                gdf['sPoints'],
+                gdf['ePoints'],
+                arr['v_producers_element']):
+            print(l)
+            rotation = np.arcsin((sPoints.x-ePoints.x) / l)
+            rotation = np.rad2deg(rotation)
+            self.get_symbol(pointXY=center, scale=l/4, rotation=rotation,
+                            fig=fig, ax=ax, element=element)
         return fig
 
     def plot_HeatSink(self, arr=None, title=None,
-                      fig=plt.figure(), ax=plt.subplot()):
+                      fig=plt.subplot(), ax=plt.subplot()):
         '''Plots all sinks of Heatsink.\n
         import: heatsink.getCalculations() or DataIO.importNumpyArr[i]'''
         if arr is None:
@@ -492,78 +494,183 @@ class Plotter():
                                'Q': np.abs(arr['v_consumers_Q'])},
                               geometry='elements')
 
-        gdf.plot(ax=ax, legend=True, color='red')
-        
         lines_centroid = gdf.centroid
         lines_length = gdf.length
-        for center, l, sPoints, ePoints in zip(lines_centroid,
-                                                    lines_length,
-                                                    gdf['sPoints'],
-                                                    gdf['ePoints']):
-            rotation = np.arcsin(l / (sPoints.x-ePoints.x))
-            self.heatExchanger(pointXY=center, scale=l/4, rotation=rotation,
-                               fig=fig, ax=ax)
+        for center, l, sPoints, ePoints, element in zip(
+                lines_centroid,
+                lines_length, gdf['sPoints'],
+                gdf['ePoints'], arr['v_consumers_element']):
+            rotation = np.arcsin((sPoints.x-ePoints.x) / l)
+            rotation = -np.rad2deg(rotation)
+            self.get_symbol(pointXY=center, scale=l/4, rotation=rotation,
+                            fig=fig, ax=ax, element=element)
 #        fig.plot()
 
         return fig
 
-    def heatExchanger(self, pointXY=Point(0, 0), scale=1,
-                      rotation=0,
-                      fig=plt.figure(),
-                      ax=plt.subplot()):
+    def get_symbol(self, pointXY=Point(0, 0), scale=1,
+                   rotation=0, fig=plt.subplot(), ax=plt.subplot(),
+                   element=''):
         # TODO implement plt.collection to speed up
         # TODO use scale from gepandas to scale all lines
         # TODO use translate to shift all lines
-        x = pointXY.coords[0][0]
-        y = pointXY.coords[0][1]
-        
-        
-        middle_circle = (x,y)
+        x = pointXY.x
+        y = pointXY.y
+        middle = (x, y)
         radius = 0.5 * scale
-        leftdown = (-0.2 * scale + x, -0.25 * scale + y)
-        leftup = (-0.2 * scale + x, 0.25 * scale + y)
-#        middle_circle = (0, 0)
-        middle = (0.2 * scale + x, 0 * scale + y)
-        middleup = (x, y + radius)
-        middledown = (x, y-radius)
-        top = (middleup[0], middleup[1] + 1 * scale)
-        down = (middledown[0], middledown[1] -1 * scale)
-        rightup = (0.8 * scale + x, 0.25 * scale + y)
-        rightdown = (0.8 * scale + x, -0.25 * scale + y)
+        if element is 'consumer':
+            leftdown = (-0.2 * scale + x, -0.25 * scale + y)
+            leftup = (leftdown[0], 0.25 * scale + y)
+            middle_lines = (0.2 * scale + x, 0 * scale + y)
+            middleup = (x, y + radius)
+            middledown = (x, y - radius)
+            top = (middleup[0], y + scale * 2)
+            down = (middledown[0], y - 1 * scale * 2)
+            rightup = (0.8 * scale + x, 0.25 * scale + y)
+            rightdown = (0.8 * scale + x, -0.25 * scale + y)
 
-        coords = [(leftdown, rightdown),
-                  (leftdown, middle),
-                  (middle, leftup),
-                  (leftup, rightup),
-                  (middleup, top),
-                  (middledown, down)]
+            #  reads in coords into geopandas Geodataframe to rotate coords
+            coords = [(leftdown, rightdown),  # 0
+                      (leftdown, middle),  # 1
+                      (middle_lines, leftup),  # 2
+                      (leftup, rightup),  # 3
+                      (middleup, top),  # 4
+                      (middledown, down)]  # 5
 
-        circle = plt.Circle(middle_circle, radius,
-                            color='black', fill=False)
+            lines = MultiLineString(coords)
+            gdf = gp.GeoDataFrame({'lines': lines}, geometry='lines')
+            gdf = gdf.rotate(rotation, origin=middle)
 
-        lines = MultiLineString(coords)
+            #  reads coords back into tuples
+            leftdown, rightdown = gdf.get_values()[0].coords
+            middle_lines, leftup = gdf.get_values()[2].coords
+            rightup = gdf.get_values()[3].coords[1]
+            middleup, top = gdf.get_values()[4].coords
+            middledown, down = gdf.get_values()[5].coords
 
-        gdf = gp.GeoDataFrame({'lines':lines}, geometry='lines')
-        gdf = gdf.skew(rotation)
-        
-        '''################################'''
-        '''next lines for test purposes'''
-#        fig, ax = plt.subplots()
+            circle = plt.Circle(middle, radius, linewidth=1.5,
+                                color='black', fill=False)
+            lines_x = [rightdown[0], leftdown[0],
+                       middle_lines[0], leftup[0], rightup[0]]
+            lines_y = [rightdown[1], leftdown[1],
+                       middle_lines[1], leftup[1], rightup[1]]
+
+            #  plot symbol
+            plt.plot(lines_x, lines_y, color='black')
+            ax.add_artist(circle)
+            #  plot line up
+            plt.plot([down[0], middledown[0]], [down[1],
+                     middledown[1]], color='black')
+            #  plot line down
+            plt.plot([top[0], middleup[0]], [top[1],
+                     middleup[1]], color='black')
+
+    #
+    #        fig.show()
+            '''####################'''
+        if element is 'producer':
+
+            leftdown = (x - 0.5 * scale , y - 0.4 * scale)
+            leftup = (leftdown[0] , y)
+            chimneyleft = (x + 0.1 * scale , leftup[1])
+            chimneyleftup = (chimneyleft[0], chimneyleft[1] + 0.4 * scale)
+            chimneyrightup = (chimneyleft[0] + 0.2 * scale, chimneyleftup[1])
+            chimneyrightdown = (chimneyrightup[0], leftdown[1])
+            middleup = (x, y + radius)
+            middledown = (x, y - radius)
+            top = (middleup[0], y + scale * 2)
+            down = (middledown[0], y - 1 * scale * 2)
+            
+            
+            coords = [(leftdown, leftup),
+                      (leftup, chimneyleft),
+                      (chimneyleft, chimneyleftup),
+                      (chimneyleftup, chimneyrightup),
+                      (chimneyrightup, chimneyrightdown),
+                      (chimneyrightdown, leftdown),
+                      (middleup, top),
+                      (middledown, down)]
+            lines = MultiLineString(coords)
+            gdf = gp.GeoDataFrame({'lines': lines}, geometry='lines')
+            gdf = gdf.rotate(rotation, origin=middle)
+            
+            # reads coords back into tuples
+            leftdown, leftup = gdf.get_values()[0].coords
+            chimneyleft, chimneyleftup = gdf.get_values()[2].coords
+            chimneyrightup, chimneyrightdown = gdf.get_values()[4].coords
+            leftdown = gdf.get_values()[5].coords[1]
+            middleup, top = gdf.get_values()[6].coords
+            middledown, down = gdf.get_values()[7].coords
+            
+            lines_x = [leftdown[0], leftup[0],
+                       chimneyleft[0], chimneyleftup[0],
+                       chimneyrightup[0], chimneyrightdown[0], leftdown[0]]
+            lines_y = [leftdown[1], leftup[1],
+                       chimneyleft[1], chimneyleftup[1],
+                       chimneyrightup[1], chimneyrightdown[1], leftdown[1]]
+            # plot symbol
+            plt.plot(lines_x, lines_y, color='black')
+            # plot line up
+            plt.plot([middleup[0], top[0]],
+                     [middleup[1], top[1]], color='black')
+            # plot line down
+            plt.plot([middledown[0], down[0]],
+                     [middledown[1], down[1]], color='black')
+            
+            circle = plt.Circle(middle, radius, linewidth=1.5,
+                                color='black', fill=False)
+            ax.add_artist(circle)
         plt.axis('equal')
-#        ax.set_xlim((-1 - x, 1 + x))
-#        ax.set_ylim((-1 - y, 1 + y))
-#
-        gdf.plot(ax=ax, color='black')
-        ax.add_artist(circle)
-#
-#        fig.show()
-        '''####################'''
+
         return fig
+
+    def _figsize(self, scale):
+        fig_width_pt = 469.755  # Get this from LaTeX using \the\textwidth
+        inches_per_pt = 1.0 / 72.27  #  Convert pt to inch
+        golden_mean = (np.sqrt(5.0) - 1.0) / 2.0
+        # Aesthetic ratio (you could change this)
+        fig_width = fig_width_pt * inches_per_pt * scale    # width in inches
+        fig_height = fig_width * golden_mean              # height in inches
+        fig_size = [fig_width, fig_height]
+        return fig_size
+
+    def _formate(self):
+        pgf_with_latex = {  # setup matplotlib to use latex for output
+            "pgf.texsystem": "pdflatex",
+            # change this if using xetex or lautex
+            "text.usetex": True,  # use LaTeX to write all text
+            "font.family": "serif",
+            "font.serif": [],
+            # blank entries should cause plots to inherit fonts from document
+            "font.sans-serif": [],
+            "font.monospace": [],
+            "axes.labelsize": 10,  # LaTeX default is 10pt font.
+            "font.size": 10,
+            "legend.fontsize": 8,
+            # Make the legend/label fonts a little smaller
+            "xtick.labelsize": 8,
+            "ytick.labelsize": 8,
+            "figure.figsize": self._figsize(0.9),
+            #  default fig size of 0.9 textwidth
+            "pgf.preamble": [
+                r"\usepackage[utf8x]{inputenc}",
+                #  use utf8 fonts becasue your computer can handle it :)
+                r"\usepackage[T1]{fontenc}",
+                #  plots will be generated using this preamble
+                ]
+                        }
+        mpl.rcParams.update(pgf_with_latex)
+
+    def _newfig(self, width):
+        plt.clf()
+        fig = plt.figure(figsize=self._figsize(width))
+        ax = fig.add_subplot(111)
+        return fig, ax
 
 if __name__ == "__main__":
     print('Plotter \t\t run directly \n')
-
-    testPlotter=Plotter(1,1,1)
-    testPlotter.heatExchanger(pointXY=Point(2,2), scale=1, rotation=10)
+    testPlotter = Plotter()
+    testPlotter.get_symbol(pointXY=Point(5, 5), scale=326, rotation=0,
+                           element='producer')
 else:
     print('Plotter \t\t was imported into another module')

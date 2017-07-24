@@ -671,6 +671,6 @@ if __name__ == "__main__":
     print('Plotter \t\t run directly \n')
     testPlotter = Plotter()
     testPlotter.get_symbol(pointXY=Point(5, 5), scale=326, rotation=0,
-                           element='producer')
+                           element='consumer')
 else:
     print('Plotter \t\t was imported into another module')

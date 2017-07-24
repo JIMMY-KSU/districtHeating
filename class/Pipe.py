@@ -9,11 +9,12 @@ Created on Sat Jan 14 12:43:40 2017
 
 import math
 
+
 class Pipe():
     def __init__(self, pipeValues):
-        self.ambient_temp = 273.15 + 15 #  in Kelvin
-        self.fluid_temp = 273.15 + 80 #  in Kelvin
-        self.__heat_capacity = 4183 #  J/(kg*K)
+        self.ambient_temp = 273.15 + 15  # in Kelvin
+        self.fluid_temp = 273.15 + 80  # in Kelvin
+        self.__heat_capacity = 4183  # J/(kg*K)
         self.__kinvis = 0.48724 * 0.000001
         self.__dynvis = 0.00046659  # kg / (s * m)
         """
@@ -31,11 +32,31 @@ class Pipe():
         self.sNode = pipeValues['sNode']
         self.eNode = pipeValues['eNode']
         self.seNode = [self.sNode, self.eNode]
-        self.length = pipeValues['length'] #[mm]
-        self.diameter_inner = pipeValues['diameter_inner']
-        self.diameter_outer = pipeValues['diameter_outer']
+        self.length = pipeValues['length']  # [mm]
         self.start_height = pipeValues['start_height']
         self.end_height = pipeValues['end_height']
+        self.sprp = pipeValues['sprp']
+        self.element = "pipe"
+        self.roughness = self.__set_roughness(pipeValues)
+        self.__diameter_inner = pipeValues['diameter_inner']
+        self.__diameter_middleinner = pipeValues['diameter_middleinner']
+        self.__diamter_middleouter = pipeValues['diameter_middleouter']
+        self.__diameter_outer = pipeValues['diameter_outer']
+
+        self.__heatflow = 0
+        self.__conductivity_inner = pipeValues['conductivity_inner']
+        self.__conductivity_middle = pipeValues[
+                'conductivity_middle']
+        self.__conductivity_outer = pipeValues['conductivity_outer']
+
+        self.__transferCoefficient_inner = pipeValues[
+                        'transferCoefficient_inner']
+        self.__transferCoefficient_outer = pipeValues[
+                        'transferCoefficient_outer']
+
+        self.transitionCoefficient = self.__set_transitionCoefficient(
+                pipeValues)
+
 
         self.Q = 0  # [Watt]
         self.m = 0  # [kg/s]
@@ -43,63 +64,61 @@ class Pipe():
         self.Tb = 0  # [K]
         self.Pa = 0  # [Pa]
         self.Pb = 0  # [Pb]
-        
-        if pipeValues['roughness'] == '':
-            self.roughness = 0.0013 #  k in [mm] from "Druckverluste
-                                    #  in Rohrleitungen"
-        else:
-            self.roughness = pipeValues['roughness']
-        self.sprp = pipeValues['sprp']
-        self.element = "pipe"
-
-        if 'heatTransitionCoefficient' in pipeValues:    
-            self.heatTransitionCoefficient = pipeValues['heatTransitionCoefficient'] #[W/m]
-        else:
-            if ('heat_transferCoefficient_inner' in pipeValues and
-                'heat_transferCoefficient_outer' in pipeValues and
-                'heat_conductivity_1'            in pipeValues and 
-                'heat_conductivity_2'            in pipeValues and 
-                'heat_conductivity_3'            in pipeValues): 
-                self.__heat_transferCoefficient_inner = pipeValues['heat_transferCoefficient_inner']
-                self.__heat_transferCoefficient_outer = pipeValues['heat_transferCoefficient_outer']
-                self.__heat_conductivity_1 = pipeValues['heat_conductivity_1']
-                self.__heat_conductivity_2 = pipeValues['heat_conductivity_2']
-                self.__heat_conductivity_3 = pipeValues['heat_conductivity_3']
-#            else:
-#                print('No heat transfer coefficient or parameter for pipe', self.index , '!')
-
-
 
 
 # TODO bring def heat_transferCoefficient in correct form, take care of possibility that pipeValues['heat_transferCoefficient_inner'] etc. is empty or not defined..
 # TODO implement @property
+
+    def __set_roughness(self, pipeValues):
+        if pipeValues['roughness'] == '':
+            self.roughness = 0.0013
+            #  k in [mm] from "Druckverluste in Rohrleitungen"
+        else:
+            self.roughness = pipeValues['roughness']
+        return self.roughness
+
+    def __set_transitionCoefficient(self, pipeValues):
+        if 'heatTransitionCoefficient' in pipeValues is not ('' or None):
+            self.transitionCoefficient = pipeValues[
+                    'heatTransitionCoefficient']  # [W/m]
+        else:
+            if (self.__transferCoefficient_inner,
+                self.__transferCoefficient_outer,
+                self.__conductivity_inner, self.__conductivity_middle,
+                self.__conductivity_outer,
+                self.__diameter_inner, self.__diameter_middleinner,
+                self.__diameter_middleouter, self.__diameter_outer) is not (
+                        '' or None):
                 
-#        self.__heat_transferCoefficients = [
-#                                            self.__heat_transferCoefficient_inner,# steel
-#                                            self.__heat_transferCoefficient_outer # average heat transition in soil ["W/m*K]
-#                                            ]
-#        self.__heat_conductivities = [
-#                                      self.__heat_conductivity_1,
-#                                      self.__heat_conductivity_2,
-#                                      self.__heat_conductivity_3
-#                                      ]
-        self.__diameters = [
-                            pipeValues['diameter_1'],
-                            pipeValues['diameter_2'],
-                            pipeValues['diameter_3']
-                            ]
-        self.__heatflow = 0
+                conductivity_inner_coeff = self.__conductivity_inner / (
+                        (self.__diameter_middleinner -
+                         self.__diameter_inner) /
+                         2)
+                conductivity_middle_coeff = self.__conductivity_middle / (
+                        (self.__diameter_middleouter -
+                         self.__diameter_middleinner) /
+                         2)
+                conductivity_outer_coeff = self.__conductivity_outer / (
+                        (self.__diameter_outer -
+                         self.__diamter_middleouter) / 
+                         2)
+                conductivity_sum = conductivity_inner_coeff + \
+                                   conductivity_middle_coeff + \
+                                   conductivity_outer_coeff
 
-    def setHeatflow(self, heatFlow):
-        self.__heatflow = heatFlow
-
-    def getHeatflow(self):
-        return self.__heatflow
-
+                heatTransferResistance = 1 / self.__transferCoefficient_inner + \
+                                         1 / conductivity_sum + \
+                                         1 / self.__transferCoefficient_outer
+                                         
+                val = 1 / heatTransferResistance
+            else:
+                print('There are missing values'
+                      'for heat transfer or conductivity or pipe diameter')
+        return val
 # CALCULATIONS:
 
 
-    def heat_transferCoefficient(self,
+    def transferCoefficient(self,
                                  transferCoefficients,
                                  layer_heat_conductivities,
                                  layer_thicknesses):
@@ -219,5 +238,16 @@ class Pipe():
 
 if __name__=="__main__":
     print('Pipe \t\t\t run directly')
+    import os
+    from DataIO import DataIO
+
+    dataIO = DataIO(os.path.dirname(os.getcwd()) + os.sep +
+                    'input' + os.sep + 'testFiles',
+                    os.path.dirname(os.getcwd()) + os.sep +
+                    'output' + os.sep + 'testFiles')
+    pipe = Pipe(dataIO.importCSV('pipes.csv'))
+    
+    
+    
 else:
     print('Pipe \t\t\t was imported into another module')

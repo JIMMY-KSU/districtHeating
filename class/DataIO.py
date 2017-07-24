@@ -41,10 +41,12 @@ class DataIO():
         return:
             array with dtype
         '''
+        
         if os.path.isfile(self.__filepath_import + os.sep + os.path.splitext(
                 filename_import)[0] + "_pointAsDec" + os.path.splitext(
                         filename_import)[1]):
-            '''opens file and reads it into memory'''
+            '''oOpens file and reads it into memory
+            if filename_pointAsDec already exists.'''
             start_time = time.clock()
             self.__dataArray = np.genfromtxt(self.__filepath_import + os.sep +
                                              os.path.splitext(
@@ -58,7 +60,10 @@ class DataIO():
                                              converters=self.str2date(
                                                      columnofdate=columnofdate,
                                                      dateformat=dateformat))
-
+            names = self.__dataArray[0]
+            print(names)
+            print(', '.join(str(names)))
+            self.__dataArray = np.genfromtxt(self.__dataArray, names=', '.join(names))
         else:
             '''
             opens file and changes decimal seperator to point, delets all

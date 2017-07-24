@@ -41,83 +41,68 @@ class DataIO():
         return:
             array with dtype
         '''
+
+        filename = self.__filepath_import + os.sep + filename_import
+        filename_pointAsDec = self.__filepath_import + os.sep +\
+            os.path.splitext(filename_import)[0] +\
+            "_pointAsDec" + os.path.splitext(filename_import)[1]
+        pointAsDec = False
         
-        if os.path.isfile(self.__filepath_import + os.sep + os.path.splitext(
-                filename_import)[0] + "_pointAsDec" + os.path.splitext(
-                        filename_import)[1]):
-            '''oOpens file and reads it into memory
-            if filename_pointAsDec already exists.'''
-            start_time = time.clock()
-            self.__dataArray = np.genfromtxt(self.__filepath_import + os.sep +
-                                             os.path.splitext(
-                                                     filename_import)[0] +
-                                             "_pointAsDec" +
-                                             os.path.splitext(
-                                                     filename_import)[1],
+        self.__dataArray = ''
+        self.__dataArrayHeader = ''
+        
+        if os.path.isfile(filename_pointAsDec):
+            filename = filename_pointAsDec
+            pointAsDec = True
+        
+        with open(filename, encoding='utf-8-sig') as csvfile:
+
+           readCSV = csv.reader(csvfile, delimiter=delimiter)
+
+           index = 0
+           for row in readCSV:
+               if pointAsDec = False
+               for row0 in readCSV:
+                   for (index, item) in enumerate(row0):
+                       if index == columnofdate:
+                           row1.append(item)
+                      else:
+                          item = item.replace(",", ".")
+                          item = item.replace(".", "", item.count(".") - 1)
+                          row1.append(item)
+                self.__dataArray = self.__dataArray +\
+                                    delimiter.join(x for x in row1) + '\n'
+                 csvfile.close
+                 with open(filename_pointAsDec,
+                      "w") as text_file:
+                    text_file.write(self.__dataArrayHeader + self.__dataArray)
+                    text_file.close()
+                else:
+                    self.__dataArrayHeader = self.__dataArrayHeader +\
+                    delimiter.join(x for x in row) + '\n'
+                    if startrow - 2 < index:
+                    row1 = []
+                    self.__dataArray = self.__dataArray + delimiter.join(
+                                            x for x in row1) + '\n'
+                    self.__dataArray = np.genfromtxt(filename,
                                              dtype=dtype,
                                              delimiter=delimiter,
                                              skip_header=startrow,
                                              converters=self.str2date(
                                                      columnofdate=columnofdate,
                                                      dateformat=dateformat))
-            names = self.__dataArray[0]
+
+            names = [for item in self.__dataArray[0] item.decode()]
             print(names)
-            print(', '.join(str(names)))
-            self.__dataArray = np.genfromtxt(self.__dataArray, names=', '.join(names))
+            self.__dataArray = np.genfromtxt(self.__dataArray, names=names)
         else:
             '''
             opens file and changes decimal seperator to point, delets all
             other points or commas: except of date -->
             saves file into input/<filename>+_pointAsDec
             '''
-            self.__dataArray = ''
-            self.__dataArrayHeader = ''
-            with open(self.__filepath_import + os.sep + filename_import,
-                      encoding='utf-8-sig') as csvfile:
 
-                readCSV = csv.reader(csvfile, delimiter=delimiter)
 
-                start_time = time.clock()
-                index = 0
-                for row in readCSV:
-                    '''
-                    saves the header of csv-file into self.__dataArrayHeader
-                    '''
-                    self.__dataArrayHeader = self.__dataArrayHeader +\
-                        delimiter.join(x for x in row) + '\n'
-                    if startrow - 2 < index:
-                        break
-                    index += 1
-
-                # print(self.__dataArrayHeader)
-                for row0 in readCSV:
-                    row1 = []
-                    for (index, item) in enumerate(row0):
-                        if index == columnofdate:
-                            row1.append(item)
-                        else:
-                            item = item.replace(",", ".")
-                            item = item.replace(".", "", item.count(".") - 1)
-                            row1.append(item)
-                    self.__dataArray = self.__dataArray +\
-                        delimiter.join(x for x in row1) + '\n'
-                print(time.clock() - start_time)
-                csvfile.close
-                with open(self.__filepath_import + os.sep +
-                          os.path.splitext(filename_import)[0] +
-                          "_pointAsDec" +
-                          os.path.splitext(filename_import)[1],
-                          "w") as text_file:
-                    text_file.write(self.__dataArrayHeader + self.__dataArray)
-                    text_file.close()
-
-                self.__dataArray = np.genfromtxt(io.BytesIO(
-                                             self.__dataArray.encode('utf-8')),
-                                             dtype=dtype,
-                                             delimiter=delimiter,
-                                             converters=self.str2date(
-                                                     columnofdate=columnofdate,
-                                                     dateformat=dateformat))
         return self.__dataArray
 
     def importTRY(self, location, year, season, quarterHour, startrow, dtype):

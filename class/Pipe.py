@@ -40,7 +40,7 @@ class Pipe():
         self.roughness = self.__set_roughness(pipeValues)
         self.__diameter_inner = pipeValues['diameter_inner']
         self.__diameter_middleinner = pipeValues['diameter_middleinner']
-        self.__diamter_middleouter = pipeValues['diameter_middleouter']
+        self.__diameter_middleouter = pipeValues['diameter_middleouter']
         self.__diameter_outer = pipeValues['diameter_outer']
 
         self.__heatflow = 0
@@ -70,11 +70,11 @@ class Pipe():
 # TODO implement @property
 
     def __set_roughness(self, pipeValues):
-        if pipeValues['roughness'] == '':
-            self.roughness = 0.0013
+        if pipeValues['roughness'] is not '':
+            self.roughness = pipeValues['roughness']
             #  k in [mm] from "Druckverluste in Rohrleitungen"
         else:
-            self.roughness = pipeValues['roughness']
+            self.roughness = 0.0013
         return self.roughness
 
     def __set_transitionCoefficient(self, pipeValues):
@@ -100,7 +100,7 @@ class Pipe():
                          2)
                 conductivity_outer_coeff = self.__conductivity_outer / (
                         (self.__diameter_outer -
-                         self.__diamter_middleouter) / 
+                         self.__diameter_middleouter) / 
                          2)
                 conductivity_sum = conductivity_inner_coeff + \
                                    conductivity_middle_coeff + \
@@ -245,7 +245,7 @@ if __name__=="__main__":
                     'input' + os.sep + 'testFiles',
                     os.path.dirname(os.getcwd()) + os.sep +
                     'output' + os.sep + 'testFiles')
-    pipe = Pipe(dataIO.importCSV('pipes.csv'))
+    pipe = Pipe(dataIO.importCSV('pipes.csv', header = 0))
     
     
     

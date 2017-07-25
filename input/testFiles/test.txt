@@ -1,0 +1,2 @@
+﻿test;test;zahl;zahl
+1;du;1.200,39;1.200

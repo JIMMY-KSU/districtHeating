@@ -229,14 +229,14 @@ class Solver():
                                   v_Tb[self.__I_source_slice],
                                   v_Q[self.__I_source_slice])
         producer_Tb = dp.producer_temp(
-                              self.heatsource.v_producers_Tb,
-                              v_Tb[self.__I_source_slice])
+                                  self.heatsource.v_producers_Tb,
+                                  v_Tb[self.__I_source_slice])
         producer_Pb = dp.producer_press(
-                          self.v_producer_Pb_set,
-                          v_Pb[self.__I_source_slice])
+                                  self.v_producer_Pb_set,
+                                  v_Pb[self.__I_source_slice])
         producer_Pa = dp.producer_press(
-                            self.v_producer_Pa_set,
-                            v_Pa[self.__I_source_slice])
+                                  self.v_producer_Pa_set,
+                                  v_Pa[self.__I_source_slice])
         F = np.concatenate((
                          massBalance,
                          energyBalance_1, energyBalance_2,

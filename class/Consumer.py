@@ -27,7 +27,7 @@ class Consumer():
         self.Tb = 60 + 273.15
         self.Pa = 0
         self.Pb = 0
-        self.cp = 4.1
+        self.cp = 4183  # J/(kg*K)
         self.m = self.__massflow(self.Q, self.cp, self.Ta, self.Tb) # t/h
         self.element = "consumer"
         # TODO implement function for massflow

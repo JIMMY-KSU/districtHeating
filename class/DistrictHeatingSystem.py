@@ -61,32 +61,26 @@ if __name__ == "__main__":
     from DataIO import DataIO
     import Dictionary
     print('DistrictHeatingSystem \t run directly \n')
+    
 
     DataIO = DataIO(
-                os.path.dirname(os.getcwd()) + os.sep + 'input',
-                os.path.dirname(os.getcwd()) + os.sep + 'output')
+                os.path.dirname(os.getcwd()) + os.sep +
+                'input' + os.sep + 'TestNetz',
+                os.path.dirname(os.getcwd()) + os.sep +
+                'output' + os.sep + 'TestNetz')
 
     heatgrid_nodes = DataIO.importDBF(
-            'TestNetz' + os.sep + 'KTestNetz.DBF',
-            Dictionary.HeatGrid_node_dtype,
-            Dictionary.HeatGrid_STANET_nodes_allocation)
+            'KTestNetz.DBF', dtype=Dictionary.STANET_nodes_allocation)
 
     heatgrid_pipes = DataIO.importDBF(
-            'TestNetz' + os.sep + 'STestNetz.DBF',
-            Dictionary.HeatGrid_pipe_dtype,
-            Dictionary.HeatGrid_STANET_pipes_allocation)
+            'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
 
     heatsink = DataIO.importDBF(
-            'TestNetz' + os.sep + 'WTestNetz.DBF',
-            Dictionary.HeatSink_consumer_dtype,
-            Dictionary.HeatSink_STANET_consumer_allocation)
+            'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
 
     heatsource = DataIO.importCSV(
-            'TestNetz' + os.sep + 'WTestNetz.csv',
-            dtype=Dictionary.HeatSource_producer_dtype,
-            startrow=1,
-            columnofdate=None,
-            dateformat='None')
+            'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
+            delimiter='\t', header=0)
 
     DHS1 = DistrictHeatingSystem(
             heatgrid_pipes,
@@ -109,7 +103,7 @@ if __name__ == "__main__":
         DHS1.heatsource.setCalculations()
         i = i + 1
 
-
+    print(DHS1.heatsink.v_consumers_Q)
     DataIO.exportNumpyArr("HeatGrid", DHS1.heatgrid.getCalculations())
     DataIO.exportNumpyArr("HeatSink", DHS1.heatsink.getCalculations())
     DataIO.exportNumpyArr("HeatSouce", DHS1.heatsource.getCalculations())

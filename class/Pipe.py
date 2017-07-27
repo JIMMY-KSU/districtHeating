@@ -8,10 +8,10 @@ Created on Sat Jan 14 12:43:40 2017
 
 
 import math
-
+from Dictionary import STANET_producer_allocation as dictionary
 
 class Pipe():
-    def __init__(self, pipeValues):
+    def __init__(self, index, pipeValues):
         self.ambient_temp = 273.15 + 15  # in Kelvin
         self.fluid_temp = 273.15 + 80  # in Kelvin
         self.__heat_capacity = 4183  # J/(kg*K)
@@ -24,7 +24,7 @@ class Pipe():
         self.__density_air = 1.293  # kg/m³ @ 1013,25 hPa
         self.__density_fluid = 971.79  # kg/m³ @ 80 °C
 
-        self.index = pipeValues['index']
+        self.index = index
         self.start_x = pipeValues['start_x']
         self.start_y = pipeValues['start_y']
         self.end_x = pipeValues['end_x']
@@ -38,20 +38,20 @@ class Pipe():
         self.sprp = pipeValues['sprp']
         self.element = "pipe"
         self.roughness = self.__set_roughness(pipeValues)
-        self.__diameter_inner = pipeValues['diameter_inner']
-        self.__diameter_middleinner = pipeValues['diameter_middleinner']
-        self.__diameter_middleouter = pipeValues['diameter_middleouter']
-        self.__diameter_outer = pipeValues['diameter_outer']
+        self.diameter_inner = pipeValues['diameter_inner']
+        self.diameter_middleinner = pipeValues['diameter_middleinner']
+        self.diameter_middleouter = pipeValues['diameter_middleouter']
+        self.diameter_outer = pipeValues['diameter_outer']
 
-        self.__heatflow = 0
-        self.__conductivity_inner = pipeValues['conductivity_inner']
-        self.__conductivity_middle = pipeValues[
-                'conductivity_middle']
-        self.__conductivity_outer = pipeValues['conductivity_outer']
+        self.heatflow = 0
+        self.conductivity_inner = pipeValues['conductivity_inner']
+        self.conductivity_middle = pipeValues[
+               'conductivity_middle']
+        self.conductivity_outer = pipeValues['conductivity_outer']
 
-        self.__transferCoefficient_inner = pipeValues[
+        self.transferCoefficient_inner = pipeValues[
                         'transferCoefficient_inner']
-        self.__transferCoefficient_outer = pipeValues[
+        self.transferCoefficient_outer = pipeValues[
                         'transferCoefficient_outer']
 
         self.transitionCoefficient = self.__set_transitionCoefficient(
@@ -82,33 +82,33 @@ class Pipe():
             self.transitionCoefficient = pipeValues[
                     'heatTransitionCoefficient']  # [W/m]
         else:
-            if (self.__transferCoefficient_inner,
-                self.__transferCoefficient_outer,
-                self.__conductivity_inner, self.__conductivity_middle,
-                self.__conductivity_outer,
-                self.__diameter_inner, self.__diameter_middleinner,
-                self.__diameter_middleouter, self.__diameter_outer) is not (
+            if (self.transferCoefficient_inner,
+                self.transferCoefficient_outer,
+                self.conductivity_inner, self.conductivity_middle,
+                self.conductivity_outer,
+                self.diameter_inner, self.diameter_middleinner,
+                self.diameter_middleouter, self.diameter_outer) is not (
                         '' or None):
                 
-                conductivity_inner_coeff = self.__conductivity_inner / (
-                        (self.__diameter_middleinner -
-                         self.__diameter_inner) /
+                conductivity_inner_coeff = self.conductivity_inner / (
+                        (self.diameter_middleinner -
+                         self.diameter_inner) /
                          2)
-                conductivity_middle_coeff = self.__conductivity_middle / (
-                        (self.__diameter_middleouter -
-                         self.__diameter_middleinner) /
+                conductivity_middle_coeff = self.conductivity_middle / (
+                        (self.diameter_middleouter -
+                         self.diameter_middleinner) /
                          2)
-                conductivity_outer_coeff = self.__conductivity_outer / (
-                        (self.__diameter_outer -
-                         self.__diameter_middleouter) / 
+                conductivity_outer_coeff = self.conductivity_outer / (
+                        (self.diameter_outer -
+                         self.diameter_middleouter) / 
                          2)
                 conductivity_sum = conductivity_inner_coeff + \
                                    conductivity_middle_coeff + \
                                    conductivity_outer_coeff
 
-                heatTransferResistance = 1 / self.__transferCoefficient_inner + \
+                heatTransferResistance = 1 / self.transferCoefficient_inner + \
                                          1 / conductivity_sum + \
-                                         1 / self.__transferCoefficient_outer
+                                         1 / self.transferCoefficient_outer
                                          
                 val = 1 / heatTransferResistance
             else:
@@ -245,8 +245,8 @@ if __name__=="__main__":
                     'input' + os.sep + 'testFiles',
                     os.path.dirname(os.getcwd()) + os.sep +
                     'output' + os.sep + 'testFiles')
-    pipe = Pipe(dataIO.importCSV('pipes.csv', header = 0))
-    
+    pipe = Pipe(dataIO.importCSV('pipes.csv', header = 0, dtype=dictionary))
+    print(pipe.roughness)
     
     
 else:

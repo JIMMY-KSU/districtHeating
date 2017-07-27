@@ -10,13 +10,14 @@ import os
 import io
 import numpy as np
 import pandas as pd
+import pysal as ps
 import time
 from datetime import datetime
 from datetime import timedelta
 from copy import copy
 from dbfread import DBF
-# from Dictionaries import Dictionaries
-# from TRY_Dictionary import TRY_Dictionary
+import Dictionary
+from collections import OrderedDict
 
 from matplotlib import dates as dates
 # from DataIO_Helper import DataIO_Helper
@@ -36,82 +37,30 @@ class DataIO():
 #    def import CSV(self):
 
     def importCSV(self, filename, delimiter=';', dtype=None,
-                  header=1, encoding='utf-8-sig', decimal=',',
-                  lineterminator='\n', thousands='.', names=None):
-        
+                  header=0, encoding='utf-8-sig', decimal=',',
+                  lineterminator='\n', thousands='.', names=None,
+                  infer_datetime_format=False):
+        '''
+        str, for more inputparameter see pandas read_csv
+        output
+        pandas DataFrame
+        '''
         filepath = self.__filepath_import + os.sep + filename
-        arr = pd.read_csv(filepath, delimiter=delimiter, header=header,
+
+        df = pd.read_csv(filepath, delimiter=delimiter, header=header,
                           encoding=encoding, decimal=decimal,
                           lineterminator=lineterminator, thousands=thousands,
-                          names=names)
-        
-        print(arr)
-        return arr
-        
-        
-        
-#    def importCSV(self, filename_import,
-#                  dtype=None, header = 0, startrow=0,
-#                  delimiter=";", columnofdate=None, dateformat=None):
-#        '''
-#        imports CSV and replaces first comma start counting from right
-#        #######
-#        return:
-#            array with dtype
-#        '''
-#
-#        filename = self.__filepath_import + os.sep + filename_import
-#        filename_pointAsDec = self.__filepath_import + os.sep +\
-#            os.path.splitext(filename_import)[0] +\
-#            "_pointAsDec" + os.path.splitext(filename_import)[1]
-#        pointAsDec = False
-#
-#        self.__dataArray = ''
-#        self.__dataArrayHeader = ''
-#
-#        if os.path.isfile(filename_pointAsDec):
-#            filename = filename_pointAsDec
-#            pointAsDec = True
-#
-#        with open(filename, encoding='utf-8-sig') as csvfile:
-#
-#            readCSV = csv.reader(csvfile, delimiter=delimiter)
-#            index = 0
-#            for index, row in enumerate(readCSV):
-#                row1 = []
-#                for index, item in enumerate(row):
-#                    if index == columnofdate:
-#                        row1.append(item)
-#                    if pointAsDec is False:
-#                        # changes decimalsign , to decimalsign .
-#                        item = item.replace(",", ".")
-#                        item = item.replace(".", "", item.count(".") - 1)
-#                        row1.append(item)
-#                    else:
-#                        row1.append(item)
-#                if index is header:
-#                    self.__dataArrayHeader = self.__dataArrayHeader +\
-#                                    ','.join(x for x in row1) + '\n'
-#                if index > startrow and index is not header:
-#                    self.__dataArray = self.__dataArray + ','.join(
-#                                            x for x in row1) + '\n'
-#            csvfile.close
-#            print(self.__dataArray)
-#            if pointAsDec is False:
-#                # saves data with decimalsign . into new file with
-#                # filename_pointAsDec.
-#                with open(filename_pointAsDec, "w", delimiter=delimiter) as text_file:
-#                    text_file.write(self.__dataArray)
-#                    text_file.close()
-#            else:
-#                self.__dataArray = np.genfromtxt(io.StringIO(self.__dataArray),
-#                                              dtype=dtype,
-#                                              delimiter=',',
-#                                              converters=self.str2date(
-#                                                  columnofdate=columnofdate,
-#                                                  dateformat=dateformat))
-#
-#        return self.__dataArray
+                          names=names, infer_datetime_format=False)
+
+        if dtype is not None:
+            df = df.rename(columns=dtype)
+            # adds columns that are probably not given in dtype
+            # but are used add instances of class
+        if None in dtype:
+            df = pd.concat([df, pd.DataFrame(columns=dtype[None])])
+        print('loading %s \t----> OK ' %filename)
+        return df
+
 
     def importTRY(self, location, year, season, quarterHour, startrow, dtype):
         self.__table = []
@@ -156,30 +105,28 @@ class DataIO():
 
             return np.asarray(self.__table, dtype=self.__dtype)
 
-    def importDBF(self, filename_import, dtype=None, dtypeAllocation=None):
+    def importDBF(self, filename, dtype=None, dtypeAllocation=None):
         '''
         imports dBASE and allocates values to dtype of returnArray. Allocation
         of values of dBASE to dtype of returnArray must be given in
         dtypeAllocation.
         #######
         return:
-           array with dtype
+           Pandas DataFrame
         '''
-        try:
-            dataArray = DBF(self.__filepath_import + os.sep + filename_import,
-                            encoding='cp437', load=True)
-        except:
-            print("If you import STANET DBF, please make sure to clean"
-                  "STANET-File with STANTE-Programm. Former deleted nodes will"
-                  "cause error")
-        returnArray = np.empty(len(dataArray), dtype=dtype)
-        for index, record in enumerate(dataArray):
-            for item in dtype['names']:
-                try:
-                    returnArray[index][item] = record[dtypeAllocation[item]]
-                except:
-                    pass
-        return returnArray
+
+        dbf = ps.open(self.__filepath_import + os.sep + filename)
+        d = {col: dbf.by_col(col) for col in dbf.header}
+        df = pd.DataFrame(d)
+        if dtype is not None:
+            df = df.rename(columns=dtype)
+            # adds columns that are probably not given in dtype
+            # but are used add instances of class
+        if None in dtype:
+            df = pd.concat([df, pd.DataFrame(columns=dtype[None])])
+        print('loading %s \t----> OK' %filename)
+
+        return df
 
     def exportCSV(self, filename, results, delimiter=";"):
         '''
@@ -243,14 +190,3 @@ class DataIO():
     def strpdate2num(self, column):
         func_strpdate2num = {column: dates.strpdate2num('%d.%m.%Y %H:%M')}
         return func_strpdate2num
-
-
-#    def writeColHeader(self, filepathAndfilename, tableHeadername):
-#        self.__filepathAndfilename = filepathAndfilename
-#        with open(self.__filepathAndfilename, "r") as text_file:
-#            text_old = text_file.read()
-#            text_file.close()
-#        with open(self.__filepathAndfilename, "w") as text_file:
-#            text_file.write(text_old[0:0] + str(Dictionaries("").csvHeader(tableHeadername)) + text_old[:])
-#            text_file.close()
-

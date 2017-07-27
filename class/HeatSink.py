@@ -24,6 +24,7 @@ class HeatSink():
             tabelOfConsumer = [] # contains all Consumer of network, \
                 allocation Dictionary can be found in Dictionary
         '''
+        print(tableOfConsumer)
         self._instancesConsumer = self.__importConsumer(tableOfConsumer)
 
         arr = self.__consumers()
@@ -34,8 +35,8 @@ class HeatSink():
         self.v_consumers_end_y = np.asarray(arr[4])
         self.v_consumers_sNode = arr[5]
         self.v_consumers_eNode = arr[6]
-        self.v_consumers_heat_profile = arr[7]
-        self.v_consumers_heat_average = np.asarray(arr[8])
+        self.v_consumers_profile = arr[7]
+        self.v_consumers_average = np.asarray(arr[8])
         self.v_consumers_m = np.asarray(arr[9])
         self.v_consumers_Q = np.asarray(arr[10])
         self.v_consumers_cp = np.asarray(arr[11])
@@ -73,8 +74,8 @@ class HeatSink():
         retarr_end_y = [0]*length
         retarr_sNode = [0]*length
         retarr_eNode = [0]*length
-        retarr_heat_profile = [0]*length
-        retarr_heat_average = [0]*length
+        retarr_profile = [0]*length
+        retarr_average = [0]*length
         retarr_m = [0]*length
         retarr_Q = [0]*length
         retarr_cp = [0]*length
@@ -92,8 +93,8 @@ class HeatSink():
             retarr_end_y[index] = item.end_y
             retarr_sNode[index] = item.sNode
             retarr_eNode[index] = item.eNode
-            retarr_heat_profile[index] = item.heat_profile
-            retarr_heat_average[index] = item.heat_average
+            retarr_profile[index] = item.profile
+            retarr_average[index] = item.average
             retarr_m[index] = item.m
             retarr_Q[index] = item.Q
             retarr_cp[index] = item.cp
@@ -104,15 +105,15 @@ class HeatSink():
             retarr_element[index] = item.element
         return retarr_index, retarr_start_x, retarr_start_y, retarr_end_x,\
             retarr_end_y, retarr_sNode, retarr_eNode,\
-            retarr_heat_profile, retarr_heat_average, retarr_m, retarr_Q,\
+            retarr_profile, retarr_average, retarr_m, retarr_Q,\
             retarr_cp, retarr_Ta, retarr_Tb,\
             retarr_Pa, retarr_Pb, retarr_element
 
-    def __importConsumer(self, arr):
-        retArr = []
-        for item in arr:
-            retArr.append(Consumer(item))
-        return retArr
+    def __importConsumer(self, df):
+        arr = []
+        for index, row in df.iterrows():
+            arr.append(Consumer(index, row))
+        return arr
 
     def setCalculations(self):
         attr = self.__dict__

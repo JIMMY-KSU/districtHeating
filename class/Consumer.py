@@ -11,28 +11,24 @@ import numpy as np
 
 class Consumer():
 
-    def __init__(self, consumerValues):
-        self.index = consumerValues['index']
-        self.heat_exchangerModel = consumerValues['heat_exchangerModel']
+    def __init__(self, index, consumerValues):
+        self.index = index
         self.sNode = consumerValues['sNode']
         self.eNode = consumerValues['eNode']
         self.start_x = consumerValues['start_x']
         self.start_y = consumerValues['start_y']
         self.end_x = consumerValues['end_x']
         self.end_y = consumerValues['end_y']
-        self.heat_profile = consumerValues['heat_consumptionProfile']
-        self.heat_average = consumerValues['heat_consumptionAverage']
-
+        self.profile = consumerValues['profile']
+        self.average = consumerValues['average']
         self.Q = consumerValues['heat_demand'] #Watt
 
-        self.flow = consumerValues['flow']
         self.Ta = 130 + 273.15
         self.Tb = 60 + 273.15
         self.Pa = 0
         self.Pb = 0
         self.cp = 4.1
         self.m = self.__massflow(self.Q, self.cp, self.Ta, self.Tb) # t/h
-
         self.element = "consumer"
         # TODO implement function for massflow
 
@@ -55,12 +51,11 @@ class Consumer():
 if __name__ == "__main__":
     print("Consumer \t\t run directly")
 
-    consumerValues = {'index': 1, 'heat_exchangerModel': 'heatExchangerModel',
-                      'sNode': 'K1017', 'eNode': 'K1018',
+    consumerValues = {'sNode': 'K1017', 'eNode': 'K1018',
                       'start_x': 11, 'start_y': 21, 'end_x': 10, 'end_y': 20,
                       'heat_consumptionProfile': 'house',
-                      'heat_consumptionAverage': 3, 'heat_demand': 1000,
-                      'flow': 10}
+                      'heat_demand': 1000
+                      }
     consumer = Consumer(consumerValues)
     print(consumer.__dict__)
 

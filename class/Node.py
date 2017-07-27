@@ -7,8 +7,8 @@ Created on Tue Jan 17 14:17:01 2017
 
 
 class Node():
-    def __init__(self, nodeValues):
-        self.index = nodeValues['index']
+    def __init__(self, index, nodeValues):
+        self.index = index
         self.x = nodeValues['x']
         self.y = nodeValues['y']
         self.name = nodeValues['name']

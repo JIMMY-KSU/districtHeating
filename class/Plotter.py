@@ -378,6 +378,7 @@ class Plotter():
                  title=''):
         if title is '':
             title = self.title
+
         fig, ax = self._newfig(self.figsize)
 #        fig, ax = plt.subplots()
         self.plot_HeatSource(arr_heatsource, ax=ax)
@@ -570,11 +571,11 @@ class Plotter():
             '''####################'''
         if element is 'producer':
 
-            leftdown = (x - 0.5 * scale , y - 0.4 * scale)
+            leftdown = (x - 0.2 * scale , y - 0.3 * scale)
             leftup = (leftdown[0] , y)
             chimneyleft = (x + 0.1 * scale , leftup[1])
-            chimneyleftup = (chimneyleft[0], chimneyleft[1] + 0.4 * scale)
-            chimneyrightup = (chimneyleft[0] + 0.2 * scale, chimneyleftup[1])
+            chimneyleftup = (chimneyleft[0], chimneyleft[1] + 0.3 * scale)
+            chimneyrightup = (chimneyleft[0] + 0.1 * scale, chimneyleftup[1])
             chimneyrightdown = (chimneyrightup[0], leftdown[1])
             middleup = (x, y + radius)
             middledown = (x, y - radius)
@@ -609,7 +610,7 @@ class Plotter():
                        chimneyleft[1], chimneyleftup[1],
                        chimneyrightup[1], chimneyrightdown[1], leftdown[1]]
             # plot symbol
-            plt.plot(lines_x, lines_y, color='black')
+            plt.plot(lines_x, lines_y, color='red')
             # plot line up
             plt.plot([middleup[0], top[0]],
                      [middleup[1], top[1]], color='black')

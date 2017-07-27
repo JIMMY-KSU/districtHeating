@@ -7,11 +7,11 @@ Created on Tue Feb 28 12:22:53 2017
 
 
 class Producer():
-    def __init__(self, producerValues):
+    def __init__(self, index, producerValues):
 
         self.cp = 4183  # J/(kg*K)
-
-        self.index = producerValues['index']
+        self.index = index
+        self.name = producerValues['name']
         self.sNode = producerValues['sNode']  # name of point in return pipe
         self.eNode = producerValues['eNode']  # name of point in supply pipe
         self.start_x = producerValues['start_x']

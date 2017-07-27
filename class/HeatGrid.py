@@ -138,17 +138,17 @@ class HeatGrid():
 
         return retarr_sprp
 
-    def __importPipes(self, arr):
-        retArr = []
-        for item in arr:
-            retArr.append(Pipe(item))
-        return retArr
+    def __importPipes(self, df):
+        arr = []
+        for index, row in df.iterrows():
+            arr.append(Pipe(index, row))
+        return arr
 
-    def __importNodes(self, arr):
-        retArr = []
-        for item in arr:
-            retArr.append(Node(item))
-        return retArr
+    def __importNodes(self, df):
+        arr = []
+        for index, row in df.iterrows():
+            arr.append(Node(index, row))
+        return arr
 
     def __pipes(self):
         length = len(self.pipes())

@@ -23,7 +23,7 @@ class HeatSource():
         self.supply_temperature = 130 + 273.15
 
         arr = self.__producers()
-        self.v_producers_index = arr[0]
+        self.v_producers_name = arr[0]
         self.v_producers_Q = np.asarray(arr[1])
         self.v_producers_m = np.asarray(arr[2])
         self.v_producers_Ta = np.asarray(arr[3])
@@ -37,7 +37,7 @@ class HeatSource():
         self.v_producers_start_y = arr[11]
         self.v_producers_end_x = arr[12]
         self.v_producers_end_y = arr[13]
-
+        self.v_producers_index = arr[14]
         self.__str__()
         print("%i producer \t----> OK \n" % (len(self.producers())))
 
@@ -67,7 +67,7 @@ class HeatSource():
 
     def __producers(self):
         length = len(self.producers())
-        retarr_index = [0]*length
+        retarr_name = [0]*length
         retarr_Q = [0]*length
         retarr_m = [0]*length
         retarr_Ta = [0]*length
@@ -81,8 +81,9 @@ class HeatSource():
         retarr_start_y = [0]*length
         retarr_end_x = [0]*length
         retarr_end_y = [0]*length
+        retarr_index = [0]*length
         for index, item in enumerate(self.producers()):
-            retarr_index[index] = item.index
+            retarr_name[index] = item.name
             retarr_Q[index] = item.Q
             retarr_m[index] = item.m
             retarr_Ta[index] = item.Ta
@@ -96,15 +97,17 @@ class HeatSource():
             retarr_start_y[index] = item.start_y
             retarr_end_x[index] = item.end_x
             retarr_end_y[index] = item.end_y
-        return retarr_index, retarr_Q, retarr_m, retarr_Ta, retarr_Tb,\
+            retarr_index[index] = item.index
+        return retarr_name, retarr_Q, retarr_m, retarr_Ta, retarr_Tb,\
             retarr_Pa, retarr_Pb,\
             retarr_sNode, retarr_eNode, retarr_element,\
-            retarr_start_x, retarr_start_y, retarr_end_x, retarr_end_y
+            retarr_start_x, retarr_start_y, retarr_end_x,\
+            retarr_end_y, retarr_index
 
-    def __importProducers(self, tableOfProducer):
+    def __importProducers(self, df):
         arr = []
-        for item in [tableOfProducer]:
-            arr.append(Producer(tableOfProducer))
+        for index, row in df.iterrows():
+            arr.append(Producer(index, row))
         return arr
 
     def setCalculations(self):

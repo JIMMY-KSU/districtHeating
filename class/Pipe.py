@@ -8,6 +8,7 @@ Created on Sat Jan 14 12:43:40 2017
 
 
 import math
+import numpy as np
 from Dictionary import STANET_producer_allocation as dictionary
 
 class Pipe():
@@ -65,17 +66,16 @@ class Pipe():
         self.Pa = 0  # [Pa]
         self.Pb = 0  # [Pb]
 
-
 # TODO bring def heat_transferCoefficient in correct form, take care of possibility that pipeValues['heat_transferCoefficient_inner'] etc. is empty or not defined..
 # TODO implement @property
 
     def __set_roughness(self, pipeValues):
         if pipeValues['roughness'] is not '':
-            self.roughness = pipeValues['roughness']
+            roughness = pipeValues['roughness']
             #  k in [mm] from "Druckverluste in Rohrleitungen"
         else:
-            self.roughness = 0.0013
-        return self.roughness
+            roughness = 0.0013
+        return roughness
 
     def __set_transitionCoefficient(self, pipeValues):
         if 'heatTransitionCoefficient' in pipeValues is not ('' or None):
@@ -245,9 +245,13 @@ if __name__=="__main__":
                     'input' + os.sep + 'testFiles',
                     os.path.dirname(os.getcwd()) + os.sep +
                     'output' + os.sep + 'testFiles')
-    pipe = Pipe(dataIO.importCSV('pipes.csv', header = 0, dtype=dictionary))
-    print(pipe.roughness)
+    df = dataIO.importCSV('pipes.csv', header = 0, dtype=dictionary)
+    arr=[]
     
+    for index, row in df.iterrows():
+        print(index, row)
+        arr.append(Pipe(index, df))
+
     
 else:
     print('Pipe \t\t\t was imported into another module')

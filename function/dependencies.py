@@ -4,8 +4,6 @@ Created on Thu Mar  9 14:11:03 2017
 
 @author: jpelda
 """
-import math
-import numpy as np
 
 cp = 4182 #  J/(kg*K)
 

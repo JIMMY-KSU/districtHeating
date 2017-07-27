@@ -463,7 +463,7 @@ class Plotter():
                 gdf['sPoints'],
                 gdf['ePoints'],
                 arr['v_producers_element']):
-            print(l)
+#            print(l)
             rotation = np.arcsin((sPoints.x-ePoints.x) / l)
             rotation = np.rad2deg(rotation)
             self.get_symbol(pointXY=center, scale=l/4, rotation=rotation,

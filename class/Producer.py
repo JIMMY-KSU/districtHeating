@@ -5,6 +5,8 @@ Created on Tue Feb 28 12:22:53 2017
 @author: jpelda
 """
 
+import numpy as np
+
 
 class Producer():
     def __init__(self, index, producerValues):
@@ -25,7 +27,9 @@ class Producer():
         self.Pb = 700000  # supply pressure [Pa] 1bar = 100000Pa
         self.Tb = 130 + 273.15  # supply temperature
         self.Ta = 0
-        self.m = self.__massflow(self.Q, self.cp, self.Ta, self.Tb)  # t/h
+        self.m = self.__massflow(
+                self.Q, self.cp, self.Ta, self.Tb)  # t/h
+
         self.element = "producer"
 
     def __massflow(self, Q, cp, Ta, Tb):

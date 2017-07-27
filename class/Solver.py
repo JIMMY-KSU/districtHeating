@@ -21,7 +21,6 @@ class Solver():
         self._inzidenzmatrix_HeatSink = self.__inzidenzmatrix_HeatSink()
         self._inzidenzmatrix_HeatSource = self.__inzidenzmatrix_HeatSource()
         self._inzidenzmatrix = self.__inzidenzmatrix()
-
         self._elements = np.shape(self._inzidenzmatrix)[1]
         self._nodes = np.shape(self._inzidenzmatrix)[0]
 
@@ -49,7 +48,7 @@ class Solver():
                                       self.__I_sink.shape[1] +
                                       self.__I_source.shape[1])
 
-        self.Tamb = 5+273.15  # [K]
+        self.Tamb = np.float64(5+273.15)  # [K]
         self.v_producer_Pa_set = self.heatsource.v_producers_Pa
         self.v_producer_Pb_set = self.heatsource.v_producers_Pb
 
@@ -238,7 +237,6 @@ class Solver():
         producer_Pa = dp.producer_press(
                             self.v_producer_Pa_set,
                             v_Pa[self.__I_source_slice])
-
         F = np.concatenate((
                          massBalance,
                          energyBalance_1, energyBalance_2,
@@ -247,7 +245,6 @@ class Solver():
                          pipePress, producer_Pb, producer_Pa,
                          consumer_Tb, producer_Tb,
                          pipeQ, consumer_Q))
-
         return F
 
     def getGuess(self):
@@ -269,9 +266,10 @@ class Solver():
             # heatflows
             v_Q[self.__I_grid_slice] = self.heatgrid.v_pipes_Q
             v_Q[self.__I_sink_slice] = self.heatsink.v_consumers_Q
-            v_Q[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_Q) /
-                                          len(self.heatsource.producers()))
-    
+            v_Q[self.__I_source_slice] = np.abs(
+                    (np.sum(self.heatsink.v_consumers_Q) /
+                     len(self.heatsource.producers())))
+
             '''
             vector of temperatures by guess
             '''
@@ -343,7 +341,6 @@ class Solver():
     
             '''set guess temperature for supply and return pipes'''
             for index, item in enumerate(self.heatgrid.v_pipes_sprp):
-    
                 try:
                     if item == 1:
                         v_Pa[self.__I_grid_slice][index] =\
@@ -388,24 +385,35 @@ class Solver():
                 self.heatsource.v_producers_Tb
 
         arr = np.concatenate((v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb))
-
         return arr
 
-    def save_x(self, arr):
-        v_m = arr[0:self._elements]
-        v_Pa = arr[self._elements + self._nodes:self._elements*2 + self._nodes]
-        v_Pb = arr[self._elements*2 + self._nodes:
-                   self._elements*3 + self._nodes]
-        v_Q = arr[self._elements*3 + self._nodes:
-                  self._elements*4 + self._nodes]
-        v_Ta = arr[self._elements*4 + self._nodes*2:
-                   self._elements*5 + self._nodes*2]
-        v_Tb = arr[self._elements*5 + self._nodes*2:
-                   self._elements*6 + self._nodes*2]
+    def __xToSingleVectors(self, x):
+        '''
+        Splits the solver vextor x into its parts v_m, v_P, v_Pa etc
+        input: x
+        output: v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb
+        '''
+        v_m = x[0:self._elements]
 
-        v_P = arr[self._elements:self._elements + self._nodes]
-        v_T = arr[self._elements*4 + self._nodes:
+        v_P = x[self._elements:self._elements + self._nodes]
+        v_Pa = x[self._elements + self._nodes:self._elements*2 + self._nodes]
+        v_Pb = x[self._elements*2 + self._nodes:
+                   self._elements*3 + self._nodes]
+
+        v_Q = x[self._elements*3 + self._nodes:
+                  self._elements*4 + self._nodes]
+
+        v_T = x[self._elements*4 + self._nodes:
                   self._elements*4 + self._nodes*2]
+        v_Ta = x[self._elements*4 + self._nodes*2:
+                   self._elements*5 + self._nodes*2]
+        v_Tb = x[self._elements*5 + self._nodes*2:
+                   self._elements*6 + self._nodes*2]
+        
+        return v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb
+        
+    def save_x(self, x):
+        v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb = self.__xToSingleVectors(x)
 
         self.heatgrid.v_pipes_m = v_m[self.__I_grid_slice]
         self.heatgrid.v_pipes_Q = v_Q[self.__I_grid_slice]
@@ -430,28 +438,25 @@ class Solver():
         self.heatsource.v_producers_Tb = v_Tb[self.__I_source_slice]
         self.heatsource.v_producers_Pa = v_Pa[self.__I_source_slice]
         self.heatsource.v_producers_Pb = v_Pb[self.__I_source_slice]
-
+        self.getGuessFirstRun = 0
 #   TODO save_x for pipes, plus how to print pretty.
 
-    def print_x(self, arr, name):
+    def print_x(self, x, name):
+        '''
+        prints x from Solver
+        input: arr = x
+               name = guess or solution or another name for values of x
+        output: print(x)
+        '''
         v_sprp = self.heatgrid.v_pipes_sprp + [''] * 2*self._elements
 
+        v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb = self.__xToSingleVectors(x)
         for element, sprp, m, Pa, Pb, Q, Ta, Tb in zip(
                                 self.heatgrid.v_pipes_element +
                                 self.heatsink.v_consumers_element +
                                 self.heatsource.v_producers_element,
                                 v_sprp,
-                                arr[0:self._elements],
-                                arr[self._elements + self._nodes:
-                                    self._elements*2 + self._nodes],
-                                arr[self._elements*2 + self._nodes:
-                                    self._elements*3 + self._nodes],
-                                arr[self._elements*3 + self._nodes:
-                                    self._elements*4 + self._nodes],
-                                arr[self._elements*4 + self._nodes*2:
-                                    self._elements*5 + self._nodes*2],
-                                arr[self._elements*5 + self._nodes*2:
-                                    self._elements*6 + self._nodes*2]):
+                                v_m, v_Pa, v_Pb, v_Q, v_Ta, v_Tb):
             if sprp != '':
                 print("%s: sprp %i \t Q %11.3f [W] m %7.3f [m/s] Ta %3.2f [K] "
                       "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa]" % (
@@ -469,10 +474,7 @@ class Solver():
 
         for element, sprp, P, T in zip(self.heatgrid.v_nodes_element,
                                        self.heatgrid.v_nodes_sprp,
-                                       arr[self._elements:
-                                           self._elements + self._nodes],
-                                       arr[self._elements*4 + self._nodes:
-                                           self._elements*4 + self._nodes*2]):
+                                       v_P, v_T):
             print("%s: sprp %i \t\t\t\t\t\t T %3.2f [K] \t\t P %6.f [Pa]" % (
                                                  element, sprp, T, P))
         print("values of %s \t ----> OK\n" % name)
@@ -489,30 +491,24 @@ if __name__ == "__main__":
     print('DistrictHeatingSystem \t run directly \n')
 
     DataIO = DataIO(
-                os.path.dirname(os.getcwd()) + os.sep + 'input',
-                os.path.dirname(os.getcwd()) + os.sep + 'output')
+                os.path.dirname(os.getcwd()) + os.sep +
+                'input' + os.sep + 'TestNetz',
+                os.path.dirname(os.getcwd()) + os.sep +
+                'output' + os.sep + 'TestNetz')
 
     heatgrid_nodes = DataIO.importDBF(
-            'TestNetz' + os.sep + 'KTestNetz.DBF',
-            Dictionary.HeatGrid_node_dtype,
-            Dictionary.HeatGrid_STANET_nodes_allocation)
+            'KTestNetz.DBF', dtype=Dictionary.STANET_nodes_allocation)
 
     heatgrid_pipes = DataIO.importDBF(
-            'TestNetz' + os.sep + 'STestNetz.DBF',
-            Dictionary.HeatGrid_pipe_dtype,
-            Dictionary.HeatGrid_STANET_pipes_allocation)
+            'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
 
     heatsink = DataIO.importDBF(
-            'TestNetz' + os.sep + 'WTestNetz.DBF',
-            Dictionary.HeatSink_consumer_dtype,
-            Dictionary.HeatSink_STANET_consumer_allocation)
+            'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
 
     heatsource = DataIO.importCSV(
-            'TestNetz' + os.sep + 'WTestNetz.csv',
-            dtype=Dictionary.HeatSource_producer_dtype,
-            startrow=1,
-            columnofdate=None,
-            dateformat='None')
+            'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
+            delimiter='\t', header=0)
+
     heatsink = HeatSink(heatsink)
     heatsource = HeatSource(heatsource)
     heatgrid = HeatGrid(heatgrid_pipes,
@@ -522,10 +518,13 @@ if __name__ == "__main__":
                          np.array([None]*len(
                              heatsource.v_producers_eNode)))))
     solver = Solver(heatgrid, heatsink, heatsource)
+    print('----> Get guess for equations.')
     guess = solver.getGuess()
+    
+    solver.print_x(guess, "guess")
+    print('----> Solve equations.')
     solution = fsolve(solver.gridCalculation, guess)
 
-    solver.print_x(guess, "guess")
     solver.print_x(solution, "solution")
     solver.save_x(solution)
 

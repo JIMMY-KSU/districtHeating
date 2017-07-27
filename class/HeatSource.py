@@ -13,23 +13,24 @@ class HeatSource():
     def __init__(self, tableOfProducer):
 
         self._instancesProducer = self.__importProducers(tableOfProducer)
-        
+
         self.nodes = self.__nodes()
         self.sNodes = self.__sNodes()
         self.eNodes = self.__eNodes()
         
-        self.supply_pressure = 7
-        self.return_pressure = 1
-        self.supply_temperature = 130 + 273.15
+#        self.supply_pressure = 7
+#        self.return_pressure = 1
+        self.supply_temperature = np.float64(130 + 273.15)
 
         arr = self.__producers()
+
         self.v_producers_name = arr[0]
         self.v_producers_Q = np.asarray(arr[1])
         self.v_producers_m = np.asarray(arr[2])
         self.v_producers_Ta = np.asarray(arr[3])
         self.v_producers_Tb = np.asarray(arr[4])  # supply temperature
-        self.v_producers_Pb = np.asarray(arr[5])  # supply pressure
-        self.v_producers_Pa = np.asarray(arr[6])  # return pressure
+        self.v_producers_Pa = np.asarray(arr[5])  # return pressure
+        self.v_producers_Pb = np.asarray(arr[6])  # supply pressure
         self.v_producers_sNode = arr[7]
         self.v_producers_eNode = arr[8]
         self.v_producers_element = arr[9]
@@ -144,19 +145,18 @@ if __name__ == "__main__":
     print('HeatSource \t\t run directly \n')
     
     DataIO = DataIO(
-            os.path.dirname(os.getcwd()) + os.sep + 'input',
-            os.path.dirname(os.getcwd()) + os.sep + 'output')
+                os.path.dirname(os.getcwd()) + os.sep +
+                'input' + os.sep + 'TestNetz',
+                os.path.dirname(os.getcwd()) + os.sep +
+                'output' + os.sep + 'TestNetz')
     
     heatsource = DataIO.importCSV(
-        'TestNetz' + os.sep + 'WTestNetz.csv',
-        dtype=Dictionary.HeatSource_producer_dtype,
-        startrow=1,
-        columnofdate=None,
-        dateformat='None')
+            'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
+            delimiter='\t', header=0)
     
     testSource = HeatSource(heatsource)
     testSource.setCalculations()
-    print(testSource.getCalculations())
+#    print(testSource.getCalculations())
     
 else:
     print('HeatSource \t\t was imported into another module')

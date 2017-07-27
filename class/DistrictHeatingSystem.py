@@ -47,10 +47,14 @@ class DistrictHeatingSystem():
 #        logger.info("This is an info log")
 
     def calculateDHS(self):
-        print("---->\tstart to calculate heatgrid\n")
+        print("---->\n---->\tStart to calculate heatgrid\n---->\n")
         solver = Solver(self.heatgrid, self.heatsink, self.heatsource)
+        print("---->\tStart to get guesses for equations\n")
         guess = solver.getGuess()
+        solver.print_x(guess, 'guess')
+        print("---->\tStart to solve equations\n")
         solution = fsolve(solver.gridCalculation, guess)
+        solver.print_x(solution, 'solution')
         solver.save_x(solution)
 
         return None
@@ -74,7 +78,6 @@ if __name__ == "__main__":
 
     heatgrid_pipes = DataIO.importDBF(
             'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
-
     heatsink = DataIO.importDBF(
             'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
 
@@ -89,10 +92,10 @@ if __name__ == "__main__":
             heatsource)
     i = 0
     while i < 2:
-        print(i)
+        print('#####\trun number %i\t#####' %i)
         DHS1.calculateDHS()
         endTime = time.time()
-        DHS1.heatgrid.__str__()
+#        DHS1.heatgrid.__str__()
 #        DHS1.heatsink.__str__()
 #        DHS1.heatsource.__str__()
 
@@ -103,7 +106,6 @@ if __name__ == "__main__":
         DHS1.heatsource.setCalculations()
         i = i + 1
 
-    print(DHS1.heatsink.v_consumers_Q)
     DataIO.exportNumpyArr("HeatGrid", DHS1.heatgrid.getCalculations())
     DataIO.exportNumpyArr("HeatSink", DHS1.heatsink.getCalculations())
     DataIO.exportNumpyArr("HeatSouce", DHS1.heatsource.getCalculations())

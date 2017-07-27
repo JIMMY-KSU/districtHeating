@@ -58,6 +58,7 @@ class DataIO():
             # but are used add instances of class
         if None in dtype:
             df = pd.concat([df, pd.DataFrame(columns=dtype[None])])
+
         print('loading %s \t----> OK ' %filename)
         return df
 
@@ -114,7 +115,6 @@ class DataIO():
         return:
            Pandas DataFrame
         '''
-
         dbf = ps.open(self.__filepath_import + os.sep + filename)
         d = {col: dbf.by_col(col) for col in dbf.header}
         df = pd.DataFrame(d)

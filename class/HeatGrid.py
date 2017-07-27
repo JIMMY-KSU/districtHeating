@@ -35,6 +35,7 @@ class HeatGrid():
 
 
         arr = self.__pipes()
+
         self.v_pipes_index = arr[0]
         self.v_pipes_start_x = arr[1]
         self.v_pipes_start_y = arr[2]
@@ -287,18 +288,17 @@ if __name__ == "__main__":
 
     print('HeatGrid \t\t run directly')
 
-    DataIO = DataIO(os.path.dirname(os.getcwd()) + os.sep + 'input',
-                    os.path.dirname(os.getcwd()) + os.sep + 'output')
+    DataIO = DataIO(
+                os.path.dirname(os.getcwd()) + os.sep +
+                'input' + os.sep + 'TestNetz',
+                os.path.dirname(os.getcwd()) + os.sep +
+                'output' + os.sep + 'TestNetz')
 
     heatgrid_nodes = DataIO.importDBF(
-        'TestNetz' + os.sep + 'KTestNetz.DBF',
-        Dictionary.HeatGrid_node_dtype,
-        Dictionary.HeatGrid_STANET_nodes_allocation)
+            'KTestNetz.DBF', dtype=Dictionary.STANET_nodes_allocation)
 
     heatgrid_pipes = DataIO.importDBF(
-        'TestNetz' + os.sep + 'STestNetz.DBF',
-        Dictionary.HeatGrid_pipe_dtype,
-        Dictionary.HeatGrid_STANET_pipes_allocation)
+            'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
 
     testGrid = HeatGrid(heatgrid_pipes, heatgrid_nodes, [["K1017", None]])
 

@@ -24,7 +24,6 @@ class HeatSink():
             tabelOfConsumer = [] # contains all Consumer of network, \
                 allocation Dictionary can be found in Dictionary
         '''
-        print(tableOfConsumer)
         self._instancesConsumer = self.__importConsumer(tableOfConsumer)
 
         arr = self.__consumers()
@@ -150,13 +149,13 @@ if __name__ == "__main__":
     import Dictionary
     print('HeatSink \t\t run directly')
     
-    DataIO = DataIO(os.path.dirname(os.getcwd()) + os.sep + 'input',
-                    os.path.dirname(os.getcwd()) + os.sep + 'output')
-
+    DataIO = DataIO(
+                os.path.dirname(os.getcwd()) + os.sep +
+                'input' + os.sep + 'TestNetz',
+                os.path.dirname(os.getcwd()) + os.sep +
+                'output' + os.sep + 'TestNetz')
     heatsink = DataIO.importDBF(
-            'TestNetz' + os.sep + 'WTestNetz.DBF',
-            Dictionary.HeatSink_consumer_dtype,
-            Dictionary.HeatSink_STANET_consumer_allocation)
+            'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
 
     testSink = HeatSink(heatsink)
     testSink.setCalculations()

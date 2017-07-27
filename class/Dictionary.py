@@ -224,9 +224,10 @@ Created on Sun Feb 26 11:03:13 2017
 STANET_nodes_allocation = {
         'GEOH': 'height',
         'KNAM': 'name',
-        'SUPPLY': 'sprp',
+#        'SUPPLY': 'sprp',
         'XRECHTS': 'x',
-        'YHOCH': 'y'}
+        'YHOCH': 'y',
+        None:['sprp']}
 
 STANET_pipes_allocation = {
         'XRA': 'start_x',

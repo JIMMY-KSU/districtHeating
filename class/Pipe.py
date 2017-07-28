@@ -45,18 +45,19 @@ class Pipe():
         self.diameter_outer = pipeValues['diameter_outer']
 
         self.heatflow = 0
+        self.m_max_set = pipeValues['m_max']
+        
         self.conductivity_inner = pipeValues['conductivity_inner']
-        self.conductivity_middle = pipeValues[
-               'conductivity_middle']
+        self.conductivity_middle = pipeValues['conductivity_middle']
         self.conductivity_outer = pipeValues['conductivity_outer']
 
-        self.transferCoefficient_inner = pipeValues[
-                        'transferCoefficient_inner']
-        self.transferCoefficient_outer = pipeValues[
-                        'transferCoefficient_outer']
+        self.transferCoefficient_inner =\
+                                        pipeValues['transferCoefficient_inner']
+        self.transferCoefficient_outer =\
+                                        pipeValues['transferCoefficient_outer']
 
-        self.transitionCoefficient = self.__set_transitionCoefficient(
-                pipeValues)
+        self.transitionCoefficient =\
+                            self.__set_transitionCoefficient(pipeValues)
 
 
         self.Q = 0  # [Watt]
@@ -133,32 +134,6 @@ class Pipe():
             h_tC += layer_thickness / layer_heat_conductivity
         return h_tC
 
-#    def heatloss(self):
-## TODO Berechungen überprüfen
-#        var = 0
-#
-#        var += 1 / (self.__heat_transferCoefficients[0] * (self.diameter_inner / 2 ))
-##        print(str(self.__heat_transferCoefficients[0]) + '|' + str(self.diameter_inner) + '| var0= ' +str(var))
-#        var += 1 / (self.__heat_transferCoefficients[1] * (self.diameter_outer / 2))
-##        print(str(self.__heat_transferCoefficients[1]) + '|' + str(self.diameter_outer) + '| var1= ' +str(var))
-#        var += ((1 / self.__heat_conductivities[0]) *
-#                (math.log((self.__diameters[0] / 2) /
-#                          (self.diameter_inner / 2))))
-##        print(str(self.__heat_conductivities[0]) + '|' + str(self.__diameters[0]) + '| var2= ' +str(var))
-#        var += ((1 / self.__heat_conductivities[1]) *
-#                (math.log((self.__diameters[1] / 2) /
-#                 (self.__diameters[1 - 1] / 2))))
-##        print(str(self.__heat_conductivities[1]) + '|' + str(self.__diameters[1]) + '| var3= ' +str(var))
-#        var += ((1 / self.__heat_conductivities[2]) *
-#                (math.log((self.__diameters[2] / 2) /
-#                 (self.__diameters[2 - 1] / 2))))
-##        print(str(self.__heat_conductivities[2]) + '|' + str(self.__diameters[2]) + '| var4= ' +str(var))
-#        heatloss = (
-#                    (2 * math.pi * self.length *
-#                     (self.fluid_temp - self.ambient_temp)) /
-#                    var
-#                    )
-#        return heatloss
 
     def start_flowspeed(self):
         """
@@ -236,6 +211,14 @@ class Pipe():
         end_pressure = start_pressure - self.pressure_difference()
         return end_pressure  # Pa
 
+    def __str__(self):
+        attr = self.__dict__
+        attr = {item: attr[item] for item in attr if item not in
+                ("pipeValues",
+                 "__str__")}
+        attr = attr.values()
+        print(attr)
+
 if __name__=="__main__":
     print('Pipe \t\t\t run directly')
     import os
@@ -246,12 +229,10 @@ if __name__=="__main__":
                     os.path.dirname(os.getcwd()) + os.sep +
                     'output' + os.sep + 'testFiles')
     df = dataIO.importCSV('pipes.csv', header = 0, dtype=dictionary)
-    arr=[]
-    
-    for index, row in df.iterrows():
-        print(index, row)
-        arr.append(Pipe(index, df))
 
-    
+    pipe = Pipe(0, df)
+    pipe.__str__()
+
+
 else:
     print('Pipe \t\t\t was imported into another module')

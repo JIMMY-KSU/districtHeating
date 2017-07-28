@@ -14,7 +14,7 @@ def pipe_massflow(m, Ta, Tb, Q, cp=cp):
     return res
 
 def pipe_heatflow(Q, Ta, Tb, A=1, k=1, Tamb=273.15 + 10):
-    res = (k*A)*(Tamb -(Ta + Tb)/2) - Q
+    res = (-k*A)*((Tb + Ta)/2 - Tamb) - Q
     return res
 
 def pipe_press(Pa, Pb, m, Ha=0, Hb=0):

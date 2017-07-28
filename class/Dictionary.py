@@ -224,10 +224,9 @@ Created on Sun Feb 26 11:03:13 2017
 STANET_nodes_allocation = {
         'GEOH': 'height',
         'KNAM': 'name',
-#        'SUPPLY': 'sprp',
+        'SUPPLY': 'sprp',
         'XRECHTS': 'x',
-        'YHOCH': 'y',
-        None:['sprp']}
+        'YHOCH': 'y'}
 
 STANET_pipes_allocation = {
         'XRA': 'start_x',
@@ -240,6 +239,7 @@ STANET_pipes_allocation = {
         'WDZAHL': 'transitionCoefficient',
         'RAU': 'roughness',
         'DM': 'diameter_inner',
+        'DP':'m_max', #  for testing, is not the correct key
         None: ['start_height', 'end_height',
                'transferCoefficient_inner',
                'transferCoefficient_outer',
@@ -249,6 +249,7 @@ STANET_pipes_allocation = {
                'diameter_middleinner',
                'diameter_middleouter',
                'diameter_outer',
+               'm_max',
                'sprp']}
 
 
@@ -261,7 +262,6 @@ STANET_consumer_allocation = {
         'YHOCH': 'start_y',
         'XRECHTS2': 'end_x',
         'YHOCH2': 'end_y',
-        'VERBRAUCH': 'heat_demand',
         None:['index', 'profile', 'average']
         }
 

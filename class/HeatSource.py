@@ -20,17 +20,17 @@ class HeatSource():
         
 #        self.supply_pressure = 7
 #        self.return_pressure = 1
-        self.supply_temperature = np.float64(130 + 273.15)
+        self.supply_temperature = 130 + 273.15
 
         arr = self.__producers()
 
         self.v_producers_name = arr[0]
-        self.v_producers_Q = np.asarray(arr[1])
-        self.v_producers_m = np.asarray(arr[2])
-        self.v_producers_Ta = np.asarray(arr[3])
-        self.v_producers_Tb = np.asarray(arr[4])  # supply temperature
-        self.v_producers_Pa = np.asarray(arr[5])  # return pressure
-        self.v_producers_Pb = np.asarray(arr[6])  # supply pressure
+        self.v_producers_Q = np.asarray(arr[1], dtype='float64')
+        self.v_producers_m = np.asarray(arr[2], dtype='float64')
+        self.v_producers_Ta = np.asarray(arr[3], dtype='float64')
+        self.v_producers_Tb = np.asarray(arr[4], dtype='float64')  # supply temperature
+        self.v_producers_Pa = np.asarray(arr[5], dtype='float64')  # return pressure
+        self.v_producers_Pb = np.asarray(arr[6], dtype='float64')  # supply pressure
         self.v_producers_sNode = arr[7]
         self.v_producers_eNode = arr[8]
         self.v_producers_element = arr[9]

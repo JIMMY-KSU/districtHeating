@@ -32,7 +32,6 @@ class Consumer():
         self.element = "consumer"
         # TODO implement function for massflow
 
-
     def heat_consumptionProfiles(self, i=slice(None,None)):
         return self.__dataArray['heat_consumptionProfile'][i]
 
@@ -54,9 +53,9 @@ if __name__ == "__main__":
     consumerValues = {'sNode': 'K1017', 'eNode': 'K1018',
                       'start_x': 11, 'start_y': 21, 'end_x': 10, 'end_y': 20,
                       'heat_consumptionProfile': 'house',
-                      'heat_demand': 1000
+                      'heat_demand': 1000, 'profile':'test', 'average':'test'
                       }
-    consumer = Consumer(consumerValues)
+    consumer = Consumer(0, consumerValues)
     print(consumer.__dict__)
 
 else:

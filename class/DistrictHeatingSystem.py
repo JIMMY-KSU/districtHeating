@@ -78,12 +78,15 @@ if __name__ == "__main__":
 
     heatgrid_pipes = DataIO.importDBF(
             'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
+
     heatsink = DataIO.importDBF(
             'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
 
     heatsource = DataIO.importCSV(
             'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
             delimiter='\t', header=0)
+
+
 
     DHS1 = DistrictHeatingSystem(
             heatgrid_pipes,
@@ -109,15 +112,16 @@ if __name__ == "__main__":
     DataIO.exportNumpyArr("HeatGrid", DHS1.heatgrid.getCalculations())
     DataIO.exportNumpyArr("HeatSink", DHS1.heatsink.getCalculations())
     DataIO.exportNumpyArr("HeatSouce", DHS1.heatsource.getCalculations())
-    DHS1_Plotter = Plotter(figsize=1)
-
-#    print(DHS1_Plotter.plot_HeatGrid(DHS1.heatgrid.getCalculations(1)))
+    print(DHS1.heatgrid.pipes_operatingLoad())
+#    DHS1_Plotter = Plotter(figsize=1)
+#
 #    fig = DHS1_Plotter.plot_HeatGrid(DHS1.heatgrid.getCalculations(1))
 #    DataIO.exportFig("test", fig)
-    fig=DHS1_Plotter.plot_DHS(DHS1.heatgrid.getCalculations(1),
-                          DHS1.heatsink.getCalculations(1),
-                          DHS1.heatsource.getCalculations(1))
-    DataIO.exportFig('test', fig)
+#
+#    fig = DHS1_Plotter.plot_DHS(DHS1.heatgrid.getCalculations(1),
+#                          DHS1.heatsink.getCalculations(1),
+#                          DHS1.heatsource.getCalculations(1))
+#    DataIO.exportFig('test', fig)
 
 else:
     import os

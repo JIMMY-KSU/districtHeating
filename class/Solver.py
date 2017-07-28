@@ -23,7 +23,10 @@ class Solver():
         self._inzidenzmatrix = self.__inzidenzmatrix()
         self._elements = np.shape(self._inzidenzmatrix)[1]
         self._nodes = np.shape(self._inzidenzmatrix)[0]
-
+#        print(self._inzidenzmatrix)
+#        print(self._inzidenzmatrix_HeatGrid)
+#        print(self._inzidenzmatrix_HeatSink)
+#        print(self._inzidenzmatrix_HeatSource)
         '''
         sets up all necessary inzmatrices
         '''
@@ -48,7 +51,10 @@ class Solver():
                                       self.__I_sink.shape[1] +
                                       self.__I_source.shape[1])
 
-        self.Tamb = np.float64(5+273.15)  # [K]
+        self.Tamb = 5+273.15  # [K]
+        self.cp = 4182 #  J/(kg*K)
+        self.k = 1
+        self.A = 1
         self.v_producer_Pa_set = self.heatsource.v_producers_Pa
         self.v_producer_Pb_set = self.heatsource.v_producers_Pb
 
@@ -259,16 +265,6 @@ class Solver():
             v_m[self.__I_sink_slice] = self.heatsink.v_consumers_m
             v_m[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_m) /
                                           len(self.heatsource.producers()))
-            '''
-            vector of heatflows by guess
-            '''
-            v_Q = np.zeros(self._elements)
-            # heatflows
-            v_Q[self.__I_grid_slice] = self.heatgrid.v_pipes_Q
-            v_Q[self.__I_sink_slice] = self.heatsink.v_consumers_Q
-            v_Q[self.__I_source_slice] = np.abs(
-                    (np.sum(self.heatsink.v_consumers_Q) /
-                     len(self.heatsource.producers())))
 
             '''
             vector of temperatures by guess
@@ -320,6 +316,18 @@ class Solver():
             '''temperature Tb'''
             v_Tb[self.__I_sink_slice] = self.heatsink.v_consumers_Tb
             v_Tb[self.__I_source_slice] = self.heatsource.v_producers_Tb
+
+            '''
+            vector of heatflows by guess
+            '''
+            v_Q = np.zeros(self._elements)
+            # heatflows
+            v_Q[self.__I_grid_slice] = self.k * self.A * (
+                    self.Tamb - v_Ta[self.__I_grid_slice])
+            v_Q[self.__I_sink_slice] = self.heatsink.v_consumers_Q
+            v_Q[self.__I_source_slice] = np.abs(
+                    (np.sum(self.heatsink.v_consumers_Q) /
+                     len(self.heatsource.producers())))
 
             '''
             vector of pressures by guess
@@ -472,11 +480,13 @@ class Solver():
                                                   Ta, Tb,
                                                   Pa, Pb))
 
-        for element, sprp, P, T in zip(self.heatgrid.v_nodes_element,
+        for element, name_nodes, sprp, P, T in zip(
+                                       self.heatgrid.v_nodes_element,
+                                       self.heatgrid.v_nodes_name,
                                        self.heatgrid.v_nodes_sprp,
                                        v_P, v_T):
-            print("%s: sprp %i \t\t\t\t\t\t T %3.2f [K] \t\t P %6.f [Pa]" % (
-                                                 element, sprp, T, P))
+            print("%s %s: sprp %i \t\t\t\t\t\t T %3.2f [K] \t\t P %6.f [Pa]"
+                  % (element, name_nodes, sprp, T, P))
         print("values of %s \t ----> OK\n" % name)
 
 if __name__ == "__main__":
@@ -487,7 +497,6 @@ if __name__ == "__main__":
     from HeatSink import HeatSink
     from HeatSource import HeatSource
     from scipy.optimize import fsolve
-    import time
     print('DistrictHeatingSystem \t run directly \n')
 
     DataIO = DataIO(

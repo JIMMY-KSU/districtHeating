@@ -1,12 +1,10 @@
+
 # -*- coding: utf-8 -*-
 """
 Created on Sat Jun 25 20:26:34 2016
-
 @author: jpelda
-
 This class plots figures.
 It inherits from Plotter_helper
-
 yAxis must be importet as array always.
 """
 import numpy as np
@@ -71,7 +69,6 @@ class Plotter():
         legend = ['string x Achse', 'string x Achse 2'] \n
         positon = 'string' str: "upper right", "upper left", "lower right" etc.
         rotation= 0 - 360 \n
-
         Return
         ------------
         fig
@@ -390,7 +387,7 @@ class Plotter():
     def plot_HeatGrid(self,
                       arr=None,
                       title=None,
-                      fig=plt.subplot(), ax=plt.subplot()):
+                      fig=plt.figure(), ax=plt.subplot()):
         '''Plots all pipes and nodes of Heatgrid.\n
         import heatgrid.getCalculations() or DataIO.importNumpyArr[i]'''
         if arr is None:
@@ -427,10 +424,10 @@ class Plotter():
 #        fig.show()
 #        fig.savefig('test.pdf', formate='pdf')
 #        fig.colorbar(ax)
-        return ax
+        return fig
 
     def plot_HeatSource(self, arr=None, title=None,
-                        fig=plt.subplot(), ax=plt.subplot()):
+                        fig=plt.figure(), ax=plt.subplot()):
         '''Plots all sources of Heatsource.\n
         import: heatsource.getCalculations() or DataIO.importNumpyArr[i]'''
         if arr is None:
@@ -471,7 +468,7 @@ class Plotter():
         return fig
 
     def plot_HeatSink(self, arr=None, title=None,
-                      fig=plt.subplot(), ax=plt.subplot()):
+                      fig=plt.figure(), ax=plt.subplot()):
         '''Plots all sinks of Heatsink.\n
         import: heatsink.getCalculations() or DataIO.importNumpyArr[i]'''
         if arr is None:

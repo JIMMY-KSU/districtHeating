@@ -27,7 +27,7 @@ class HeatSink():
         self._instancesConsumer = self.__importConsumer(tableOfConsumer)
 
         arr = self.__consumers()
-        self.v_consumers_index = np.asarray(arr[0])
+        self.v_consumers_index = np.array(arr[0])
         self.v_consumers_start_x = np.asarray(arr[1])
         self.v_consumers_start_y = np.asarray(arr[2])
         self.v_consumers_end_x = np.asarray(arr[3])
@@ -36,18 +36,18 @@ class HeatSink():
         self.v_consumers_eNode = arr[6]
         self.v_consumers_profile = arr[7]
         self.v_consumers_average = np.asarray(arr[8])
-        self.v_consumers_m = np.asarray(arr[9])
-        self.v_consumers_Q = np.asarray(arr[10])
-        self.v_consumers_cp = np.asarray(arr[11])
-        self.v_consumers_Ta = np.asarray(arr[12])
-        self.v_consumers_Tb = np.asarray(arr[13])
-        self.v_consumers_Pa = np.asarray(arr[14])
-        self.v_consumers_Pb = np.asarray(arr[15])
+        self.v_consumers_m = np.asarray(arr[9], dtype='float64')
+        self.v_consumers_Q = np.asarray(arr[10], dtype='float64')
+        self.v_consumers_cp = np.asarray(arr[11], dtype='float64')
+        self.v_consumers_Ta = np.asarray(arr[12], dtype='float64')
+        self.v_consumers_Tb = np.asarray(arr[13], dtype='float64')
+        self.v_consumers_Pa = np.asarray(arr[14], dtype='float64')
+        self.v_consumers_Pb = np.asarray(arr[15], dtype='float64')
         self.v_consumers_element = arr[16]
 
         self.__str__()
         print("%i consumer \t----> OK \n" % (len(self.v_consumers_index)))
-
+        print(self.v_consumers_Q)
         self.calcVals = []
 
     def consumer(self, i=slice(None, None)):
@@ -142,6 +142,7 @@ class HeatSink():
             print("%s: i %i Q %10.f [W] m %7.3f [m/s] Ta %3.2f [K] "
                   "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa] sNode %s eNode %s"
                   % (element, i, Q, m, Ta, Tb, Pa, Pb, sNode, eNode))
+            print(self.__dict__)
 
 
 if __name__ == "__main__":

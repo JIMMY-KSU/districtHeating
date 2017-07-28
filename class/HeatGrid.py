@@ -43,26 +43,27 @@ class HeatGrid():
         self.v_pipes_end_y = arr[4]
         self.v_pipes_sNode = arr[5]
         self.v_pipes_eNode = arr[6]
-        self.v_pipes_length = np.asarray(arr[7])
-        self.v_pipes_diameter_inner = np.asarray(arr[8])
-        self.v_pipes_diamter_outer = np.asarray(arr[9])
-        self.v_pipes_sHeight = np.asarray(arr[10])
-        self.v_pipes_eHeight = np.asarray(arr[11])
-        self.v_pipes_roughness = np.asarray(arr[12])
+        self.v_pipes_length = np.asarray(arr[7], dtype='float64')
+        self.v_pipes_diameter_inner = np.asarray(arr[8], dtype='float64')
+        self.v_pipes_diamter_outer = np.asarray(arr[9], dtype='float64')
+        self.v_pipes_sHeight = np.asarray(arr[10], dtype='float64')
+        self.v_pipes_eHeight = np.asarray(arr[11], dtype='float64')
+        self.v_pipes_roughness = np.asarray(arr[12], dtype='float64')
         self.v_pipes_element = arr[13]
-        self.v_pipes_Q = np.asarray(arr[14])
-        self.v_pipes_m = np.asarray(arr[15])
-        self.v_pipes_Ta = np.asarray(arr[16])
-        self.v_pipes_Tb = np.asarray(arr[17])
-        self.v_pipes_Pa = np.asarray(arr[18])
-        self.v_pipes_Pb = np.asarray(arr[19])
-
+        self.v_pipes_Q = np.asarray(arr[14], dtype='float64')
+        self.v_pipes_m = np.asarray(arr[15], dtype='float64')
+        self.v_pipes_Ta = np.asarray(arr[16], dtype='float64')
+        self.v_pipes_Tb = np.asarray(arr[17], dtype='float64')
+        self.v_pipes_Pa = np.asarray(arr[18], dtype='float64')
+        self.v_pipes_Pb = np.asarray(arr[19], dtype='float64')
+        self.v_pipes_m_max = np.asarray(arr[20], dtype='float64')
+        
         arr = self.__nodes()
         self.v_nodes_index = arr[0]
         self.v_nodes_x = arr[1]
         self.v_nodes_y = arr[2]
         self.v_nodes_name = arr[3]
-        self.v_nodes_height = np.asarray(arr[4])
+        self.v_nodes_height = np.asarray(arr[4], dtype='float64')
         self.v_nodes_element = arr[5]
 
         self.v_pipes_seNode = np.column_stack(
@@ -70,15 +71,14 @@ class HeatGrid():
         seNodes_sprp = self.__get_pipes_sprp(nodeSupply)
         self.v_pipes_sprp = self.__set_pipes_sprp(seNodes_sprp)
         self.v_nodes_sprp = self.__set_nodes_sprp(seNodes_sprp)
-        
-        self.v_nodes_T = 0
-        self.v_nodes_P = 0
+
+        self.v_nodes_T = np.asarray(0, dtype='float64')
+        self.v_nodes_P = np.asarray(0, dtype='float64')
 
         self.__str__(nodes=0)
         print("%i pipes \t----> OK" % (len(self.v_pipes_index)))
         self.__str__(pipes=0)
         print("%i nodes \t----> OK\n" % (len(self.v_nodes_index)))
-    
         self._calcVals = []
 
     def pipes(self, i=slice(None, None)):
@@ -173,6 +173,7 @@ class HeatGrid():
         retarr_Tb = [0]*length
         retarr_Pa = [0]*length
         retarr_Pb = [0]*length
+        retarr_m_max = [0]*length
         for index, item in enumerate(self.pipes()):
             retarr_index[index] = item.index
             retarr_start_x[index] = item.start_x
@@ -194,34 +195,15 @@ class HeatGrid():
             retarr_Tb[index] = item.Tb
             retarr_Pa[index] = item.Pa
             retarr_Pb[index] = item.Pb
+            retarr_m_max[index] = item.m_max_set
         return retarr_index, retarr_start_x, retarr_start_y, retarr_end_x,\
             retarr_end_y, retarr_sNode, retarr_eNode,\
             retarr_length, retarr_diameter_inner, retarr_diameter_outer,\
             retarr_start_height, retarr_end_height, retarr_roughness,\
             retarr_element, retarr_Q, retarr_m, retarr_Ta, retarr_Tb,\
-            retarr_Pa, retarr_Pb
+            retarr_Pa, retarr_Pb, retarr_m_max
 
-#    def set_calculatedValuesIntoPipes(self, Q, m, Ta, Tb, Pa, Pb):
-#        '''
-#        sets customized or calculated values into pipes of HeatGrid:
-#            Q, m, Ta, Tb, Pa, Pb
-#        '''
-#        self.v_pipes_Q = Q
-#        self.v_pipes_m = m
-#        self.v_pipes_Ta = Ta
-#        self.v_pipes_Tb = Tb
-#        self.v_pipes_Pa = Pa
-#        self.v_pipes_Pb = Pb
 
-#    def set_calculatedValuesIntoNodes(self, T, P):
-#        '''
-#        sets customized or calculated values into nodes of HeatGrid:
-#            T, P
-#        '''
-#        self.v_nodes_T = T
-#        self.v_nodes_P = P
-#        
-#        
     def __nodes(self):
         length = len(self.nodes())
         retarr_index = [0]*length
@@ -240,6 +222,7 @@ class HeatGrid():
         return retarr_index, retarr_x, retarr_y,\
             retarr_name, retarr_height, retarr_element
 
+
     def setCalculations(self):
         attr = self.__dict__
         attr = {item: attr[item] for item in attr if item not in
@@ -252,6 +235,11 @@ class HeatGrid():
 
     def getCalculations(self, i=slice(None,None)):
         return self._calcVals[i]
+
+    def pipes_operatingLoad(self):
+        arr = self.v_pipes_m_max / 100
+        arr = self.v_pipes_m / arr
+        return arr
 
     def __str__(self, pipes=1, nodes=1):
         if pipes is 1:

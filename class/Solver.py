@@ -135,7 +135,6 @@ class Solver():
         '''
         i = 0
 
-        print('###################' + str(type(x)))
         v_m = x[i: i + self._elements]
         i = i + self._elements
         '''

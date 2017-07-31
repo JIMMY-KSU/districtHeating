@@ -249,8 +249,9 @@ STANET_pipes_allocation = {
                'diameter_middleinner',
                'diameter_middleouter',
                'diameter_outer',
-               'm_max',
-               'sprp']}
+               'sprp',
+			   'index'
+               ]}
 
 
 STANET_consumer_allocation = {
@@ -280,5 +281,7 @@ STANET_producer_allocation = {
                              'XRA': 'start_x',
                              'YHA': 'start_y',
                              'XRB': 'end_x',
-                             'YHB': 'end_y'
+                             'YHB': 'end_y',
+                             None:[1,2,3]
                              }
+

@@ -47,15 +47,14 @@ class DistrictHeatingSystem():
 #        logger.info("This is an info log")
 
     def calculateDHS(self):
-        print("---->\n---->\tStart to calculate heatgrid\n---->\n")
+        print("---->\tstart to calculate heatgrid\n")
         solver = Solver(self.heatgrid, self.heatsink, self.heatsource)
-        print("---->\tStart to get guesses for equations\n")
         guess = solver.getGuess()
         solver.print_x(guess, 'guess')
-        print("---->\tStart to solve equations\n")
         solution = fsolve(solver.gridCalculation, guess)
         solver.print_x(solution, 'solution')
         solver.save_x(solution)
+        
 
         return None
 
@@ -87,14 +86,13 @@ if __name__ == "__main__":
             delimiter='\t', header=0)
 
 
-
     DHS1 = DistrictHeatingSystem(
             heatgrid_pipes,
             heatgrid_nodes,
             heatsink,
             heatsource)
     i = 0
-    while i < 2:
+    while i < 1:
         print('#####\trun number %i\t#####' %i)
         DHS1.calculateDHS()
         endTime = time.time()
@@ -113,15 +111,12 @@ if __name__ == "__main__":
     DataIO.exportNumpyArr("HeatSink", DHS1.heatsink.getCalculations())
     DataIO.exportNumpyArr("HeatSouce", DHS1.heatsource.getCalculations())
     print(DHS1.heatgrid.pipes_operatingLoad())
-#    DHS1_Plotter = Plotter(figsize=1)
-#
-#    fig = DHS1_Plotter.plot_HeatGrid(DHS1.heatgrid.getCalculations(1))
-#    DataIO.exportFig("test", fig)
-#
-#    fig = DHS1_Plotter.plot_DHS(DHS1.heatgrid.getCalculations(1),
-#                          DHS1.heatsink.getCalculations(1),
-#                          DHS1.heatsource.getCalculations(1))
-#    DataIO.exportFig('test', fig)
+    DHS1_Plotter = Plotter(figsize=1)
+
+    fig = DHS1_Plotter.plot_DHS(DHS1.heatgrid.getCalculations(0),
+                          DHS1.heatsink.getCalculations(0),
+                          DHS1.heatsource.getCalculations(0))
+    DataIO.exportFig('test', fig)
 
 else:
     import os

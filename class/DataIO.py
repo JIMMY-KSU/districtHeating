@@ -37,7 +37,7 @@ class DataIO():
 #    def import CSV(self):
 
     def importCSV(self, filename, delimiter=';', dtype=None,
-                  header=0, encoding='utf-8-sig', decimal=',',
+                  header=0, encoding='utf-8-sig', decimal=',', usecols=None,
                   lineterminator='\n', thousands='.', names=None,
                   infer_datetime_format=False):
         '''
@@ -47,19 +47,31 @@ class DataIO():
         '''
         filepath = self.__filepath_import + os.sep + filename
 
+            
+        if dtype is not None:
+            usecols = []
+            for value, key in zip(dtype.keys(), dtype.values()):
+                if value is not None:
+                    usecols.append(value)
+
         df = pd.read_csv(filepath, delimiter=delimiter, header=header,
-                          encoding=encoding, decimal=decimal,
+                          encoding=encoding, decimal=decimal, usecols=usecols,
                           lineterminator=lineterminator, thousands=thousands,
                           names=names, infer_datetime_format=False)
 
         if dtype is not None:
+            if None in dtype.keys():
+                df_length = len(df)
+                for item in dtype[None]:
+                    arr = np.empty(df_length)
+                    arr[:] = False
+                    df[item] = pd.Series(arr, index=df.index)
+                # adds columns that are probably not given in dtype
+                # but are used add instances of class
             df = df.rename(columns=dtype)
-            # adds columns that are probably not given in dtype
-            # but are used add instances of class
-        if None in dtype:
-            df = pd.concat([df, pd.DataFrame(columns=dtype[None])])
 
         print('loading %s \t----> OK ' %filename)
+
         return df
 
 
@@ -106,7 +118,7 @@ class DataIO():
 
             return np.asarray(self.__table, dtype=self.__dtype)
 
-    def importDBF(self, filename, dtype=None, dtypeAllocation=None):
+    def importDBF(self, filename, dtype=None):
         '''
         imports dBASE and allocates values to dtype of returnArray. Allocation
         of values of dBASE to dtype of returnArray must be given in
@@ -118,13 +130,20 @@ class DataIO():
         dbf = ps.open(self.__filepath_import + os.sep + filename)
         d = {col: dbf.by_col(col) for col in dbf.header}
         df = pd.DataFrame(d)
+        
+        
         if dtype is not None:
-            df = df.rename(columns=dtype)
-            # adds columns that are probably not given in dtype
-            # but are used add instances of class
-        if None in dtype:
-            df = pd.concat([df, pd.DataFrame(columns=dtype[None])])
-        print('loading %s \t----> OK' %filename)
+            if None in dtype.keys():
+                df_length = len(df)
+                for item in dtype[None]:
+                    arr = np.empty(df_length)
+                    arr[:] = False
+                    df[item] = pd.Series(arr, index=df.index)
+                # adds columns that are probably not given in dtype
+                # but are used add instances of class
+        df = df.rename(columns=dtype)
+
+        print('loading %s \t----> OK ' %filename)
 
         return df
 
@@ -190,3 +209,27 @@ class DataIO():
     def strpdate2num(self, column):
         func_strpdate2num = {column: dates.strpdate2num('%d.%m.%Y %H:%M')}
         return func_strpdate2num
+    
+    
+if __name__ == "__main__":
+    import Dictionary
+    print('DataIO \t run directly \n')
+    DataIO = DataIO(
+            os.path.dirname(os.getcwd()) + os.sep +
+            'input' + os.sep + 'TestNetz',
+            os.path.dirname(os.getcwd()) + os.sep +
+            'output' + os.sep + 'TestNetz')
+    heatgrid_pipes = DataIO.importDBF(
+            'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
+
+    heatsource = DataIO.importCSV(
+            'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
+            delimiter='\t', header=0)
+    print(heatsource)
+
+else:
+    import os
+    import sys
+    sys.path.append(os.getcwd() + os.sep + 'function')
+    print(sys.path.append(os.getcwd() + os.sep + 'function'))
+    print('DistrictHeatingSystem \t was imported into another module')

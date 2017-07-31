@@ -18,6 +18,7 @@ def massBalance(inzidenzmatrix, v_m):
     --------
     mass balance (I * m) with length of v_massflow -1
     '''
+#    print('massbalance %s' %type(v_m))
     arr = np.dot(inzidenzmatrix, v_m)
     return arr
 
@@ -27,6 +28,7 @@ def energyBalance_1(I_plus, v_m, v_Tb,
     '''
     energy balance (I_plus * diag(m)*T^b + I_minus * diag(m)*T^a)
     '''
+#    print('EnergyBalance_1 %s %s %s' %(type(v_m), type(v_Tb), type(v_Ta)))
     arr = np.dot(I_plus, np.dot(np.diag(v_m), v_Tb)) +\
         np.dot(I_minus, np.dot(np.diag(v_m), v_Ta))
     return arr
@@ -36,6 +38,7 @@ def energyBalance_2(I_ab, v_T, v_Tab):
     '''
     energy balance (I_ab.T * v_T + v_Tab)
     '''
+#    print("energyBalance_2 %s %s" %(type(v_T), type(v_Tab)))
     arr = np.dot(np.transpose(I_ab), v_T) + v_Tab
     return arr
 
@@ -52,6 +55,7 @@ def impulseBalance_1(inzidenzmatrix_minus_T, v_P, v_Pa):
     '''
     impulse balance (-1*I_minus.T*P - P^a)
     '''
+#    print("impulseBalance_1 %s %s" %(type(v_P), type(v_Pa)))
     arr = np.dot(inzidenzmatrix_minus_T, v_P) + v_Pa
     return arr
 
@@ -60,5 +64,6 @@ def impulseBalance_2(inzidenzmatrix_plus_T, v_P, v_Pb):
     '''
     impulse balance I_plus.T*P - P^b
     '''
+#    print("impulseBalance_2 %s %s" %(type(v_P), type(v_Pb)))
     arr = np.dot(inzidenzmatrix_plus_T, v_P) - v_Pb
     return arr

@@ -35,7 +35,6 @@ class HeatGrid():
 
 
         arr = self.__pipes()
-
         self.v_pipes_index = arr[0]
         self.v_pipes_start_x = arr[1]
         self.v_pipes_start_y = arr[2]
@@ -43,27 +42,27 @@ class HeatGrid():
         self.v_pipes_end_y = arr[4]
         self.v_pipes_sNode = arr[5]
         self.v_pipes_eNode = arr[6]
-        self.v_pipes_length = np.asarray(arr[7], dtype='float64')
-        self.v_pipes_diameter_inner = np.asarray(arr[8], dtype='float64')
-        self.v_pipes_diamter_outer = np.asarray(arr[9], dtype='float64')
-        self.v_pipes_sHeight = np.asarray(arr[10], dtype='float64')
-        self.v_pipes_eHeight = np.asarray(arr[11], dtype='float64')
-        self.v_pipes_roughness = np.asarray(arr[12], dtype='float64')
+        self.v_pipes_length = np.asarray(arr[7])
+        self.v_pipes_diameter_inner = np.asarray(arr[8])
+        self.v_pipes_diamter_outer = np.asarray(arr[9])
+        self.v_pipes_sHeight = np.asarray(arr[10])
+        self.v_pipes_eHeight = np.asarray(arr[11])
+        self.v_pipes_roughness = np.asarray(arr[12])
         self.v_pipes_element = arr[13]
-        self.v_pipes_Q = np.asarray(arr[14], dtype='float64')
-        self.v_pipes_m = np.asarray(arr[15], dtype='float64')
-        self.v_pipes_Ta = np.asarray(arr[16], dtype='float64')
-        self.v_pipes_Tb = np.asarray(arr[17], dtype='float64')
-        self.v_pipes_Pa = np.asarray(arr[18], dtype='float64')
-        self.v_pipes_Pb = np.asarray(arr[19], dtype='float64')
-        self.v_pipes_m_max = np.asarray(arr[20], dtype='float64')
+        self.v_pipes_Q = np.asarray(arr[14])
+        self.v_pipes_m = np.asarray(arr[15])
+        self.v_pipes_Ta = np.asarray(arr[16])
+        self.v_pipes_Tb = np.asarray(arr[17])
+        self.v_pipes_Pa = np.asarray(arr[18])
+        self.v_pipes_Pb = np.asarray(arr[19])
+        self.v_pipes_m_max = tableOfPipes['m_max']
         
         arr = self.__nodes()
         self.v_nodes_index = arr[0]
         self.v_nodes_x = arr[1]
         self.v_nodes_y = arr[2]
         self.v_nodes_name = arr[3]
-        self.v_nodes_height = np.asarray(arr[4], dtype='float64')
+        self.v_nodes_height = np.asarray(arr[4])
         self.v_nodes_element = arr[5]
 
         self.v_pipes_seNode = np.column_stack(
@@ -71,9 +70,30 @@ class HeatGrid():
         seNodes_sprp = self.__get_pipes_sprp(nodeSupply)
         self.v_pipes_sprp = self.__set_pipes_sprp(seNodes_sprp)
         self.v_nodes_sprp = self.__set_nodes_sprp(seNodes_sprp)
+        
+        self.v_nodes_T = 0
+        self.v_nodes_P = 0
 
-        self.v_nodes_T = np.asarray(0, dtype='float64')
-        self.v_nodes_P = np.asarray(0, dtype='float64')
+#        self.v_pipes_index = tableOfPipes['index']
+#        self.v_pipes_start_x = tableOfPipes['start_x']
+#        self.v_pipes_start_y = tableOfPipes['start_y']
+#        self.v_pipes_end_x = tableOfPipes['end_x']
+#        self.v_pipes_end_y = tableOfPipes['end_y']
+#        self.v_pipes_sNode = tableOfPipes['sNode']
+#        self.v_pipes_eNode = tableOfPipes['eNode']
+#        self.v_pipes_length = tableOfPipes['length']
+#        self.v_pipes_diameter_inner = tableOfPipes['diameter_inner']
+#        self.v_pipes_diameter_middleinner = tableOfPipes['diameter_middleinner']
+#        self.v_pipes_diameter_middleouter = tableOfPipes['diameter_middleouter']
+#        self.v_pipes_diamter_outer = tableOfPipes['diameter_outer']
+#        self.v_pipes_sHeight = tableOfPipes['start_height']
+#        self.v_pipes_eHeight = tableOfPipes['end_height']
+
+#        
+#        self.v_pipes_conductivity_inner = tableOfPipes['conductivity_inner']
+#        self.v_pipes_conductivity_middle = tableOfPipes['conductivity_middle']
+#        self.v_pipes_conductivity_outer = tableOfPipes['conductivity_outer']
+
 
         self.__str__(nodes=0)
         print("%i pipes \t----> OK" % (len(self.v_pipes_index)))
@@ -153,27 +173,27 @@ class HeatGrid():
 
     def __pipes(self):
         length = len(self.pipes())
-        retarr_index = [0]*length
-        retarr_start_x = [0]*length
-        retarr_start_y = [0]*length
-        retarr_end_x = [0]*length
-        retarr_end_y = [0]*length
+        retarr_index = np.asarray([0.]*length)
+        retarr_start_x = np.asarray([0.]*length)
+        retarr_start_y = np.asarray([0.]*length)
+        retarr_end_x = np.asarray([0.]*length)
+        retarr_end_y = np.asarray([0.]*length)
         retarr_sNode = [0]*length
         retarr_eNode = [0]*length
-        retarr_length = [0]*length
-        retarr_diameter_inner = [0]*length
-        retarr_diameter_outer = [0]*length
-        retarr_start_height = [0]*length
-        retarr_end_height = [0]*length
-        retarr_roughness = [0]*length
-        retarr_element = [0]*length
-        retarr_Q = [0]*length
-        retarr_m = [0]*length
-        retarr_Ta = [0]*length
-        retarr_Tb = [0]*length
-        retarr_Pa = [0]*length
-        retarr_Pb = [0]*length
-        retarr_m_max = [0]*length
+        retarr_length = np.asarray([0.]*length)
+        retarr_diameter_inner = np.asarray([0.]*length)
+        retarr_diameter_outer = np.asarray([0.]*length)
+        retarr_start_height = np.asarray([0.]*length)
+        retarr_end_height = np.asarray([0.]*length)
+        retarr_roughness = np.asarray([0.]*length)
+        retarr_element = [0.]*length
+        retarr_Q = np.asarray([0.]*length)
+        retarr_m = np.asarray([0.]*length)
+        retarr_Ta = np.asarray([0.]*length)
+        retarr_Tb = np.asarray([0.]*length)
+        retarr_Pa = np.asarray([0.]*length)
+        retarr_Pb = np.asarray([0.]*length)
+        retarr_m_max = np.asarray([0.]*length)
         for index, item in enumerate(self.pipes()):
             retarr_index[index] = item.index
             retarr_start_x[index] = item.start_x
@@ -244,23 +264,18 @@ class HeatGrid():
     def __str__(self, pipes=1, nodes=1):
         if pipes is 1:
 
-            for element, sprp, Q, m, Ta, Tb, Pa, Pb, sNode, eNode, length,\
+            for element, sprp, sNode, eNode, length,\
                 diameter_inner, diameter_outer, sprp in zip(
                         self.v_pipes_element, self.v_pipes_sprp,
-                        self.v_pipes_Q, self.v_pipes_m,
-                        self.v_pipes_Ta, self.v_pipes_Tb,
-                        self.v_pipes_Pa, self.v_pipes_Pb,
                         self.v_pipes_sNode, self.v_pipes_eNode,
                         self.v_pipes_length,
                         self.v_pipes_diameter_inner,
                         self.v_pipes_diamter_outer,
                         self.v_pipes_sprp):
-                print("%s: sprp %i Q %6.f [W] m %7.3f [m/s] Ta %3.2f [K] "
-                      "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa] \n"
-                      "\t\t\t\t\t\t\t\t l %4.1f [m] "
+                print("%s: sprp %i length %4.1f [m] "
                       "d_i %4.2f [m] d_o %4.2f [m] sNode %s "
-                      "eNode %s" % (element, sprp, Q, m, Ta, Tb, Pa, Pb,
-                                    length, diameter_inner, diameter_outer,
+                      "eNode %s" % (element, sprp, length,
+                                    diameter_inner, diameter_outer,
                                     sNode, eNode))
         if nodes is 1:
             for element, name, sprp in zip(

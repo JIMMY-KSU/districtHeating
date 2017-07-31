@@ -27,27 +27,25 @@ class HeatSink():
         self._instancesConsumer = self.__importConsumer(tableOfConsumer)
 
         arr = self.__consumers()
-        self.v_consumers_index = np.array(arr[0])
-        self.v_consumers_start_x = np.asarray(arr[1])
-        self.v_consumers_start_y = np.asarray(arr[2])
-        self.v_consumers_end_x = np.asarray(arr[3])
-        self.v_consumers_end_y = np.asarray(arr[4])
+        self.v_consumers_index = arr[0]
+        self.v_consumers_start_x = arr[1]
+        self.v_consumers_start_y = arr[2]
+        self.v_consumers_end_x = arr[3]
+        self.v_consumers_end_y = arr[4]
         self.v_consumers_sNode = arr[5]
         self.v_consumers_eNode = arr[6]
         self.v_consumers_profile = arr[7]
-        self.v_consumers_average = np.asarray(arr[8])
-        self.v_consumers_m = np.asarray(arr[9], dtype='float64')
-        self.v_consumers_Q = np.asarray(arr[10], dtype='float64')
-        self.v_consumers_cp = np.asarray(arr[11], dtype='float64')
-        self.v_consumers_Ta = np.asarray(arr[12], dtype='float64')
-        self.v_consumers_Tb = np.asarray(arr[13], dtype='float64')
-        self.v_consumers_Pa = np.asarray(arr[14], dtype='float64')
-        self.v_consumers_Pb = np.asarray(arr[15], dtype='float64')
+        self.v_consumers_average = arr[8]
+        self.v_consumers_m = arr[9]
+        self.v_consumers_Q = arr[10]
+        self.v_consumers_cp = arr[11]
+        self.v_consumers_Ta = arr[12]
+        self.v_consumers_Tb = arr[13]
+        self.v_consumers_Pa = arr[14]
+        self.v_consumers_Pb = arr[15]
         self.v_consumers_element = arr[16]
-
         self.__str__()
         print("%i consumer \t----> OK \n" % (len(self.v_consumers_index)))
-        print(self.v_consumers_Q)
         self.calcVals = []
 
     def consumer(self, i=slice(None, None)):
@@ -66,23 +64,23 @@ class HeatSink():
 
     def __consumers(self):
         length = len(self.consumer())
-        retarr_index = [0]*length
-        retarr_start_x = [0]*length
-        retarr_start_y = [0]*length
-        retarr_end_x = [0]*length
-        retarr_end_y = [0]*length
-        retarr_sNode = [0]*length
-        retarr_eNode = [0]*length
-        retarr_profile = [0]*length
-        retarr_average = [0]*length
-        retarr_m = [0]*length
-        retarr_Q = [0]*length
-        retarr_cp = [0]*length
-        retarr_Ta = [0]*length
-        retarr_Tb = [0]*length
-        retarr_Pa = [0]*length
-        retarr_Pb = [0]*length
-        retarr_element = [0]*length
+        retarr_index = np.asarray([0.]*length)
+        retarr_start_x = np.asarray([0.]*length)
+        retarr_start_y = np.asarray([0.]*length)
+        retarr_end_x = np.asarray([0.]*length)
+        retarr_end_y = np.asarray([0.]*length)
+        retarr_sNode = [0.]*length
+        retarr_eNode = [0.]*length
+        retarr_profile = [0.]*length
+        retarr_average = np.asarray([0.]*length)
+        retarr_m = np.asarray([0.]*length)
+        retarr_Q = np.asarray([0.]*length)
+        retarr_cp = np.asarray([0.]*length)
+        retarr_Ta = np.asarray([0.]*length)
+        retarr_Tb = np.asarray([0.]*length)
+        retarr_Pa = np.asarray([0.]*length)
+        retarr_Pb = np.asarray([0.]*length)
+        retarr_element = [0.]*length
 
         for index, item in enumerate(self.consumer()):
             retarr_index[index] = item.index
@@ -142,7 +140,6 @@ class HeatSink():
             print("%s: i %i Q %10.f [W] m %7.3f [m/s] Ta %3.2f [K] "
                   "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa] sNode %s eNode %s"
                   % (element, i, Q, m, Ta, Tb, Pa, Pb, sNode, eNode))
-            print(self.__dict__)
 
 
 if __name__ == "__main__":

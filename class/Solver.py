@@ -235,14 +235,15 @@ class Solver():
                                   v_Tb[self.__I_source_slice],
                                   v_Q[self.__I_source_slice])
         producer_Tb = dp.producer_temp(
-                                  self.heatsource.v_producers_Tb,
-                                  v_Tb[self.__I_source_slice])
+                              self.heatsource.v_producers_Tb,
+                              v_Tb[self.__I_source_slice])
         producer_Pb = dp.producer_press(
-                                  self.v_producer_Pb_set,
-                                  v_Pb[self.__I_source_slice])
+                          self.v_producer_Pb_set,
+                          v_Pb[self.__I_source_slice])
         producer_Pa = dp.producer_press(
-                                  self.v_producer_Pa_set,
-                                  v_Pa[self.__I_source_slice])
+                            self.v_producer_Pa_set,
+                            v_Pa[self.__I_source_slice])
+
         F = np.concatenate((
                          massBalance,
                          energyBalance_1, energyBalance_2,
@@ -251,6 +252,7 @@ class Solver():
                          pipePress, producer_Pb, producer_Pa,
                          consumer_Tb, producer_Tb,
                          pipeQ, consumer_Q))
+
         return F
 
     def getGuess(self):
@@ -391,6 +393,22 @@ class Solver():
             v_Tb = self.heatgrid.v_pipes_Tb +\
                 self.heatsink.v_consumers_Tb +\
                 self.heatsource.v_producers_Tb
+#        for item in v_m:
+#            print('????????????? v_m %f \n'%item)
+#        for item in v_P:
+#            print('????????????? v_P %f \n'%item)
+#        for item in v_Pa:
+#            print('????????????? v_Pa %f \n'%item)
+#        for item in v_Pb:
+#            print('????????????? v_Pb %f \n'%item)
+#        for item in v_Q:
+#            print('????????????? v_Q %f \n'%item)
+#        for item in v_T:
+#            print('????????????? v_T %f \n'%item)
+#        for item in v_Ta:
+#            print('????????????? v_Ta %f \n'%item)
+#        for item in v_Tb:
+#            print('????????????? v_Tb %f \n'%item)
 
         arr = np.concatenate((v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb))
         return arr

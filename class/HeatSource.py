@@ -25,12 +25,12 @@ class HeatSource():
         arr = self.__producers()
 
         self.v_producers_name = arr[0]
-        self.v_producers_Q = np.asarray(arr[1], dtype='float64')
-        self.v_producers_m = np.asarray(arr[2], dtype='float64')
-        self.v_producers_Ta = np.asarray(arr[3], dtype='float64')
-        self.v_producers_Tb = np.asarray(arr[4], dtype='float64')  # supply temperature
-        self.v_producers_Pa = np.asarray(arr[5], dtype='float64')  # return pressure
-        self.v_producers_Pb = np.asarray(arr[6], dtype='float64')  # supply pressure
+        self.v_producers_Q = arr[1]
+        self.v_producers_m = arr[2]
+        self.v_producers_Ta = arr[3]
+        self.v_producers_Tb = arr[4]  # supply temperature
+        self.v_producers_Pa = arr[5]  # return pressure
+        self.v_producers_Pb = arr[6]  # supply pressure
         self.v_producers_sNode = arr[7]
         self.v_producers_eNode = arr[8]
         self.v_producers_element = arr[9]
@@ -68,21 +68,21 @@ class HeatSource():
 
     def __producers(self):
         length = len(self.producers())
-        retarr_name = [0]*length
-        retarr_Q = [0]*length
-        retarr_m = [0]*length
-        retarr_Ta = [0]*length
-        retarr_Tb = [0]*length  # Tb is supply temperature
-        retarr_Pa = [0]*length  # Pa is return pressure
-        retarr_Pb = [0]*length  # Pb is supply pressure
-        retarr_sNode = [0]*length
-        retarr_eNode = [0]*length
-        retarr_element = [0]*length
-        retarr_start_x = [0]*length
-        retarr_start_y = [0]*length
-        retarr_end_x = [0]*length
-        retarr_end_y = [0]*length
-        retarr_index = [0]*length
+        retarr_name = [0.]*length
+        retarr_Q = np.asarray([0.]*length)
+        retarr_m = np.asarray([0.]*length)
+        retarr_Ta = np.asarray([0.]*length)
+        retarr_Tb = np.asarray([0.]*length)  # Tb is supply temperature
+        retarr_Pa = np.asarray([0.]*length)  # Pa is return pressure
+        retarr_Pb = np.asarray([0.]*length)  # Pb is supply pressure
+        retarr_sNode = [0.]*length
+        retarr_eNode = [0.]*length
+        retarr_element = [0.]*length
+        retarr_start_x = [0.]*length
+        retarr_start_y = [0.]*length
+        retarr_end_x = [0.]*length
+        retarr_end_y = [0.]*length
+        retarr_index = [0.]*length
         for index, item in enumerate(self.producers()):
             retarr_name[index] = item.name
             retarr_Q[index] = item.Q

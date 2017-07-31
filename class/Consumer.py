@@ -21,16 +21,16 @@ class Consumer():
         self.end_y = consumerValues['end_y']
         self.profile = consumerValues['profile']
         self.average = consumerValues['average']
-        self.Q = -np.abs(consumerValues['heat_demand']) #Watt
+        self.Q = float(-np.abs(consumerValues['heat_demand'])) #Watt
 
-        self.Ta = 130 + 273.15
-        self.Tb = 60 + 273.15
-        self.Pa = 0
-        self.Pb = 0
-        self.cp = 4183  # J/(kg*K)
-        self.m = self.__massflow(self.Q, self.cp, self.Ta, self.Tb) # t/h
+        self.Ta = float(130 + 273.15)
+        self.Tb = float(60 + 273.15)
+        self.Pa = float(0)
+        self.Pb = float(0)
+        self.cp = float(4183)  # J/(kg*K)
+        self.m = float(self.__massflow(self.Q, self.cp, self.Ta, self.Tb))  # t/h
+
         self.element = "consumer"
-        # TODO implement function for massflow
 
     def heat_consumptionProfiles(self, i=slice(None,None)):
         return self.__dataArray['heat_consumptionProfile'][i]

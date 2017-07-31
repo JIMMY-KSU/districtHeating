@@ -135,6 +135,7 @@ class Solver():
         '''
         i = 0
 
+        print('###################' + str(type(x)))
         v_m = x[i: i + self._elements]
         i = i + self._elements
         '''
@@ -475,7 +476,6 @@ class Solver():
         output: print(x)
         '''
         v_sprp = self.heatgrid.v_pipes_sprp + [''] * 2*self._elements
-
         v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb = self.__xToSingleVectors(x)
         for element, sprp, m, Pa, Pb, Q, Ta, Tb in zip(
                                 self.heatgrid.v_pipes_element +

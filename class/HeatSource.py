@@ -12,33 +12,34 @@ class HeatSource():
 
     def __init__(self, tableOfProducer):
 
+        Tb = 130 + 273.15
+        Ta = 0.0
+        Pa = 100000.0  # return pressure [Pa] 1bar = 100000Pa
+        Pb = 700000.0  # supply pressure [Pa] 7bar = 700000Pa
+        
         self._instancesProducer = self.__importProducers(tableOfProducer)
 
         self.nodes = self.__nodes()
         self.sNodes = self.__sNodes()
         self.eNodes = self.__eNodes()
-        
-#        self.supply_pressure = 7
-#        self.return_pressure = 1
-        self.supply_temperature = 130 + 273.15
 
-        arr = self.__producers()
+        length = len(tableOfProducer)
+        self.v_producers_name = np.array(tableOfProducer['name'])
+        self.v_producers_Q = np.array([0.0] * length)
+        self.v_producers_m = np.array([0.0] * length)
+        self.v_producers_Ta = np.array([Ta] * length)
+        self.v_producers_Tb = np.array([Tb] * length)  # supply temperature
+        self.v_producers_Pa = np.array([Pa] * length)  # return pressure
+        self.v_producers_Pb = np.array([Pb] * length)  # supply pressure
+        self.v_producers_sNode = np.array(tableOfProducer['sNode'])
+        self.v_producers_eNode = np.array(tableOfProducer['eNode'])
+        self.v_producers_element = ['producer'] * length
+        self.v_producers_start_x = np.array(tableOfProducer['start_x'])
+        self.v_producers_start_y = np.array(tableOfProducer['start_y'])
+        self.v_producers_end_x = np.array(tableOfProducer['end_x'])
+        self.v_producers_end_y = np.array(tableOfProducer['end_y'])
+        self.v_producers_index = np.arange(length)
 
-        self.v_producers_name = arr[0]
-        self.v_producers_Q = arr[1]
-        self.v_producers_m = arr[2]
-        self.v_producers_Ta = arr[3]
-        self.v_producers_Tb = arr[4]  # supply temperature
-        self.v_producers_Pa = arr[5]  # return pressure
-        self.v_producers_Pb = arr[6]  # supply pressure
-        self.v_producers_sNode = arr[7]
-        self.v_producers_eNode = arr[8]
-        self.v_producers_element = arr[9]
-        self.v_producers_start_x = arr[10]
-        self.v_producers_start_y = arr[11]
-        self.v_producers_end_x = arr[12]
-        self.v_producers_end_y = arr[13]
-        self.v_producers_index = arr[14]
         self.__str__()
         print("%i producer \t----> OK \n" % (len(self.producers())))
 
@@ -65,45 +66,6 @@ class HeatSource():
         for index, item in enumerate(self.producers()):
             arr[index] = [item.eNode, None]
         return arr
-
-    def __producers(self):
-        length = len(self.producers())
-        retarr_name = [0.]*length
-        retarr_Q = np.asarray([0.]*length)
-        retarr_m = np.asarray([0.]*length)
-        retarr_Ta = np.asarray([0.]*length)
-        retarr_Tb = np.asarray([0.]*length)  # Tb is supply temperature
-        retarr_Pa = np.asarray([0.]*length)  # Pa is return pressure
-        retarr_Pb = np.asarray([0.]*length)  # Pb is supply pressure
-        retarr_sNode = [0.]*length
-        retarr_eNode = [0.]*length
-        retarr_element = [0.]*length
-        retarr_start_x = [0.]*length
-        retarr_start_y = [0.]*length
-        retarr_end_x = [0.]*length
-        retarr_end_y = [0.]*length
-        retarr_index = [0.]*length
-        for index, item in enumerate(self.producers()):
-            retarr_name[index] = item.name
-            retarr_Q[index] = item.Q
-            retarr_m[index] = item.m
-            retarr_Ta[index] = item.Ta
-            retarr_Tb[index] = item.Tb
-            retarr_Pa[index] = item.Pa
-            retarr_Pb[index] = item.Pb
-            retarr_sNode[index] = item.sNode
-            retarr_eNode[index] = item.eNode
-            retarr_element[index] = item.element
-            retarr_start_x[index] = item.start_x
-            retarr_start_y[index] = item.start_y
-            retarr_end_x[index] = item.end_x
-            retarr_end_y[index] = item.end_y
-            retarr_index[index] = item.index
-        return retarr_name, retarr_Q, retarr_m, retarr_Ta, retarr_Tb,\
-            retarr_Pa, retarr_Pb,\
-            retarr_sNode, retarr_eNode, retarr_element,\
-            retarr_start_x, retarr_start_y, retarr_end_x,\
-            retarr_end_y, retarr_index
 
     def __importProducers(self, df):
         arr = []

@@ -24,26 +24,35 @@ class HeatSink():
             tabelOfConsumer = [] # contains all Consumer of network, \
                 allocation Dictionary can be found in Dictionary
         '''
+        cp = 4183  # J/(kg*K)
+        Ta = 130 + 273.15  # Kelvin
+        Tb = 60 + 273.15  # Kelvin
+        
         self._instancesConsumer = self.__importConsumer(tableOfConsumer)
 
-        arr = self.__consumers()
-        self.v_consumers_index = arr[0]
-        self.v_consumers_start_x = arr[1]
-        self.v_consumers_start_y = arr[2]
-        self.v_consumers_end_x = arr[3]
-        self.v_consumers_end_y = arr[4]
-        self.v_consumers_sNode = arr[5]
-        self.v_consumers_eNode = arr[6]
-        self.v_consumers_profile = arr[7]
-        self.v_consumers_average = arr[8]
-        self.v_consumers_m = arr[9]
-        self.v_consumers_Q = arr[10]
-        self.v_consumers_cp = arr[11]
-        self.v_consumers_Ta = arr[12]
-        self.v_consumers_Tb = arr[13]
-        self.v_consumers_Pa = arr[14]
-        self.v_consumers_Pb = arr[15]
-        self.v_consumers_element = arr[16]
+        length = len(tableOfConsumer)
+        self.v_consumers_index = np.arange(length)
+        self.v_consumers_start_x = np.array(tableOfConsumer['start_x'])
+        self.v_consumers_start_y = np.array(tableOfConsumer['start_y'])
+        self.v_consumers_end_x = np.array(tableOfConsumer['end_x'])
+        self.v_consumers_end_y = np.array(tableOfConsumer['end_y'])
+        self.v_consumers_sNode = np.array(tableOfConsumer['sNode'])
+        self.v_consumers_eNode = np.array(tableOfConsumer['eNode'])
+        self.v_consumers_profile = np.array(tableOfConsumer['profile'])
+        self.v_consumers_average = np.array(tableOfConsumer['average'])
+        self.v_consumers_Q = np.array(tableOfConsumer['Q'])
+        self.v_consumers_cp = np.array([cp] * length)  # J/(kg*K)
+        self.v_consumers_Ta = np.array([Ta] * length)  # Kelvin
+        self.v_consumers_Tb = np.array([Tb] * length)  # Kelvin
+        # TODO make cp, Ta, Tb function that takes care if cp, Ta and Tb are 
+        # given by tableOfConsumer
+        self.v_consumers_m = self.__calc_consumers_m(self.v_consumers_Q,
+                                                     self.v_consumers_cp,
+                                                     self.v_consumers_Ta,
+                                                     self.v_consumers_Tb)
+        self.v_consumers_Pa = [0] * length
+        self.v_consumers_Pb =  [0] * length
+        self.v_consumers_element = ['consumer'] * length
         self.__str__()
         print("%i consumer \t----> OK \n" % (len(self.v_consumers_index)))
         self.calcVals = []
@@ -59,52 +68,12 @@ class HeatSink():
             sumQ += i.heat_demand
         return sumQT / sumQ
 
+    def __calc_consumers_m(self, Q, cp, Ta, Tb):
+        arr = Q / (cp * (Tb - Ta))
+        return arr
+    
     def __consumerProfile(self):
         pass
-
-    def __consumers(self):
-        length = len(self.consumer())
-        retarr_index = np.asarray([0.]*length)
-        retarr_start_x = np.asarray([0.]*length)
-        retarr_start_y = np.asarray([0.]*length)
-        retarr_end_x = np.asarray([0.]*length)
-        retarr_end_y = np.asarray([0.]*length)
-        retarr_sNode = [0.]*length
-        retarr_eNode = [0.]*length
-        retarr_profile = [0.]*length
-        retarr_average = np.asarray([0.]*length)
-        retarr_m = np.asarray([0.]*length)
-        retarr_Q = np.asarray([0.]*length)
-        retarr_cp = np.asarray([0.]*length)
-        retarr_Ta = np.asarray([0.]*length)
-        retarr_Tb = np.asarray([0.]*length)
-        retarr_Pa = np.asarray([0.]*length)
-        retarr_Pb = np.asarray([0.]*length)
-        retarr_element = [0.]*length
-
-        for index, item in enumerate(self.consumer()):
-            retarr_index[index] = item.index
-            retarr_start_x[index] = item.start_x
-            retarr_start_y[index] = item.start_y
-            retarr_end_x[index] = item.end_x
-            retarr_end_y[index] = item.end_y
-            retarr_sNode[index] = item.sNode
-            retarr_eNode[index] = item.eNode
-            retarr_profile[index] = item.profile
-            retarr_average[index] = item.average
-            retarr_m[index] = item.m
-            retarr_Q[index] = item.Q
-            retarr_cp[index] = item.cp
-            retarr_Ta[index] = item.Ta
-            retarr_Tb[index] = item.Tb
-            retarr_Pa[index] = item.Pa
-            retarr_Pb[index] = item.Pb
-            retarr_element[index] = item.element
-        return retarr_index, retarr_start_x, retarr_start_y, retarr_end_x,\
-            retarr_end_y, retarr_sNode, retarr_eNode,\
-            retarr_profile, retarr_average, retarr_m, retarr_Q,\
-            retarr_cp, retarr_Ta, retarr_Tb,\
-            retarr_Pa, retarr_Pb, retarr_element
 
     def __importConsumer(self, df):
         arr = []

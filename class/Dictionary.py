@@ -257,7 +257,7 @@ STANET_pipes_allocation = {
 STANET_consumer_allocation = {
         'ANFNAM': 'sNode',
         'ENDNAM': 'eNode',
-        'WAERMEMENG': 'heat_demand',
+        'WAERMEMENG': 'Q',
         'FLUSS': 'flow',
         'XRECHTS': 'start_x',
         'YHOCH': 'start_y',

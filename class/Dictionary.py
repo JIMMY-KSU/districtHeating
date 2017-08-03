@@ -285,3 +285,14 @@ STANET_producer_allocation = {
                              None:[1,2,3]
                              }
 
+STANET_vogelstang_producer_allocation = {
+                             'NAME': 'name',
+                             'ANFNAM': 'sNode',
+                             'ENDNAM': 'eNode',
+                             'XRA': 'start_x',
+                             'YHA': 'start_y',
+                             'XRB': 'end_x',
+                             'YHB': 'end_y',
+                             None:[1,2,3, 'power']
+                             }
+

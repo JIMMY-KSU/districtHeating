@@ -45,7 +45,7 @@ class DataIO():
         output
         pandas DataFrame
         '''
-        filepath = self.__filepath_import + os.sep + filename
+        file = self.__filepath_import + os.sep + filename
 
             
         if dtype is not None:
@@ -53,8 +53,8 @@ class DataIO():
             for value, key in zip(dtype.keys(), dtype.values()):
                 if value is not None:
                     usecols.append(value)
-
-        df = pd.read_csv(filepath, delimiter=delimiter, header=header,
+        print(usecols)
+        df = pd.read_csv(file, delimiter=delimiter, header=header,
                           encoding=encoding, decimal=decimal, usecols=usecols,
                           lineterminator=lineterminator, thousands=thousands,
                           names=names, infer_datetime_format=False)
@@ -120,18 +120,28 @@ class DataIO():
 
     def importDBF(self, filename, dtype=None):
         '''
-        imports dBASE and allocates values to dtype of returnArray. Allocation
-        of values of dBASE to dtype of returnArray must be given in
-        dtypeAllocation.
+        imports dBASE and changes column names to the given by dtype.
+        If you try to import a STANET DBF, 
+        please reorganise it with STANET first.
         #######
         return:
            Pandas DataFrame
         '''
-        dbf = ps.open(self.__filepath_import + os.sep + filename)
-        d = {col: dbf.by_col(col) for col in dbf.header}
+        file = self.__filepath_import + os.sep + filename
+
+        dbf = ps.open(file)
+
+        if dtype is not None:
+            usecols = []
+            for value, key in zip(dtype.keys(), dtype.values()):
+                if value is not None:
+                    usecols.append(value)
+        else:
+            usecols = dbf.header
+        print(usecols)
+        d = {col: dbf.by_col(col) for col in usecols}
         df = pd.DataFrame(d)
-        
-        
+
         if dtype is not None:
             if None in dtype.keys():
                 df_length = len(df)

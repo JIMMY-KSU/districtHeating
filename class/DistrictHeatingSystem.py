@@ -66,24 +66,42 @@ if __name__ == "__main__":
     print('DistrictHeatingSystem \t run directly \n')
     
 
+#    DataIO = DataIO(
+#                os.path.dirname(os.getcwd()) + os.sep +
+#                'input' + os.sep + 'TestNetz',
+#                os.path.dirname(os.getcwd()) + os.sep +
+#                'output' + os.sep + 'TestNetz')
+#
+#    heatgrid_nodes = DataIO.importDBF(
+#            'KTestNetz.DBF', dtype=Dictionary.STANET_nodes_allocation)
+#
+#    heatgrid_pipes = DataIO.importDBF(
+#            'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
+#
+#    heatsink = DataIO.importDBF(
+#            'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
+#
+#    heatsource = DataIO.importCSV(
+#            'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
+#            delimiter='\t', header=0)
     DataIO = DataIO(
                 os.path.dirname(os.getcwd()) + os.sep +
-                'input' + os.sep + 'TestNetz',
+                'input' + os.sep + 'TestNetz' + os.sep + "vogelstang",
                 os.path.dirname(os.getcwd()) + os.sep +
-                'output' + os.sep + 'TestNetz')
+                'output' + os.sep + 'TestNetz' + os.sep + "vogelstang")
 
     heatgrid_nodes = DataIO.importDBF(
-            'KTestNetz.DBF', dtype=Dictionary.STANET_nodes_allocation)
+            'K20150909_F-MVV_TL-West.DBF', dtype=Dictionary.STANET_nodes_allocation)
 
     heatgrid_pipes = DataIO.importDBF(
-            'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
+            'S20150909_F-MVV_TL-West.DBF', dtype=Dictionary.STANET_pipes_allocation)
 
     heatsink = DataIO.importDBF(
-            'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
+            'W20150909_F-MVV_TL-West.DBF', dtype=Dictionary.STANET_consumer_allocation)
 
     heatsource = DataIO.importCSV(
-            'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
-            delimiter='\t', header=0)
+            'W20150909_F-MVV_TL-West.csv', dtype=Dictionary.STANET_vogelstang_producer_allocation,
+            delimiter=';', header=0)
 
 
     DHS1 = DistrictHeatingSystem(
@@ -110,12 +128,12 @@ if __name__ == "__main__":
     DataIO.exportNumpyArr("HeatGrid", DHS1.heatgrid.getCalculations())
     DataIO.exportNumpyArr("HeatSink", DHS1.heatsink.getCalculations())
     DataIO.exportNumpyArr("HeatSouce", DHS1.heatsource.getCalculations())
-    DHS1_Plotter = Plotter(figsize=1)
-
-    fig = DHS1_Plotter.plot_DHS(DHS1.heatgrid.getCalculations(0),
-                          DHS1.heatsink.getCalculations(0),
-                          DHS1.heatsource.getCalculations(0))
-    DataIO.exportFig('test', fig)
+#    DHS1_Plotter = Plotter(figsize=1)
+#
+#    fig = DHS1_Plotter.plot_DHS(DHS1.heatgrid.getCalculations(0),
+#                          DHS1.heatsink.getCalculations(0),
+#                          DHS1.heatsource.getCalculations(0))
+#    DataIO.exportFig('test', fig)
 
 else:
     import os

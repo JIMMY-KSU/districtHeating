@@ -9,7 +9,7 @@ import os
 from Finder import Finder
 from Pipe import Pipe
 from Node import Node
-
+import time
 import numpy as np
 
 
@@ -34,36 +34,43 @@ class HeatGrid():
         self._instancesNode = self.__importNodes(tableOfNodes)
 
 
-        arr = self.__pipes()
-        self.v_pipes_index = arr[0]
-        self.v_pipes_start_x = arr[1]
-        self.v_pipes_start_y = arr[2]
-        self.v_pipes_end_x = arr[3]
-        self.v_pipes_end_y = arr[4]
-        self.v_pipes_sNode = arr[5]
-        self.v_pipes_eNode = arr[6]
-        self.v_pipes_length = np.asarray(arr[7])
-        self.v_pipes_diameter_inner = np.asarray(arr[8])
-        self.v_pipes_diamter_outer = np.asarray(arr[9])
-        self.v_pipes_sHeight = np.asarray(arr[10])
-        self.v_pipes_eHeight = np.asarray(arr[11])
-        self.v_pipes_roughness = np.asarray(arr[12])
-        self.v_pipes_element = arr[13]
-        self.v_pipes_Q = np.asarray(arr[14])
-        self.v_pipes_m = np.asarray(arr[15])
-        self.v_pipes_Ta = np.asarray(arr[16])
-        self.v_pipes_Tb = np.asarray(arr[17])
-        self.v_pipes_Pa = np.asarray(arr[18])
-        self.v_pipes_Pb = np.asarray(arr[19])
-        self.v_pipes_m_max = tableOfPipes['m_max']
-        
-        arr = self.__nodes()
-        self.v_nodes_index = arr[0]
-        self.v_nodes_x = arr[1]
-        self.v_nodes_y = arr[2]
-        self.v_nodes_name = arr[3]
-        self.v_nodes_height = np.asarray(arr[4])
-        self.v_nodes_element = arr[5]
+        length = len(tableOfPipes)
+        self.v_pipes_index = np.arange(length)
+        self.v_pipes_start_x = np.array(tableOfPipes['start_x'])
+        self.v_pipes_start_y = np.array(tableOfPipes['start_y'])
+        self.v_pipes_end_x = np.array(tableOfPipes['end_x'])
+        self.v_pipes_end_y = np.array(tableOfPipes['end_y'])
+        self.v_pipes_sNode = np.array(tableOfPipes['sNode'])
+        self.v_pipes_eNode = np.array(tableOfPipes['eNode'])
+        self.v_pipes_length = np.array(tableOfPipes['length'])
+        self.v_pipes_diameter_inner = np.array(tableOfPipes['diameter_inner'])
+#        self.v_pipes_diameter_middleinner = tableOfPipes['diameter_middleinner']
+#        self.v_pipes_diameter_middleouter = tableOfPipes['diameter_middleouter']
+        self.v_pipes_diamter_outer = np.array(tableOfPipes['diameter_outer'])
+        self.v_pipes_sHeight = np.array(tableOfPipes['start_height'])
+        self.v_pipes_eHeight = np.array(tableOfPipes['end_height'])
+        self.v_pipes_roughness = np.array(tableOfPipes['roughness'])
+#        
+#        self.v_pipes_conductivity_inner = tableOfPipes['conductivity_inner']
+#        self.v_pipes_conductivity_middle = tableOfPipes['conductivity_middle']
+#        self.v_pipes_conductivity_outer = tableOfPipes['conductivity_outer']
+
+        self.v_pipes_element = ['pipes'] * length
+        self.v_pipes_Q = np.array([0.0] * length)
+        self.v_pipes_m = np.array([0.0] * length)
+        self.v_pipes_Ta = np.array([0.0] * length)
+        self.v_pipes_Tb = np.array([0.0] * length)
+        self.v_pipes_Pa = np.array([0.0] * length)
+        self.v_pipes_Pb = np.array([0.0] * length)
+        self.v_pipes_m_max = np.array(tableOfPipes['m_max'])
+
+        length = len(tableOfNodes)
+        self.v_nodes_index = np.arange(length)
+        self.v_nodes_x = np.array(tableOfNodes['x'])
+        self.v_nodes_y = np.array(tableOfNodes['y'])
+        self.v_nodes_name = np.array(tableOfNodes['name'])
+        self.v_nodes_height = np.array(tableOfNodes['height'])
+        self.v_nodes_element = ['nodes'] * length
 
         self.v_pipes_seNode = np.column_stack(
                                     (self.v_pipes_sNode, self.v_pipes_eNode))
@@ -74,25 +81,6 @@ class HeatGrid():
         self.v_nodes_T = 0
         self.v_nodes_P = 0
 
-#        self.v_pipes_index = tableOfPipes['index']
-#        self.v_pipes_start_x = tableOfPipes['start_x']
-#        self.v_pipes_start_y = tableOfPipes['start_y']
-#        self.v_pipes_end_x = tableOfPipes['end_x']
-#        self.v_pipes_end_y = tableOfPipes['end_y']
-#        self.v_pipes_sNode = tableOfPipes['sNode']
-#        self.v_pipes_eNode = tableOfPipes['eNode']
-#        self.v_pipes_length = tableOfPipes['length']
-#        self.v_pipes_diameter_inner = tableOfPipes['diameter_inner']
-#        self.v_pipes_diameter_middleinner = tableOfPipes['diameter_middleinner']
-#        self.v_pipes_diameter_middleouter = tableOfPipes['diameter_middleouter']
-#        self.v_pipes_diamter_outer = tableOfPipes['diameter_outer']
-#        self.v_pipes_sHeight = tableOfPipes['start_height']
-#        self.v_pipes_eHeight = tableOfPipes['end_height']
-
-#        
-#        self.v_pipes_conductivity_inner = tableOfPipes['conductivity_inner']
-#        self.v_pipes_conductivity_middle = tableOfPipes['conductivity_middle']
-#        self.v_pipes_conductivity_outer = tableOfPipes['conductivity_outer']
 
 
         self.__str__(nodes=0)
@@ -170,78 +158,6 @@ class HeatGrid():
         for index, row in df.iterrows():
             arr.append(Node(index, row))
         return arr
-
-    def __pipes(self):
-        length = len(self.pipes())
-        retarr_index = np.asarray([0.]*length)
-        retarr_start_x = np.asarray([0.]*length)
-        retarr_start_y = np.asarray([0.]*length)
-        retarr_end_x = np.asarray([0.]*length)
-        retarr_end_y = np.asarray([0.]*length)
-        retarr_sNode = [0]*length
-        retarr_eNode = [0]*length
-        retarr_length = np.asarray([0.]*length)
-        retarr_diameter_inner = np.asarray([0.]*length)
-        retarr_diameter_outer = np.asarray([0.]*length)
-        retarr_start_height = np.asarray([0.]*length)
-        retarr_end_height = np.asarray([0.]*length)
-        retarr_roughness = np.asarray([0.]*length)
-        retarr_element = [0.]*length
-        retarr_Q = np.asarray([0.]*length)
-        retarr_m = np.asarray([0.]*length)
-        retarr_Ta = np.asarray([0.]*length)
-        retarr_Tb = np.asarray([0.]*length)
-        retarr_Pa = np.asarray([0.]*length)
-        retarr_Pb = np.asarray([0.]*length)
-        retarr_m_max = np.asarray([0.]*length)
-        for index, item in enumerate(self.pipes()):
-            retarr_index[index] = item.index
-            retarr_start_x[index] = item.start_x
-            retarr_start_y[index] = item.start_y
-            retarr_end_x[index] = item.end_x
-            retarr_end_y[index] = item.end_y
-            retarr_sNode[index] = item.sNode
-            retarr_eNode[index] = item.eNode
-            retarr_length[index] = item.length
-            retarr_diameter_inner[index] = item.diameter_inner
-            retarr_diameter_outer[index] = item.diameter_outer
-            retarr_start_height[index] = item.start_height
-            retarr_end_height[index] = item.end_height
-            retarr_roughness[index] = item.roughness
-            retarr_element[index] = item.element
-            retarr_Q[index] = item.Q
-            retarr_m[index] = item.m
-            retarr_Ta[index] = item.Ta
-            retarr_Tb[index] = item.Tb
-            retarr_Pa[index] = item.Pa
-            retarr_Pb[index] = item.Pb
-            retarr_m_max[index] = item.m_max_set
-        return retarr_index, retarr_start_x, retarr_start_y, retarr_end_x,\
-            retarr_end_y, retarr_sNode, retarr_eNode,\
-            retarr_length, retarr_diameter_inner, retarr_diameter_outer,\
-            retarr_start_height, retarr_end_height, retarr_roughness,\
-            retarr_element, retarr_Q, retarr_m, retarr_Ta, retarr_Tb,\
-            retarr_Pa, retarr_Pb, retarr_m_max
-
-
-    def __nodes(self):
-        length = len(self.nodes())
-        retarr_index = [0]*length
-        retarr_x = [0]*length
-        retarr_y = [0]*length
-        retarr_name = [0]*length
-        retarr_height = [0]*length
-        retarr_element = [0]*length
-        for index, item in enumerate(self.nodes()):
-            retarr_index[index] = item.index
-            retarr_x[index] = item.x
-            retarr_y[index] = item.y
-            retarr_name[index] = item.name
-            retarr_height[index] = item.height
-            retarr_element[index] = item.element
-        return retarr_index, retarr_x, retarr_y,\
-            retarr_name, retarr_height, retarr_element
-
 
     def setCalculations(self):
         attr = self.__dict__

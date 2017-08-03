@@ -21,7 +21,7 @@ class Consumer():
         self.end_y = consumerValues['end_y']
         self.profile = consumerValues['profile']
         self.average = consumerValues['average']
-        self.Q = float(-np.abs(consumerValues['heat_demand'])) #Watt
+        self.Q = float(-np.abs(consumerValues['Q'])) #Watt
 
         self.Ta = float(130 + 273.15)
         self.Tb = float(60 + 273.15)

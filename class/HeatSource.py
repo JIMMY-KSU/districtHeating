@@ -85,6 +85,7 @@ class HeatSource():
         return self.calcVals[i]
 
     def __str__(self):
+        index = 0
         for element, index, Q, m, Ta, Tb, Pa, Pb, sNode, eNode in zip(
                 self.v_producers_element,
                 self.v_producers_index,
@@ -96,10 +97,14 @@ class HeatSource():
                 self.v_producers_Pb,
                 self.v_producers_sNode,
                 self.v_producers_eNode):
-            print("%s: i %s Q %10.f [W] m %7.3f [m/s] Ta %3.2f [K] "
-                  "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa] sNode %s eNode %s"
-                  % (element, index, Q, m, Ta, Tb, Pa, Pb, sNode, eNode))
-
+            if index < 1:
+                print("%s: i %s Q %10.f [W] m %7.3f [m/s] Ta %3.2f [K] "
+                      "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa] sNode %s"
+                      " eNode %s" % (element, index, Q, m, Ta, Tb, Pa, Pb,
+                                     sNode, eNode))
+                index = index + 1
+            else:
+                break
 if __name__ == "__main__":
     import os
     from DataIO import DataIO

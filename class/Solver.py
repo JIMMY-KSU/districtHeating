@@ -256,6 +256,7 @@ class Solver():
         return F
 
     def getGuess(self):
+        print("Getting guess for solver")
         if self.getGuessFirstRun is 1:
             
             '''
@@ -411,6 +412,7 @@ class Solver():
 #            print('????????????? v_Tb %f \n'%item)
 
         arr = np.concatenate((v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb))
+        print("Guess for solver \t----> OK")
         return arr
 
     def __xToSingleVectors(self, x):

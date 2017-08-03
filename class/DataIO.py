@@ -53,7 +53,6 @@ class DataIO():
             for value, key in zip(dtype.keys(), dtype.values()):
                 if value is not None:
                     usecols.append(value)
-        print(usecols)
         df = pd.read_csv(file, delimiter=delimiter, header=header,
                           encoding=encoding, decimal=decimal, usecols=usecols,
                           lineterminator=lineterminator, thousands=thousands,
@@ -138,7 +137,6 @@ class DataIO():
                     usecols.append(value)
         else:
             usecols = dbf.header
-        print(usecols)
         d = {col: dbf.by_col(col) for col in usecols}
         df = pd.DataFrame(d)
 

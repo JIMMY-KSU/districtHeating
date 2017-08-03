@@ -179,7 +179,7 @@ class HeatGrid():
 
     def __str__(self, pipes=1, nodes=1):
         if pipes is 1:
-
+            index = 0
             for element, sprp, sNode, eNode, length,\
                 diameter_inner, diameter_outer, sprp in zip(
                         self.v_pipes_element, self.v_pipes_sprp,
@@ -188,18 +188,28 @@ class HeatGrid():
                         self.v_pipes_diameter_inner,
                         self.v_pipes_diamter_outer,
                         self.v_pipes_sprp):
-                print("%s: sprp %i length %4.1f [m] "
+                if index < 1:
+                    print("%s: sprp %i length %4.1f [m] "
                       "d_i %4.2f [m] d_o %4.2f [m] sNode %s "
                       "eNode %s" % (element, sprp, length,
                                     diameter_inner, diameter_outer,
                                     sNode, eNode))
+                    index = index + 1
+                else:
+                    break
         if nodes is 1:
+            index = 0
             for element, name, sprp in zip(
                                             self.v_nodes_element,
                                             self.v_nodes_name,
                                             self.v_nodes_sprp):
-                        print("%s: sprp %s \t\t\t\t\t\t\t\t\t Node %s" % (
-                                element, sprp, name))
+                if index < 1:
+                    print("%s: sprp %i name %s \t\t\t\t\t\t\t\t\t" % (
+                            element, sprp, name))
+                    index = index + 1
+                else:
+                    break
+
 
 if __name__ == "__main__":
     from DataIO import DataIO

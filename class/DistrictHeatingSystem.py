@@ -24,6 +24,7 @@ from HeatSource import HeatSource
 from Plotter import Plotter
 from scipy.optimize import root
 from Solver import Solver
+from collections import Counter
 
 
 import logging
@@ -54,17 +55,67 @@ class DistrictHeatingSystem():
         solution = fsolve(solver.gridCalculation, guess)
         solver.print_x(solution, 'solution')
         solver.save_x(solution)
-        
-
         return None
 
+    def checkDHSForDeadEnds(self):
+#        print(len(self.heatgrid.v_pipes_eNode),
+#              len(self.heatgrid.v_pipes_sNode),
+#              len(self.heatgrid.v_nodes_name))
+        print(type(self.heatgrid.v_pipes_eNode))
+        v_pipes_eNode = self.heatgrid.v_pipes_eNode
+        v_pipes_sNode = self.heatgrid.v_pipes_sNode
+        setOfElements_eNode = set(v_pipes_eNode)
+        setOfElements_sNode = set(v_pipes_sNode)
+        setOfHeatsink_sNode = set(self.heatsink.v_consumers_sNode)
+        setOfHeatsink_eNode = set(self.heatsink.v_consumers_eNode)
+        setOfHeatsource_sNode = set(self.heatsource.v_producers_sNode)
+        setOfHeatsource_eNode = set(self.heatsource.v_producers_eNode)
+        
+        setOfHeatsinkHeatsource_nodes = set(setOfHeatsink_sNode |
+                setOfHeatsink_eNode | setOfHeatsource_sNode |
+                setOfHeatsource_eNode)
+
+        setOfElements_nodes = (setOfElements_eNode | setOfElements_sNode) -\
+                               setOfHeatsinkHeatsource_nodes
+        index = 0
+        for eNode, sNode in zip(v_pipes_eNode, v_pipes_sNode):
+            if eNode not in setOfElements_nodes:
+                v_pipes_eNode[index] = None
+            if sNode not in setOfElements_nodes:
+                v_pipes_sNode[index] = None
+            index = index + 1
+        
+        countsEqualOne_eNode = Counter(v_pipes_eNode)
+        countsEqualOne_sNode = Counter(v_pipes_sNode)
+        countsEqualOne_eNode = [item for item in countsEqualOne_eNode.items()
+                                if item[1] == 1]
+        countsEqualOne_sNode = [item for item in countsEqualOne_sNode.items()
+                                if item[1] == 1]
+
+        countsEqualOne_nodes = np.append(countsEqualOne_eNode,
+                                        countsEqualOne_sNode)
+        countsEqualOne_nodes = Counter(countsEqualOne_nodes)
+        countsEqualOne_nodes = [item for item in countsEqualOne_nodes.items()]
+        print(countsEqualOne_nodes)
+        print(len(countsEqualOne_nodes))
+        
+
+#        leaves = setElements_eNode - setElements_sNode
+#        print(leaves)
+#        deadEnds = set(self.heatgrid.v_nodes_name) - (
+#                                set(self.heatsink.v_consumers_eNode) &
+#                                set(self.heatsink.v_consumers_sNode) &
+#                                set(self.heatsource.v_producers_eNode) &
+#                                set(self.heatsource.v_producers_sNode))
+#
+#        print(deadEnds)
 
 
 if __name__ == "__main__":
     from DataIO import DataIO
     import Dictionary
     print('DistrictHeatingSystem \t run directly \n')
-    
+
 
 #    DataIO = DataIO(
 #                os.path.dirname(os.getcwd()) + os.sep +
@@ -109,25 +160,26 @@ if __name__ == "__main__":
             heatgrid_nodes,
             heatsink,
             heatsource)
-    i = 0
-    while i < 1:
-        print('#####\trun number %i\t#####' %i)
-        DHS1.calculateDHS()
-        endTime = time.time()
-#        DHS1.heatgrid.__str__()
-#        DHS1.heatsink.__str__()
-#        DHS1.heatsource.__str__()
-
-#        solver.print_x(guess, "guess")
-#        solver.print_x(solution, "solution")
-        DHS1.heatgrid.setCalculations()
-        DHS1.heatsink.setCalculations()
-        DHS1.heatsource.setCalculations()
-        i = i + 1
-
-    DataIO.exportNumpyArr("HeatGrid", DHS1.heatgrid.getCalculations())
-    DataIO.exportNumpyArr("HeatSink", DHS1.heatsink.getCalculations())
-    DataIO.exportNumpyArr("HeatSouce", DHS1.heatsource.getCalculations())
+    DHS1.checkDHSForDeadEnds()
+#    i = 0
+#    while i < 1:
+#        print('#####\trun number %i\t#####' %i)
+#        DHS1.calculateDHS()
+#        endTime = time.time()
+##        DHS1.heatgrid.__str__()
+##        DHS1.heatsink.__str__()
+##        DHS1.heatsource.__str__()
+#
+##        solver.print_x(guess, "guess")
+##        solver.print_x(solution, "solution")
+#        DHS1.heatgrid.setCalculations()
+#        DHS1.heatsink.setCalculations()
+#        DHS1.heatsource.setCalculations()
+#        i = i + 1
+#
+#    DataIO.exportNumpyArr("HeatGrid", DHS1.heatgrid.getCalculations())
+#    DataIO.exportNumpyArr("HeatSink", DHS1.heatsink.getCalculations())
+#    DataIO.exportNumpyArr("HeatSouce", DHS1.heatsource.getCalculations())
 #    DHS1_Plotter = Plotter(figsize=1)
 #
 #    fig = DHS1_Plotter.plot_DHS(DHS1.heatgrid.getCalculations(0),

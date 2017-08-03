@@ -89,12 +89,11 @@ class HeatSink():
                  "calcVals")}
         self.calcVals.append(attr)
 
-
     def getCalculations(self, i=slice(None,None)):
         return self.calcVals[i]
 
-
     def __str__(self):
+        index = 0
         for element, i, Q, m, Ta, Tb, Pa, Pb, sNode, eNode in zip(
                 self.v_consumers_element,
                 self.v_consumers_index,
@@ -106,9 +105,14 @@ class HeatSink():
                 self.v_consumers_Pb,
                 self.v_consumers_sNode,
                 self.v_consumers_eNode):
-            print("%s: i %i Q %10.f [W] m %7.3f [m/s] Ta %3.2f [K] "
-                  "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa] sNode %s eNode %s"
-                  % (element, i, Q, m, Ta, Tb, Pa, Pb, sNode, eNode))
+            if index < 1:
+                print("%s: i %i Q %10.f [W] m %7.3f [m/s] Ta %3.2f [K] "
+                      "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa] sNode %s"
+                      "eNode %s" % (element, i, Q, m, Ta, Tb, Pa, Pb,
+                                    sNode, eNode))
+                index = index + 1
+            else:
+                break
 
 
 if __name__ == "__main__":

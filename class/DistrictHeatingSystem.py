@@ -137,22 +137,26 @@ if __name__ == "__main__":
 #    heatsource = DataIO.importCSV(
 #            'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
 #            delimiter='\t', header=0)
-    DataIO = DataIO(
-                os.path.dirname(os.getcwd()) + os.sep +
-                'input' + os.sep + 'TestNetz' + os.sep + "vogelstang",
-                os.path.dirname(os.getcwd()) + os.sep +
-                'output' + os.sep + 'TestNetz' + os.sep + "vogelstang")
+#    DataIO = DataIO(
+#                os.path.dirname(os.getcwd()) + os.sep +
+#                'input' + os.sep + 'TestNetz' + os.sep + "vogelstang",
+#                os.path.dirname(os.getcwd()) + os.sep +
+#                'output' + os.sep + 'TestNetz' + os.sep + "vogelstang")
 
-    heatgrid_nodes = DataIO.importDBF(
+    dataIO = DataIO(
+            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vogelstang',
+            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vogelstang')
+
+    heatgrid_nodes = dataIO.importDBF(
             'K20150909_F-MVV_TL-West.DBF', dtype=Dictionary.STANET_nodes_allocation)
 
-    heatgrid_pipes = DataIO.importDBF(
+    heatgrid_pipes = dataIO.importDBF(
             'S20150909_F-MVV_TL-West.DBF', dtype=Dictionary.STANET_pipes_allocation)
 
-    heatsink = DataIO.importDBF(
+    heatsink = dataIO.importDBF(
             'W20150909_F-MVV_TL-West.DBF', dtype=Dictionary.STANET_consumer_allocation)
 
-    heatsource = DataIO.importCSV(
+    heatsource = dataIO.importCSV(
             'W20150909_F-MVV_TL-West.csv', dtype=Dictionary.STANET_vogelstang_producer_allocation,
             delimiter=';', header=0)
 
@@ -162,32 +166,32 @@ if __name__ == "__main__":
             heatgrid_nodes,
             heatsink,
             heatsource)
-    DHS1.checkDHSForDeadEnds()
-#    i = 0
-#    while i < 1:
-#        print('#####\trun number %i\t#####' %i)
-#        DHS1.calculateDHS()
-#        endTime = time.time()
-##        DHS1.heatgrid.__str__()
-##        DHS1.heatsink.__str__()
-##        DHS1.heatsource.__str__()
-#
-##        solver.print_x(guess, "guess")
-##        solver.print_x(solution, "solution")
-#        DHS1.heatgrid.setCalculations()
-#        DHS1.heatsink.setCalculations()
-#        DHS1.heatsource.setCalculations()
-#        i = i + 1
-#
-#    DataIO.exportNumpyArr("HeatGrid", DHS1.heatgrid.getCalculations())
-#    DataIO.exportNumpyArr("HeatSink", DHS1.heatsink.getCalculations())
-#    DataIO.exportNumpyArr("HeatSouce", DHS1.heatsource.getCalculations())
-#    DHS1_Plotter = Plotter(figsize=1)
-#
-#    fig = DHS1_Plotter.plot_DHS(DHS1.heatgrid.getCalculations(0),
-#                          DHS1.heatsink.getCalculations(0),
-#                          DHS1.heatsource.getCalculations(0))
-#    DataIO.exportFig('test', fig)
+
+    i = 0
+    while i < 1:
+        print('#####\trun number %i\t#####' %i)
+        DHS1.calculateDHS()
+        endTime = time.time()
+#        DHS1.heatgrid.__str__()
+#        DHS1.heatsink.__str__()
+#        DHS1.heatsource.__str__()
+
+#        solver.print_x(guess, "guess")
+#        solver.print_x(solution, "solution")
+        DHS1.heatgrid.setCalculations()
+        DHS1.heatsink.setCalculations()
+        DHS1.heatsource.setCalculations()
+        i = i + 1
+
+    dataIO.exportNumpyArr("HeatGrid", DHS1.heatgrid.getCalculations())
+    dataIO.exportNumpyArr("HeatSink", DHS1.heatsink.getCalculations())
+    dataIO.exportNumpyArr("HeatSouce", DHS1.heatsource.getCalculations())
+    DHS1_Plotter = Plotter(figsize=1)
+
+    fig = DHS1_Plotter.plot_DHS(DHS1.heatgrid.getCalculations(0),
+                          DHS1.heatsink.getCalculations(0),
+                          DHS1.heatsource.getCalculations(0))
+    dataIO.exportFig('test', fig)
 
 else:
     import os

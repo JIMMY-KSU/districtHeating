@@ -508,6 +508,34 @@ class Solver():
                   % (element, name_nodes, sprp, T, P))
         print("values of %s \t ----> OK\n" % name)
 
+    def checkDHSForDeadEnds(self):
+        I = np.array([[0,-1,0,1],[0,1,-1,0],[0,0,1,-1],
+                   [-1,0,0,1],[0,0,0,1],[0,0,0,0]])
+        index = I.shape[1]
+        i = 0
+        while i < index:
+
+            I_abs = np.abs(self._inzidenzmatrix)
+            
+
+            I_row_sum = np.sum(I_abs, axis=1)
+            I_row_index = np.where(I_row_sum == 1)
+            for val in I_row_index:
+                I[val] = 0
+        
+            I_col_sum = np.sum(I_abs, axis=0)
+            I_col_index = np.where(I_col_sum == 1)
+            
+            for val in I_col_index:
+                I[:,val] = 0
+            i = i + 1
+            if not (I_row_index and I_col_index):
+                break
+
+
+
+
+
 if __name__ == "__main__":
     import os
     from DataIO import DataIO

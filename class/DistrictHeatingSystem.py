@@ -57,48 +57,50 @@ class DistrictHeatingSystem():
         solver.save_x(solution)
         return None
 
-    def checkDHSForDeadEnds(self):
+
+
+        
 #        print(len(self.heatgrid.v_pipes_eNode),
 #              len(self.heatgrid.v_pipes_sNode),
 #              len(self.heatgrid.v_nodes_name))
-        print(type(self.heatgrid.v_pipes_eNode))
-        v_pipes_eNode = self.heatgrid.v_pipes_eNode
-        v_pipes_sNode = self.heatgrid.v_pipes_sNode
-        setOfElements_eNode = set(v_pipes_eNode)
-        setOfElements_sNode = set(v_pipes_sNode)
-        setOfHeatsink_sNode = set(self.heatsink.v_consumers_sNode)
-        setOfHeatsink_eNode = set(self.heatsink.v_consumers_eNode)
-        setOfHeatsource_sNode = set(self.heatsource.v_producers_sNode)
-        setOfHeatsource_eNode = set(self.heatsource.v_producers_eNode)
-        
-        setOfHeatsinkHeatsource_nodes = set(setOfHeatsink_sNode |
-                setOfHeatsink_eNode | setOfHeatsource_sNode |
-                setOfHeatsource_eNode)
-
-        setOfElements_nodes = (setOfElements_eNode | setOfElements_sNode) -\
-                               setOfHeatsinkHeatsource_nodes
-        index = 0
-        for eNode, sNode in zip(v_pipes_eNode, v_pipes_sNode):
-            if eNode not in setOfElements_nodes:
-                v_pipes_eNode[index] = None
-            if sNode not in setOfElements_nodes:
-                v_pipes_sNode[index] = None
-            index = index + 1
-        
-        countsEqualOne_eNode = Counter(v_pipes_eNode)
-        countsEqualOne_sNode = Counter(v_pipes_sNode)
-        countsEqualOne_eNode = [item for item in countsEqualOne_eNode.items()
-                                if item[1] == 1]
-        countsEqualOne_sNode = [item for item in countsEqualOne_sNode.items()
-                                if item[1] == 1]
-
-        countsEqualOne_nodes = np.append(countsEqualOne_eNode,
-                                        countsEqualOne_sNode)
-        countsEqualOne_nodes = Counter(countsEqualOne_nodes)
-        countsEqualOne_nodes = [item for item in countsEqualOne_nodes.items()]
-        print(countsEqualOne_nodes)
-        print(len(countsEqualOne_nodes))
-        
+#        print(type(self.heatgrid.v_pipes_eNode))
+#        v_pipes_eNode = self.heatgrid.v_pipes_eNode
+#        v_pipes_sNode = self.heatgrid.v_pipes_sNode
+#        setOfElements_eNode = set(v_pipes_eNode)
+#        setOfElements_sNode = set(v_pipes_sNode)
+#        setOfHeatsink_sNode = set(self.heatsink.v_consumers_sNode)
+#        setOfHeatsink_eNode = set(self.heatsink.v_consumers_eNode)
+#        setOfHeatsource_sNode = set(self.heatsource.v_producers_sNode)
+#        setOfHeatsource_eNode = set(self.heatsource.v_producers_eNode)
+#        
+#        setOfHeatsinkHeatsource_nodes = set(setOfHeatsink_sNode |
+#                setOfHeatsink_eNode | setOfHeatsource_sNode |
+#                setOfHeatsource_eNode)
+#
+#        setOfElements_nodes = (setOfElements_eNode | setOfElements_sNode) -\
+#                               setOfHeatsinkHeatsource_nodes
+#        index = 0
+#        for eNode, sNode in zip(v_pipes_eNode, v_pipes_sNode):
+#            if eNode not in setOfElements_nodes:
+#                v_pipes_eNode[index] = None
+#            if sNode not in setOfElements_nodes:
+#                v_pipes_sNode[index] = None
+#            index = index + 1
+#        
+#        countsEqualOne_eNode = Counter(v_pipes_eNode)
+#        countsEqualOne_sNode = Counter(v_pipes_sNode)
+#        countsEqualOne_eNode = [item for item in countsEqualOne_eNode.items()
+#                                if item[1] == 1]
+#        countsEqualOne_sNode = [item for item in countsEqualOne_sNode.items()
+#                                if item[1] == 1]
+#
+#        countsEqualOne_nodes = np.append(countsEqualOne_eNode,
+#                                        countsEqualOne_sNode)
+#        countsEqualOne_nodes = Counter(countsEqualOne_nodes)
+#        countsEqualOne_nodes = [item for item in countsEqualOne_nodes.items()]
+#        print(countsEqualOne_nodes)
+#        print(len(countsEqualOne_nodes))
+#        
 
 #        leaves = setElements_eNode - setElements_sNode
 #        print(leaves)

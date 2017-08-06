@@ -4,29 +4,40 @@ Spyder Editor
 
 This is a temporary script file.
 """
-import numpy as np 
+import numpy as np
 
 
 class Finder():
     def __init__(self):
         pass
-    
+
     def findAllItems(self, item_list, search_list, arr=[]):
+        '''
+        finds all elements on supply side --> 1 and return side --> 0
+        input
+            item_list: nodeSupply = [] is given by
+            [[val, None],[val, None], ...]
+            search_list: [[sNode, eNode],[sNode, eNode],...]
+        return arr [[sNode, eNode], ...] with (sNode and eNode) = 1
+        '''
         noMoreElementsIn_search_list = 1
         for item0 in item_list:
             i = 0
             while i < len(search_list):
-                if (item0[0] == search_list[i][0] or item0[0] == search_list[i][1]
-                or item0[1] == search_list[i][0] or item0[1] == search_list[i][1]):
+                if (item0[0] == search_list[i][0] or
+                    item0[0] == search_list[i][1] or
+                    item0[1] == search_list[i][0] or
+                    item0[1] == search_list[i][1]):
+
                     arr.append(search_list[i])
                     search_list = np.delete(search_list, i, axis=0)
                     i = i - 1
                     noMoreElementsIn_search_list = 0
                 i = i + 1
-        return np.asarray(arr) if(bool(noMoreElementsIn_search_list)) else\
-                        self.findAllItems(arr, search_list, arr)
-    
-    
+        return arr if(bool(noMoreElementsIn_search_list)) else\
+            self.findAllItems(arr, search_list, arr)
+
+
 if __name__ == "__main__":
     print('Finder \t\t\t run directly')
     pipes = [[1,2],[2,3],[3,4],[4,1],[4,5],[4,6],[4,7],[8,11],\

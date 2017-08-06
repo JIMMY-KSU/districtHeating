@@ -17,6 +17,8 @@ from shapely.geometry import MultiLineString
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib import dates as mdates
+import pandas as pd
+import igraph
 
 import datetime
 
@@ -371,6 +373,8 @@ class Plotter():
 
         return fig
 
+
+
     def plot_DHS(self, arr_heatgrid, arr_heatsink, arr_heatsource,
                  title=''):
         if title is '':
@@ -664,11 +668,41 @@ class Plotter():
         fig = plt.figure(figsize=self._figsize(width))
         ax = fig.add_subplot(111)
         return fig, ax
+    
+    def plot_graph(self, nodes, edges_seNode,
+                   nodes_label=None, edges_label=None,
+                   weight = None):
+        visual_style = {}
+        visual_style["vertex_size"] = 15
+        visual_style["vertex_shape"] = "circle"
+        visual_style["layout"] = 'lgl'
+        visual_style["bbox"] = (1024, 1024)
+        visual_style["margin"] = 10
+
+        g = igraph.Graph()
+        g.add_vertices(nodes)
+        g.add_edges(edges_seNode)
+        g.es['label'] = edges_label
+        g.vs['label'] = nodes_label
+#        g.vs['shape'] = "circle"
+#        g.vs['size'] ='5'
+        fig = igraph.plot(g, **visual_style)
+        fig.show()
 
 if __name__ == "__main__":
     print('Plotter \t\t run directly \n')
     testPlotter = Plotter()
-    testPlotter.get_symbol(pointXY=Point(5, 5), scale=326, rotation=0,
-                           element='consumer')
+#    testPlotter.get_symbol(pointXY=Point(5, 5), scale=326, rotation=0,
+#                           element='consumer')
+    nodes_name = ['A', 'B', 'C', 'D']
+    weight = [12,12,12,12]
+    elements_name = ['e1', 'e2', 'e3', 'e4']
+    edges_seNode = np.array([['A', 'B'], ['A', 'C'],
+                             ['C', 'B'],['B', 'C'],
+                             ['C', 'A'], ['B', 'A']])
+
+    testPlotter.plot_graph(nodes_name, edges_seNode, nodes_label=nodes_name,
+                           edges_label=elements_name,
+                           weight=weight)
 else:
     print('Plotter \t\t was imported into another module')

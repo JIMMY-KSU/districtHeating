@@ -8,24 +8,10 @@ cp = 4182  # J/(kg*K)
 
 
 # pipe
-def pipe_massflow(m, Ta, Tb, Q, cp=cp):
-    res = m * cp * (Tb - Ta) - Q
-    return res
 
 
-def pipe_heatflow(Q, Ta, Tb, A=1, k=1, Tamb=273.15 + 10):
-#    print('pipe_heatflow %s %s %s' %(type(Q), type(Ta), type(Tb)))
-    res = (k * A) * (Tamb -(Ta + Tb) / 2) - Q
-    return res
 
 
-def pipe_press(Pa, Pb, m, Ha=0, Hb=0):
-    Zeta = 0.2
-    rho = 1000
-    g = 9.81
-#    print('pipe_press %s %s %s' %(type(Pa), type(Pb), type(m)))
-    res = (Pa - Pb) * 100000 - Zeta * m * abs(m) + rho * g * (Ha - Hb)
-    return res
 
 
 # consumer

@@ -55,7 +55,7 @@ class HeatGrid():
 #        self.v_pipes_conductivity_middle = tableOfPipes['conductivity_middle']
 #        self.v_pipes_conductivity_outer = tableOfPipes['conductivity_outer']
 
-        self.v_pipes_element = ['pipes'] * length
+        self.v_pipes_element = ['pipe'] * length
         self.v_pipes_Q = np.array([0.0] * length)
         self.v_pipes_m = np.array([0.0] * length)
         self.v_pipes_Ta = np.array([0.0] * length)
@@ -70,11 +70,12 @@ class HeatGrid():
         self.v_nodes_y = np.array(tableOfNodes['y'])
         self.v_nodes_name = np.array(tableOfNodes['name'])
         self.v_nodes_height = np.array(tableOfNodes['height'])
-        self.v_nodes_element = ['nodes'] * length
+        self.v_nodes_element = ['node'] * length
 
         self.v_pipes_seNode = np.column_stack(
                                     (self.v_pipes_sNode, self.v_pipes_eNode))
-        seNodes_sprp = self.__get_pipes_sprp(nodeSupply)
+        seNodes_sprp = self.__get_pipes_sprp(nodeSupply,
+                                             tableOfNodes = tableOfNodes)
         self.v_pipes_sprp = self.__set_pipes_sprp(seNodes_sprp)
         self.v_nodes_sprp = self.__set_nodes_sprp(seNodes_sprp)
         
@@ -95,16 +96,22 @@ class HeatGrid():
     def nodes(self, i=slice(None, None)):
         return self._instancesNode[i]
 
-    def __get_pipes_sprp(self, nodeSupply):
+    def __get_pipes_sprp(self, nodeSupply = None, tableOfNodes = None):
         '''
         gets an arr of all supply pipes,
         find by class Finder method findAllItems
+        return: []
         '''
-        search_list = []
-        for item in self.pipes():
-            search_list.append(item.seNode)
-        arr = Finder().findAllItems(nodeSupply,
-                                    self.v_pipes_seNode)
+        if 'sprp' not in tableOfNodes:
+            arr = Finder().findAllItems(nodeSupply,
+                                        self.v_pipes_seNode)
+        else:
+            arr = []
+            for item0, name in zip(tableOfNodes['sprp'], self.v_nodes_name):
+                if item0 is 'J':
+                    for index, item1 in enumerate(self.v_pipes_seNode):
+                        if (item1[0] or item1[1]) in name:
+                            arr.append(item1)
         return arr
 
     def __set_pipes_sprp(self, arr):

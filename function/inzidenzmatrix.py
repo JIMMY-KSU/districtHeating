@@ -37,3 +37,30 @@ def inzidenzmatrix(rows, cols, inzidenzmatrix_name):
 #    print('\n')
 
     return returnMatrix
+
+def adjacencyMatrix(nodes, edges_seNode):
+    '''
+    arranges an adjacencyMatrix undirected:
+            A B C D
+    A       0 0 1 0
+    B       0 0 1 1
+    C ...
+    D ...
+    
+    input:
+        nodes = numpy.array([])
+        edges = numpy.array([]) defining the conjunctions.
+    return:
+        adjacencyMatrix = numpy.array([]) --> square array
+    '''
+    pass
+
+
+if __name__ == "__main__":
+    print('Plotter \t\t run directly \n')
+    edges_seNode = np.array([['A', 'B'], ['A', 'C'], ['C', 'B'],['B', 'C'], ['C', 'A'], ['B', 'A']])
+    nodes = np.array(['A', 'B', 'C', 'D'])
+    adjacencyMatrix(nodes, edges_seNode)
+else:
+    print('Plotter \t\t was imported into another module')
+

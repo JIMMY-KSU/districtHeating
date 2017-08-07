@@ -32,7 +32,7 @@ class Pipe():
         self.end_y = pipeValues['end_y']
         self.sNode = pipeValues['sNode']
         self.eNode = pipeValues['eNode']
-        self.seNode = [self.sNode, self.eNode]
+        self.esNode = [self.eNode, self.sNode]
         self.length = float(pipeValues['length'])  # [mm]
         self.start_height = float(pipeValues['start_height'])
         self.end_height = float(pipeValues['end_height'])

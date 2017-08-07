@@ -72,12 +72,12 @@ class HeatGrid():
         self.v_nodes_height = np.array(tableOfNodes['height'])
         self.v_nodes_element = ['node'] * length
 
-        self.v_pipes_seNode = np.column_stack(
-                                    (self.v_pipes_sNode, self.v_pipes_eNode))
-        seNodes_sprp = self.__get_pipes_sprp(nodeSupply,
+        self.v_pipes_esNode = np.column_stack(
+                                    (self.v_pipes_eNode, self.v_pipes_sNode))
+        esNodes_sprp = self.__get_pipes_sprp(nodeSupply,
                                              tableOfNodes = tableOfNodes)
-        self.v_pipes_sprp = self.__set_pipes_sprp(seNodes_sprp)
-        self.v_nodes_sprp = self.__set_nodes_sprp(seNodes_sprp)
+        self.v_pipes_sprp = self.__set_pipes_sprp(esNodes_sprp)
+        self.v_nodes_sprp = self.__set_nodes_sprp(esNodes_sprp)
         
         self.v_nodes_T = 0
         self.v_nodes_P = 0
@@ -96,6 +96,24 @@ class HeatGrid():
     def nodes(self, i=slice(None, None)):
         return self._instancesNode[i]
 
+    def subdict_v_Pipes(self):
+        attr = self.__dict__
+        subdict = {item: attr[item] for item in attr if "v_pipes" in item}
+        return subdict
+
+    def subdict_v_Nodes(self):
+        subdict = {item: attr[item] for item in attr if "v_nodes" in item}
+        return subdict
+
+    def delPipes(self, arr):
+        '''
+        Deletes all pipes that indices are given.
+        input: arr of indices
+        '''
+        v_pipes = self.subdict_v_Pipes()
+        for item in v_pipes:
+            item.values = np.delete(item.values(), arr)
+
     def __get_pipes_sprp(self, nodeSupply = None, tableOfNodes = None):
         '''
         gets an arr of all supply pipes,
@@ -104,12 +122,12 @@ class HeatGrid():
         '''
         if 'sprp' not in tableOfNodes:
             arr = Finder().findAllItems(nodeSupply,
-                                        self.v_pipes_seNode)
+                                        self.v_pipes_esNode)
         else:
             arr = []
             for item0, name in zip(tableOfNodes['sprp'], self.v_nodes_name):
                 if item0 is 'J':
-                    for index, item1 in enumerate(self.v_pipes_seNode):
+                    for index, item1 in enumerate(self.v_pipes_esNode):
                         if (item1[0] or item1[1]) in name:
                             arr.append(item1)
         return arr
@@ -118,7 +136,7 @@ class HeatGrid():
         '''
         names all pipes at sp_rp with 1 for supply pipe and 0 for return pipe
         '''
-        arr_pipes = self.v_pipes_seNode
+        arr_pipes = self.v_pipes_esNode
 
         for index, item in enumerate(arr_pipes):
             for item1 in arr:
@@ -166,6 +184,11 @@ class HeatGrid():
             arr.append(Node(index, row))
         return arr
 
+
+
+    def getCalculations(self, i=slice(None,None)):
+        return self._calcVals[i]
+
     def setCalculations(self):
         attr = self.__dict__
         attr = {item: attr[item] for item in attr if item not in
@@ -176,8 +199,6 @@ class HeatGrid():
         self._calcVals.append(attr)
 
 
-    def getCalculations(self, i=slice(None,None)):
-        return self._calcVals[i]
 
     def pipes_operatingLoad(self):
         arr = self.v_pipes_m_max / 100
@@ -237,7 +258,7 @@ if __name__ == "__main__":
             'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
 
     testGrid = HeatGrid(heatgrid_pipes, heatgrid_nodes, [["K1017", None]])
-
+    testGrid.subdict_v_Pipes()
 
 else:
     print('HeatGrid \t\t was imported into another module')

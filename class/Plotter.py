@@ -669,7 +669,7 @@ class Plotter():
         ax = fig.add_subplot(111)
         return fig, ax
     
-    def plot_graph(self, nodes, edges_seNode,
+    def plot_graph(self, nodes, edges_esNode,
                    nodes_label=None, edges_label=None,
                    weight = None):
         visual_style = {}
@@ -681,7 +681,7 @@ class Plotter():
 
         g = igraph.Graph()
         g.add_vertices(nodes)
-        g.add_edges(edges_seNode)
+        g.add_edges(edges_esNode)
         g.es['label'] = edges_label
         g.vs['label'] = nodes_label
 #        g.vs['shape'] = "circle"
@@ -697,11 +697,11 @@ if __name__ == "__main__":
     nodes_name = ['A', 'B', 'C', 'D']
     weight = [12,12,12,12]
     elements_name = ['e1', 'e2', 'e3', 'e4']
-    edges_seNode = np.array([['A', 'B'], ['A', 'C'],
+    edges_esNode = np.array([['A', 'B'], ['A', 'C'],
                              ['C', 'B'],['B', 'C'],
                              ['C', 'A'], ['B', 'A']])
 
-    testPlotter.plot_graph(nodes_name, edges_seNode, nodes_label=nodes_name,
+    testPlotter.plot_graph(nodes_name, edges_esNode, nodes_label=nodes_name,
                            edges_label=elements_name,
                            weight=weight)
 else:

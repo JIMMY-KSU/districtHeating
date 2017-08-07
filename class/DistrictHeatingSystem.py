@@ -9,6 +9,7 @@ import sys
 import os
 import numpy as np
 from scipy.optimize import fsolve
+from scipy.optimize import root
 import time
 
 #sys.path.append(os.getcwd())
@@ -47,12 +48,12 @@ class DistrictHeatingSystem():
 #        logger.error("An error occurred")
 #        logger.info("This is an info log")
 
-    def calculateDHS(self, Solver):
+    def calculateDHS(self):
         print("---->\tstart to calculate heatgrid\n")
-        solver = Solver
+        solver = Solver(self.heatgrid, self.heatsink, self.heatsource)
         guess = solver.getGuess()
         solver.print_x(guess, 'guess')
-        solution = fsolve(solver.gridCalculation, guess)
+        solution = root(solver.gridCalculation, guess)
         solver.print_x(solution, 'solution')
         solver.save_x(solution)
         return None
@@ -143,9 +144,14 @@ if __name__ == "__main__":
 #                os.path.dirname(os.getcwd()) + os.sep +
 #                'output' + os.sep + 'TestNetz' + os.sep + "vog")
 
-    dataIO = DataIO(
-            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog',
-            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog')
+#    dataIO = DataIO(
+#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog' +
+#            os.sep + 'vog_klein',
+#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog' +
+#            os.sep + 'vog_klein')
+    dataIO= DataIO(
+            'D:\jpelda\Python Scripts\\vog\\vog_gross',
+            'D:\jpelda\Python Scripts\\vog\\vog_gross\\output')
 
     heatgrid_nodes = dataIO.importDBF(
             'K20150909_F-MVV_TL-West.DBF',
@@ -170,27 +176,27 @@ if __name__ == "__main__":
             heatgrid_nodes,
             heatsink,
             heatsource)
+
     DHS1_Plotter = Plotter()
-    DHS1_Solver = Solver(DHS1.heatgrid, DHS1.heatsink, DHS1.heatsource)
-    DHS1_Plotter.plot_graph(DHS1.heatgrid.v_nodes_name,
-                            DHS1.heatgrid.v_pipes_seNode)
+#    DHS1_Plotter.plot_graph(DHS1.heatgrid.v_nodes_name,
+#                            DHS1.heatgrid.v_pipes_seNode)
 
     
-#    i = 0
-#    while i < 1:
-#        print('#####\trun number %i\t#####' %i)
-#        DHS1_Solver.calculateDHS()
-#        endTime = time.time()
-##        DHS1.heatgrid.__str__()
-##        DHS1.heatsink.__str__()
-##        DHS1.heatsource.__str__()
-#
-##        solver.print_x(guess, "guess")
-##        solver.print_x(solution, "solution")
-#        DHS1.heatgrid.setCalculations()
-#        DHS1.heatsink.setCalculations()
-#        DHS1.heatsource.setCalculations()
-#        i = i + 1
+    i = 0
+    while i < 1:
+        print('#####\trun number %i\t#####' %i)
+        DHS1.calculateDHS()
+        endTime = time.time()
+#        DHS1.heatgrid.__str__()
+#        DHS1.heatsink.__str__()
+#        DHS1.heatsource.__str__()
+
+#        solver.print_x(guess, "guess")
+#        solver.print_x(solution, "solution")
+        DHS1.heatgrid.setCalculations()
+        DHS1.heatsink.setCalculations()
+        DHS1.heatsource.setCalculations()
+        i = i + 1
 #
 #    dataIO.exportNumpyArr("HeatGrid", DHS1.heatgrid.getCalculations())
 #    dataIO.exportNumpyArr("HeatSink", DHS1.heatsink.getCalculations())

@@ -11,6 +11,7 @@ import dependencies as dp
 import numpy as np
 from inzidenzmatrix import inzidenzmatrix
 import time
+from scipy.optimize import root
 
 class Solver():
     def __init__(self, heatgrid, heatsink, heatsource):
@@ -120,30 +121,23 @@ class Solver():
     def __inzidenzmatrix(self):
         '''returns an inzidenzmatrix of HeatGrid, HeatSink and HeatSource,\
         where all elements are col and nodes are row'''
-        array_col = []
+
         try:
-            for item in self.heatgrid.pipes():
-                array_col.append(
-                                 [item.sNode,
-                                  item.eNode])
+            arr_col = np.vstack((
+                    self.heatgrid.v_pipes_esNode,
+                    self.heatsink.v_consumers_esNode,
+                    self.heatsource.v_producers_esNode))
 
-            for item in self.heatsink.consumer():
-                array_col.append(
-                                 [item.sNode,
-                                  item.eNode])
-
-            for item in self.heatsource.producers():
-                array_col.append([item.sNode,
-                                  item.eNode])
         except ValueError:
             print("Error in __inzidenzmatrix")
-        return inzidenzmatrix(self.heatgrid.v_nodes_name, array_col,
-                              inzidenzmatrix_name="all")
 
+        inzMatrix = inzidenzmatrix(self.heatgrid.v_nodes_name, arr_col,
+                                   inzidenzmatrix_name="all")
+
+        return inzMatrix
 
     def gridCalculation(self, x):
         print(x)
-        print('\n')
         '''
         vector of massflows by solver
         '''
@@ -469,41 +463,41 @@ class Solver():
         input: x
         output: v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb
         '''
-        self.v_m = x[self.slice_v_m]
+        v_m = x[self.slice_v_m]
 
-        self.v_P = x[self.slice_v_P]
-        self.v_Pa = x[self.slice_v_Pa]
-        self.v_Pb = x[self.slice_v_Pb]
+        v_P = x[self.slice_v_P]
+        v_Pa = x[self.slice_v_Pa]
+        v_Pb = x[self.slice_v_Pb]
 
-        self.v_Q = x[self.slice_v_Q]
+        v_Q = x[self.slice_v_Q]
 
-        self.v_T = x[self.slice_v_T]
-        self.v_Ta = x[self.slice_v_Ta]
-        self.v_Tb = x[self.slice_v_Tb]
+        v_T = x[self.slice_v_T]
+        v_Ta = x[self.slice_v_Ta]
+        v_Tb = x[self.slice_v_Tb]
 
-        pipe_m = self.v_m[self.__I_grid_slice]
-        pipe_Pa = self.v_Pa[self.__I_grid_slice]
-        pipe_Pb = self.v_Pb[self.__I_grid_slice]
-        pipe_Ta = self.v_Ta[self.__I_grid_slice]
-        pipe_Tb = self.v_Tb[self.__I_grid_slice]
-        pipe_Q = self.v_Q[self.__I_grid_slice]
+        pipe_m = v_m[self.__I_grid_slice]
+        pipe_Pa = v_Pa[self.__I_grid_slice]
+        pipe_Pb = v_Pb[self.__I_grid_slice]
+        pipe_Ta = v_Ta[self.__I_grid_slice]
+        pipe_Tb = v_Tb[self.__I_grid_slice]
+        pipe_Q = v_Q[self.__I_grid_slice]
 
-        consumer_m = self.v_m[self.__I_sink_slice]
-        consumer_Pa = self.v_Pa[self.__I_sink_slice]
-        consumer_Pb = self.v_Pb[self.__I_sink_slice]
-        consumer_Ta = self.v_Ta[self.__I_sink_slice]
-        consumer_Tb = self.v_Tb[self.__I_sink_slice]
-        consumer_Q = self.v_Q[self.__I_sink_slice]
+        consumer_m = v_m[self.__I_sink_slice]
+        consumer_Pa = v_Pa[self.__I_sink_slice]
+        consumer_Pb = v_Pb[self.__I_sink_slice]
+        consumer_Ta = v_Ta[self.__I_sink_slice]
+        consumer_Tb = v_Tb[self.__I_sink_slice]
+        consumer_Q = v_Q[self.__I_sink_slice]
 
-        producer_m = self.v_m[self.__I_source_slice]
-        producer_Pa = self.v_Pa[self.__I_source_slice]
-        producer_Pb = self.v_Pb[self.__I_source_slice]
-        producer_Ta = self.v_Ta[self.__I_source_slice]
-        producer_Tb = self.v_Tb[self.__I_source_slice]
-        producer_Q = self.v_Q[self.__I_source_slice]
+        producer_m = v_m[self.__I_source_slice]
+        producer_Pa = v_Pa[self.__I_source_slice]
+        producer_Pb = v_Pb[self.__I_source_slice]
+        producer_Ta = v_Ta[self.__I_source_slice]
+        producer_Tb = v_Tb[self.__I_source_slice]
+        producer_Q = v_Q[self.__I_source_slice]
 
-        v_P = self.v_P
-        v_T = self.v_T
+        v_P = v_P
+        v_T = v_T
 
         return pipe_m, pipe_Pa, pipe_Pb, pipe_Q, pipe_Ta, pipe_Tb,\
             consumer_m, consumer_Pa, consumer_Pb, consumer_Q, consumer_Ta,\
@@ -511,6 +505,7 @@ class Solver():
             producer_Ta, producer_Tb, v_P, v_T
 
     def save_x(self, x):
+
         pipe_m, pipe_Pa, pipe_Pb, pipe_Q, pipe_Ta, pipe_Tb,\
             consumer_m, consumer_Pa, consumer_Pb, consumer_Q, consumer_Ta,\
             consumer_Tb, producer_m, producer_Pa, producer_Pb, producer_Q,\
@@ -554,37 +549,37 @@ class Solver():
         print(self._inzidenzmatrix)
         print('\n')
         Inzidenzmatrix = self._inzidenzmatrix
-#        e = np.array([[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0]])
-#        e2 = np.array([[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0]])
-#        n = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1])
-#        n2 = np.array([0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,-1,1])
-#        I = np.hstack((I, e))
-#        I = np.vstack((I, n))
-#        I = np.hstack((I, e2))
-#        I = np.vstack((I, n2))
-#        print(I)
-#        print('\n')
+
         index = Inzidenzmatrix.shape[1]
         i = 0
+        I_row_deleted = [] 
+        I_col_deleted = []
         while i < index:
-
             I_abs = np.abs(Inzidenzmatrix)
-
             I_row_sum = np.sum(I_abs, axis=1)
             I_row_index = np.where(I_row_sum == 1)
-            for val in I_row_index:
+            for val in I_row_index[0]:
                 Inzidenzmatrix[val] = 0
+#                if val.size is not 0:
+#                    print('deleted node: ' + str(
+#                            self.heatgrid.nodes(val).name))
+            I_row_deleted.append(I_row_index[0])
 
             I_col_sum = np.sum(I_abs, axis=0)
             I_col_index = np.where(I_col_sum == 1)
-
-            for val in I_col_index:
+            for val in I_col_index[0]:
                 Inzidenzmatrix[:, val] = 0
+#                if val.size is not 0:
+#                    print('deleted edges: ' + str(
+                #            self.heatgrid.pipes(val).esNode))
+            I_col_deleted.append(I_col_index[0])
             i = i + 1
+
             if not (I_row_index and I_col_index):
                 break
+
         self._inzidenzmatrix = Inzidenzmatrix
-        
+        self.heatgrid
         print(self._inzidenzmatrix)
         print('\n')
 
@@ -723,7 +718,10 @@ if __name__ == "__main__":
     solver.print_x(guess, "guess")
     print('----> Solve equations.')
     startTime = time.clock()
-    solution = fsolve(solver.gridCalculation, guess)
+#    solution = fsolve(solver.gridCalculation, guess)
+    solution_root = root(solver.gridCalculation, guess, method='lm')
+
+    solution = solution_root.x
     print(time.clock() - startTime)
     solver.print_x(solution, "solution")
     
@@ -788,6 +786,7 @@ if __name__ == "__main__":
 #    print(np.mean(mytime))
 
     solver.save_x(solution)
-
+    print(solution_root.success)
+    print(solution_root.message)
 else:
     print("Solver \t\t\t was imported into another module")

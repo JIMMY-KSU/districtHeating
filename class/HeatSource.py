@@ -33,6 +33,8 @@ class HeatSource():
         self.v_producers_Pb = np.array([Pb] * length)  # supply pressure
         self.v_producers_sNode = np.array(tableOfProducer['sNode'])
         self.v_producers_eNode = np.array(tableOfProducer['eNode'])
+        self.v_producers_esNode = np.column_stack((self.v_producers_eNode,
+                                                   self.v_producers_sNode))
         self.v_producers_element = ['producer'] * length
         self.v_producers_start_x = np.array(tableOfProducer['start_x'])
         self.v_producers_start_y = np.array(tableOfProducer['start_y'])

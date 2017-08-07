@@ -38,6 +38,8 @@ class HeatSink():
         self.v_consumers_end_y = np.array(tableOfConsumer['end_y'])
         self.v_consumers_sNode = np.array(tableOfConsumer['sNode'])
         self.v_consumers_eNode = np.array(tableOfConsumer['eNode'])
+        self.v_consumers_esNode = np.column_stack((self.v_consumers_eNode,
+                                                   self.v_consumers_sNode))
         self.v_consumers_profile = np.array(tableOfConsumer['profile'])
         self.v_consumers_average = np.array(tableOfConsumer['average'])
         self.v_consumers_Q = np.array(tableOfConsumer['Q'])

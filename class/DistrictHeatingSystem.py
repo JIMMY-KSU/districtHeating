@@ -143,16 +143,14 @@ if __name__ == "__main__":
 #                'input' + os.sep + 'TestNetz' + os.sep + "vog",
 #                os.path.dirname(os.getcwd()) + os.sep +
 #                'output' + os.sep + 'TestNetz' + os.sep + "vog")
-
-#    dataIO = DataIO(
-#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog' +
-#            os.sep + 'vog_klein',
-#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog' +
-#            os.sep + 'vog_klein')
-    dataIO= DataIO(
-            'D:\jpelda\Python Scripts\\vog\\vog_gross',
-            'D:\jpelda\Python Scripts\\vog\\vog_gross\\output')
-
+#
+    dataIO = DataIO(
+            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog' ,
+            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog')
+#    dataIO= DataIO(
+#            'D:\jpelda\Python Scripts\\vog\\vog_gross',
+#            'D:\jpelda\Python Scripts\\vog\\vog_gross\\output')
+#
     heatgrid_nodes = dataIO.importDBF(
             'K20150909_F-MVV_TL-West.DBF',
             dtype=Dictionary.STANET_nodes_allocation)
@@ -179,7 +177,7 @@ if __name__ == "__main__":
 
     DHS1_Plotter = Plotter()
 #    DHS1_Plotter.plot_graph(DHS1.heatgrid.v_nodes_name,
-#                            DHS1.heatgrid.v_pipes_seNode)
+#                            DHS1.heatgrid.v_pipes_esNode)
 
     
     i = 0

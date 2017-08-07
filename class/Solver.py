@@ -29,7 +29,7 @@ class Solver():
 #        print(self._inzidenzmatrix_HeatGrid)
 #        print(self._inzidenzmatrix_HeatSink)
 #        print(self._inzidenzmatrix_HeatSource)
-        self.__del_DeadEnds()
+#        self.__del_DeadEnds()
         '''
         sets up all necessary inzmatrices
         '''
@@ -68,7 +68,7 @@ class Solver():
         self.g = 9.81
         self.v_producer_Pa_set = self.heatsource.v_producers_Pa
         self.v_producer_Pb_set = self.heatsource.v_producers_Pb
-
+        self.run = 0
 
         self.getGuessFirstRun = 1  # if this value is 1, then the guess is
 # calculated, otherwise guess comes from the former calculated values
@@ -137,7 +137,17 @@ class Solver():
         return inzMatrix
 
     def gridCalculation(self, x):
-        print(x)
+        item = '.'
+        print(item, sep=' ', end='', flush=True)
+        if self.run == 20:
+            sec = 30
+            while sec > 0:
+                print("\rpause of %i sec" %sec, end=' ')
+
+                time.sleep(1)    # pause 5.5 seconds
+                sec = sec - 1
+            self.run = 0
+        self.run = self.run + 1
         '''
         vector of massflows by solver
         '''
@@ -538,51 +548,6 @@ class Solver():
         self.getGuessFirstRun = 0
 #   TODO save_x for pipes, plus how to print pretty.
 
-    def __del_DeadEnds(self):
-        '''
-        deletes all dead ends in a network
-        output: inzidenzmatrix with zeros for elments that are dead ends.
-        '''
-        
-        print("Deletion of all dead ends")
-        
-        print(self._inzidenzmatrix)
-        print('\n')
-        Inzidenzmatrix = self._inzidenzmatrix
-
-        index = Inzidenzmatrix.shape[1]
-        i = 0
-        I_row_deleted = [] 
-        I_col_deleted = []
-        while i < index:
-            I_abs = np.abs(Inzidenzmatrix)
-            I_row_sum = np.sum(I_abs, axis=1)
-            I_row_index = np.where(I_row_sum == 1)
-            for val in I_row_index[0]:
-                Inzidenzmatrix[val] = 0
-#                if val.size is not 0:
-#                    print('deleted node: ' + str(
-#                            self.heatgrid.nodes(val).name))
-            I_row_deleted.append(I_row_index[0])
-
-            I_col_sum = np.sum(I_abs, axis=0)
-            I_col_index = np.where(I_col_sum == 1)
-            for val in I_col_index[0]:
-                Inzidenzmatrix[:, val] = 0
-#                if val.size is not 0:
-#                    print('deleted edges: ' + str(
-                #            self.heatgrid.pipes(val).esNode))
-            I_col_deleted.append(I_col_index[0])
-            i = i + 1
-
-            if not (I_row_index and I_col_index):
-                break
-
-        self._inzidenzmatrix = Inzidenzmatrix
-        self.heatgrid
-        print(self._inzidenzmatrix)
-        print('\n')
-
     def print_x(self, x, name):
         '''
         prints x from Solver
@@ -677,6 +642,7 @@ if __name__ == "__main__":
     import os
     from DataIO import DataIO
     import Dictionary
+    from Plotter import Plotter
     from HeatGrid import HeatGrid
     from HeatSink import HeatSink
     from HeatSource import HeatSource
@@ -723,7 +689,17 @@ if __name__ == "__main__":
 
     solution = solution_root.x
     print(time.clock() - startTime)
+    print(solution)
     solver.print_x(solution, "solution")
+    solver.save_x(solution)
+    print(solution_root.success)
+    print(solution_root.message)
+    Solver_plotter = Plotter()
+    Solver_plotter.plot_graph(solver.heatgrid.v_nodes_name,
+                              solver.heatgrid.v_pipes_esNode)
+else:
+    print("Solver \t\t\t was imported into another module")
+
     
 #    performance check clip vs [i for i in ...]
 #    clip = 0.00346
@@ -784,9 +760,48 @@ if __name__ == "__main__":
 #        y = y + 1
 #
 #    print(np.mean(mytime))
-
-    solver.save_x(solution)
-    print(solution_root.success)
-    print(solution_root.message)
-else:
-    print("Solver \t\t\t was imported into another module")
+    
+#        def __del_DeadEnds(self):
+#        '''
+#        deletes all dead ends in a network
+#        output: inzidenzmatrix with zeros for elments that are dead ends.
+#        '''
+#        
+#        print("Deletion of all dead ends")
+#        
+#        print(self._inzidenzmatrix)
+#        print('\n')
+#        Inzidenzmatrix = self._inzidenzmatrix
+#
+#        index = Inzidenzmatrix.shape[1]
+#        i = 0
+#        I_row_deleted = [] 
+#        I_col_deleted = []
+#        while i < index:
+#            I_abs = np.abs(Inzidenzmatrix)
+#            I_row_sum = np.sum(I_abs, axis=1)
+#            I_row_index = np.where(I_row_sum == 1)
+#            for val in I_row_index[0]:
+#                Inzidenzmatrix[val] = 0
+##                if val.size is not 0:
+##                    print('deleted node: ' + str(
+##                            self.heatgrid.nodes(val).name))
+#            I_row_deleted.append(I_row_index[0])
+#
+#            I_col_sum = np.sum(I_abs, axis=0)
+#            I_col_index = np.where(I_col_sum == 1)
+#            for val in I_col_index[0]:
+#                Inzidenzmatrix[:, val] = 0
+##                if val.size is not 0:
+##                    print('deleted edges: ' + str(
+#                #            self.heatgrid.pipes(val).esNode))
+#            I_col_deleted.append(I_col_index[0])
+#            i = i + 1
+#
+#            if not (I_row_index and I_col_index):
+#                break
+#
+#        self._inzidenzmatrix = Inzidenzmatrix
+#        self.heatgrid
+#        print(self._inzidenzmatrix)
+#        print('\n')

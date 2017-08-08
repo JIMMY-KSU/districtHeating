@@ -53,6 +53,7 @@ class DistrictHeatingSystem():
         solver = Solver(self.heatgrid, self.heatsink, self.heatsource)
         guess = solver.getGuess()
         solver.print_x(guess, 'guess')
+        print("Getting solution\n")
         solution = root(solver.gridCalculation, guess)
         solver.print_x(solution, 'solution')
         solver.save_x(solution)
@@ -144,27 +145,27 @@ if __name__ == "__main__":
 #                os.path.dirname(os.getcwd()) + os.sep +
 #                'output' + os.sep + 'TestNetz' + os.sep + "vog")
 #
-    dataIO = DataIO(
-            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog' ,
-            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog')
-#    dataIO= DataIO(
-#            'D:\jpelda\Python Scripts\\vog\\vog_gross',
-#            'D:\jpelda\Python Scripts\\vog\\vog_gross\\output')
+#    dataIO = DataIO(
+#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog' ,
+#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog')
+    dataIO= DataIO(
+            'D:\jpelda\Python Scripts\\vNetz\\v_klein',
+            'D:\jpelda\Python Scripts\\vNetz\\v_klein\\output')
 #
     heatgrid_nodes = dataIO.importDBF(
-            'K20150909_F-MVV_TL-West.DBF',
+            'K20170808_vKlein.DBF',
             dtype=Dictionary.STANET_nodes_allocation)
 
     heatgrid_pipes = dataIO.importDBF(
-            'S20150909_F-MVV_TL-West.DBF',
+            'S20170808_vKlein.DBF',
             dtype=Dictionary.STANET_pipes_allocation)
 
     heatsink = dataIO.importDBF(
-            'W20150909_F-MVV_TL-West.DBF',
+            'W20170808_vKlein.DBF',
             dtype=Dictionary.STANET_consumer_allocation)
 
     heatsource = dataIO.importCSV(
-            'W20150909_F-MVV_TL-West.csv',
+            'W20170808_vKlein.csv',
             dtype=Dictionary.STANET_vog_producer_allocation,
             delimiter=';', header=0)
 

@@ -139,15 +139,15 @@ class Solver():
     def gridCalculation(self, x):
         item = '.'
         print(item, sep=' ', end='', flush=True)
-        if self.run == 20:
-            sec = 30
-            while sec > 0:
-                print("\rpause of %i sec" %sec, end=' ')
-
-                time.sleep(1)    # pause 5.5 seconds
-                sec = sec - 1
-            self.run = 0
-        self.run = self.run + 1
+#        if self.run == 20:
+#            sec = 30
+#            while sec > 0:
+#                print("\rpause of %i sec" %sec, end=' ')
+#
+#                time.sleep(1)    # pause 5.5 seconds
+#                sec = sec - 1
+#            self.run = 0
+#        self.run = self.run + 1
         '''
         vector of massflows by solver
         '''
@@ -209,6 +209,7 @@ class Solver():
         energy balance (I_ab.T * v_T + v_Tab)
         '''
         energyBalance_2 = np.dot(np.transpose(Iab), v_T) + v_Tab
+#        energyBalance_2 = np.dot(-1*np.transpose(self.__I_minus), v_T) - v_Ta
 
         '''
         impulse balance (-1*I_minus.T*P - P^a)
@@ -286,10 +287,24 @@ class Solver():
             '''
             v_m = np.zeros(self._elements)
             # massflow
-            v_m[self.__I_grid_slice] = np.average(self.heatsink.v_consumers_m)
-            v_m[self.__I_sink_slice] = self.heatsink.v_consumers_m
-            v_m[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_m) /
-                                          len(self.heatsource.producers()))
+            iMatrix = self.__I
+            val = np.sum(-iMatrix[:,(self.__I_sink_slice)] *
+                self.heatsink.v_consumers_m, axis=1)
+            iMatrix[:, self.__I_sink_slice] = 0
+            iMatrix_pseudo = np.linalg.pinv(iMatrix)
+
+            v_m = np.dot(iMatrix_pseudo, val)
+#            print('Matrix:')
+#            print(iMatrix_pseudo)
+#            print('val')
+#            print(val)
+#            print('v_m')
+#            print(v_m)
+            
+#            v_m[self.__I_grid_slice] = np.average(self.heatsink.v_consumers_m)
+#            v_m[self.__I_sink_slice] = self.heatsink.v_consumers_m
+#            v_m[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_m) /
+#                                          len(self.heatsource.producers()))
 
             '''
             vector of temperatures by guess

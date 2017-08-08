@@ -374,22 +374,53 @@ class Plotter():
         return fig
 
 
-    def plot_DHS(self, heatgrid, heatsink, heatsource,
+    def plot_DHS(self,
+                 v_pipes_start_x,
+                 v_pipes_start_y,
+                 v_pipes_end_x,
+                 v_pipes_end_y,
+                 v_pipes_Q,
+                 v_nodes_x,
+                 v_nodes_y,
+                 v_consumer_start_x,
+                 v_consumer_start_y,
+                 v_consumer_end_x,
+                 v_consumer_end_y,
+                 v_consumer_Q,
+                 v_producer_start_x,
+                 v_producer_start_y,
+                 v_producer_end_x,
+                 v_producer_end_y,
+                 v_producer_Q,
                  title=''):
         if title is '':
             title = self.title
 
         fig, ax = self._newfig(self.figsize)
 #        fig, ax = plt.subplots()
-        self.plot_HeatSource(heatsource, ax=ax)
-        self.plot_HeatSink(heatsink, ax=ax)
-        self.plot_HeatGrid(heatgrid, ax=ax)
+        self.plot_HeatSource(v_producer_start_x,
+                             v_producer_start_y,
+                             v_producer_end_x,
+                             v_producer_end_y,
+                             v_producer_Q, ax=ax)
+        self.plot_HeatSink(v_consumer_start_x,
+                           v_consumer_start_y,
+                           v_consumer_end_x,
+                           v_consumer_end_y,
+                           v_consumer_Q, ax=ax)
+        self.plot_HeatGrid(v_pipes_start_x,
+                           v_pipes_start_y,
+                           v_pipes_end_x,
+                           v_pipes_end_y,
+                           v_pipes_Q,
+                           v_nodes_x,
+                           v_nodes_y, ax=ax)
         # at last to overlay HeatSource and Heatsink
         return fig
 
     def plot_HeatGrid(self,
-                      heatgrid=None,
-                      title=None,
+                      pipes_start_x, pipes_start_y, pipes_end_x, pipes_end_y,
+                      pipes_Q, nodes_x, nodes_y, title=None,
                       fig=plt.figure(), ax=plt.subplot()):
         '''Plots all pipes and nodes of Heatgrid.\n
         import heatgrid.getCalculations() or DataIO.importNumpyArr[i]'''

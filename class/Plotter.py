@@ -374,138 +374,125 @@ class Plotter():
         return fig
 
 
-
-    def plot_DHS(self, arr_heatgrid, arr_heatsink, arr_heatsource,
+    def plot_DHS(self, heatgrid, heatsink, heatsource,
                  title=''):
         if title is '':
             title = self.title
 
         fig, ax = self._newfig(self.figsize)
 #        fig, ax = plt.subplots()
-        self.plot_HeatSource(arr_heatsource, ax=ax)
-        self.plot_HeatSink(arr_heatsink, ax=ax)
-        self.plot_HeatGrid(arr_heatgrid, ax=ax)
+        self.plot_HeatSource(heatsource, ax=ax)
+        self.plot_HeatSink(heatsink, ax=ax)
+        self.plot_HeatGrid(heatgrid, ax=ax)
         # at last to overlay HeatSource and Heatsink
         return fig
 
     def plot_HeatGrid(self,
-                      arr=None,
+                      heatgrid=None,
                       title=None,
                       fig=plt.figure(), ax=plt.subplot()):
         '''Plots all pipes and nodes of Heatgrid.\n
         import heatgrid.getCalculations() or DataIO.importNumpyArr[i]'''
-        if arr is None:
-            arr = self.heatgrid.getCalculations()
-        if title is None:
-            title = self.title
+        
+        pipes_sPoint = [Point(xy) for xy in zip(heatgrid.v_pipes_start_x,
+                                     heatgrid.v_pipes_start_y)]
+        pipes_ePoint = [Point(xy) for xy in zip(heatgrid.v_pipes_end_x,
+                                                 heatgrid.v_pipes_end_y)]
+                            
+        pipes_LineString = [LineString(xy) for xy in zip(
+                                                    pipes_sPoint,
+                                                    pipes_ePoint)]
 
-        pipes_startPointsXY = [Point(xy) for xy in zip(
-                                                    arr['v_pipes_start_x'],
-                                                    arr['v_pipes_start_y'])]
-        pipes_endPointsXY = [Point(xy) for xy in zip(
-                                                    arr['v_pipes_end_x'],
-                                                    arr['v_pipes_end_y'])]
-        pipes_LineStrings = [LineString(xy) for xy in zip(
-                                                    pipes_startPointsXY,
-                                                    pipes_endPointsXY)]
-        nodes_Points = [Point(xy) for xy in zip(
-                                                arr['v_nodes_x'],
-                                                arr['v_nodes_y'])]
-
-        df_pipes = gp.GeoDataFrame({'sPoints': pipes_startPointsXY,
-                                    'ePoints': pipes_endPointsXY,
-                                    'elements': pipes_LineStrings,
-                                    'Q': np.abs(arr['v_pipes_Q'])},
+        df_pipes = gp.GeoDataFrame({'elements': pipes_LineString,
+                                    'Q': np.abs(heatgrid.v_pipes_Q)},
                                    geometry='elements')
 
-        df_nodes = gp.GeoDataFrame({'elements': nodes_Points},
+        
+        nodes_Point = [Point(xy) for xy in zip(
+                                                heatgrid.v_nodes_x,
+                                                heatgrid.v_nodes_y)]
+        df_nodes = gp.GeoDataFrame({'elements': nodes_Point},
                                    geometry='elements')
 
         df_pipes.plot(ax=ax, column='Q', k=3, legend=True,
                       cmap='cool', scheme='quantiles')
         df_nodes.plot(ax=ax, color='red', marker='o')
 
-#        fig.show()
-#        fig.savefig('test.pdf', formate='pdf')
+        fig = df_pipes.plot()
+        fig = df_nodes.plot()
+
 #        fig.colorbar(ax)
         return fig
 
-    def plot_HeatSource(self, arr=None, title=None,
+    def plot_HeatSource(self, heatsource=None, title=None,
                         fig=plt.figure(), ax=plt.subplot()):
         '''Plots all sources of Heatsource.\n
         import: heatsource.getCalculations() or DataIO.importNumpyArr[i]'''
-        if arr is None:
-            arr = self.heatsource.getCalculations()
-            if title is None:
-                title = self.title
 
-        sources_startPointsXY = [Point(xy) for xy in zip(
-                                                arr['v_producers_start_x'],
-                                                arr['v_producers_start_y'])]
-        sources_endPointsXY = [Point(xy) for xy in zip(
-                                                arr['v_producers_end_x'],
-                                                arr['v_producers_end_y'])]
-        sources_LineStrings = [LineString(xy) for xy in zip(
-                                                sources_startPointsXY,
-                                                sources_endPointsXY)]
+        sources_sPoint = [Point(xy) for xy in zip(
+                heatsource.v_producers_start_x,
+                heatsource.v_producers_start_y)]
+        sources_ePoint = [Point(xy) for xy in zip(
+                heatsource.v_producers_end_x,
+                heatsource.v_producers_end_y)]
+        sources_LineString = [LineString(xy) for xy in zip(
+                                                sources_sPoint,
+                                                sources_ePoint)]
 
         gdf = gp.GeoDataFrame({
-                'sPoints': sources_startPointsXY,
-                'ePoints': sources_endPointsXY,
-                'elements': sources_LineStrings,
-                'Q': np.abs(arr['v_producers_Q'])},
+                'sPoints': sources_sPoint,
+                'ePoints': sources_ePoint,
+                'elements': sources_LineString,
+                'Q': np.abs(heatsource.v_producers_Q)},
                               geometry='elements')
 
-        lines_centroid = gdf.centroid
-        lines_length = gdf.length
-        for center, l, sPoints, ePoints, element in zip(
-                lines_centroid,
-                lines_length,
-                gdf['sPoints'],
-                gdf['ePoints'],
-                arr['v_producers_element']):
-#            print(l)
-            rotation = np.arcsin((sPoints.x-ePoints.x) / l)
-            rotation = np.rad2deg(rotation)
-            self.get_symbol(pointXY=center, scale=l/4, rotation=rotation,
-                            fig=fig, ax=ax, element=element)
+        fig = gdf.plot(marker='p', color='red', markersize=2)
+#        lines_centroid = gdf.centroid
+#        lines_length = gdf.length
+#        for center, l, sPoints, ePoints, element in zip(
+#                lines_centroid,
+#                lines_length,
+#                gdf['sPoints'],
+#                gdf['ePoints'],
+#                heatsource.v_producers_element):
+##            print(l)
+#            rotation = np.arcsin((sPoints.x-ePoints.x) / l)
+#            rotation = np.rad2deg(rotation)
+#            self.get_symbol(pointXY=center, scale=l/4, rotation=rotation,
+#                            fig=fig, ax=ax, element=element)
         return fig
 
-    def plot_HeatSink(self, arr=None, title=None,
+    def plot_HeatSink(self, heatsink=None, title=None,
                       fig=plt.figure(), ax=plt.subplot()):
         '''Plots all sinks of Heatsink.\n
         import: heatsink.getCalculations() or DataIO.importNumpyArr[i]'''
-        if arr is None:
-            arr = self.heatsink.getCalculations()
-            if title is None:
-                title = self.title
 
-        sinks_startPointsXY = [Point(xy) for xy in zip(
-                                                arr['v_consumers_start_x'],
-                                                arr['v_consumers_start_y'])]
-        sinks_endPointsXY = [Point(xy) for xy in zip(
-                                                arr['v_consumers_end_x'],
-                                                arr['v_consumers_end_y'])]
-        sinks_LineStrings = [LineString(xy) for xy in zip(
-                                                sinks_startPointsXY,
-                                                sinks_endPointsXY)]
+        sinks_sPoint = [Point(xy) for xy in zip(
+                                                heatsink.v_consumers_start_x,
+                                                heatsink.v_consumers_start_y)]
+        sinks_ePoint = [Point(xy) for xy in zip(
+                                                heatsink.v_consumers_end_x,
+                                                heatsink.v_consumers_end_y)]
+        sinks_LineString = [LineString(xy) for xy in zip(
+                                                sinks_sPoint,
+                                                sinks_ePoint)]
 
-        gdf = gp.GeoDataFrame({'sPoints': sinks_startPointsXY,
-                               'ePoints': sinks_endPointsXY,
-                               'elements': sinks_LineStrings,
-                               'Q': np.abs(arr['v_consumers_Q'])},
+        gdf = gp.GeoDataFrame({'sPoints': sinks_sPoint,
+                               'ePoints': sinks_ePoint,
+                               'elements': sinks_LineString,
+                               'Q': np.abs(heatsink.v_consumers_Q)},
                               geometry='elements')
-
-        lines_centroid = gdf.centroid
-        lines_length = gdf.length
-        for center, l, sPoints, ePoints, element in zip(
-                lines_centroid,
-                lines_length, gdf['sPoints'],
-                gdf['ePoints'], arr['v_consumers_element']):
-            rotation = np.arcsin((sPoints.x-ePoints.x) / l)
-            rotation = -np.rad2deg(rotation)
-            self.get_symbol(pointXY=center, scale=l/4, rotation=rotation,
-                            fig=fig, ax=ax, element=element)
+        fig = gdf.plot(marker='D', color='blue', markersize=2)
+#        lines_centroid = gdf.centroid
+#        lines_length = gdf.length
+#        for center, l, sPoints, ePoints, element in zip(
+#                lines_centroid,
+#                lines_length, gdf['sPoints'],
+#                gdf['ePoints'], heatsink.v_consumers_element):
+#            rotation = np.arcsin((sPoints.x-ePoints.x) / l)
+#            rotation = -np.rad2deg(rotation)
+#            self.get_symbol(pointXY=center, scale=l/4, rotation=rotation,
+#                            fig=fig, ax=ax, element=element)
 #        fig.plot()
 
         return fig
@@ -694,12 +681,13 @@ if __name__ == "__main__":
     testPlotter = Plotter()
 #    testPlotter.get_symbol(pointXY=Point(5, 5), scale=326, rotation=0,
 #                           element='consumer')
-    nodes_name = ['A', 'B', 'C', 'D']
-    weight = [12,12,12,12]
-    elements_name = ['e1', 'e2', 'e3', 'e4']
-    edges_esNode = np.array([['A', 'B'], ['A', 'C'],
-                             ['C', 'B'],['B', 'C'],
-                             ['C', 'A'], ['B', 'A']])
+#    nodes_name = ['A', 'B', 'C', 'D']
+#    weight = [12,12,12,12]
+#    elements_name = ['e1', 'e2', 'e3', 'e4']
+#    edges_esNode = np.array([['A', 'B'], ['A', 'C'],
+#                             ['C', 'B'],['B', 'C'],
+#                             ['C', 'A'], ['B', 'A']])
+    testPlotter.plot_HeatGrid()
 
     testPlotter.plot_graph(nodes_name, edges_esNode, nodes_label=nodes_name,
                            edges_label=elements_name,

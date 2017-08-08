@@ -121,53 +121,51 @@ if __name__ == "__main__":
     print('DistrictHeatingSystem \t run directly \n')
 
 
-#    DataIO = DataIO(
-#                os.path.dirname(os.getcwd()) + os.sep +
-#                'input' + os.sep + 'TestNetz',
-#                os.path.dirname(os.getcwd()) + os.sep +
-#                'output' + os.sep + 'TestNetz')
-#
-#    heatgrid_nodes = DataIO.importDBF(
-#            'KTestNetz.DBF', dtype=Dictionary.STANET_nodes_allocation)
-#
-#    heatgrid_pipes = DataIO.importDBF(
-#            'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
-#
-#    heatsink = DataIO.importDBF(
-#            'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
-#
-#    heatsource = DataIO.importCSV(
-#            'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
-#            delimiter='\t', header=0)
-#    DataIO = DataIO(
-#                os.path.dirname(os.getcwd()) + os.sep +
-#                'input' + os.sep + 'TestNetz' + os.sep + "vog",
-#                os.path.dirname(os.getcwd()) + os.sep +
-#                'output' + os.sep + 'TestNetz' + os.sep + "vog")
+    DataIO = DataIO(
+                os.path.dirname(os.getcwd()) + os.sep +
+                'input' + os.sep + 'TestNetz',
+                os.path.dirname(os.getcwd()) + os.sep +
+                'output' + os.sep + 'TestNetz')
+
+    heatgrid_nodes = DataIO.importDBF(
+            'KTestNetz.DBF', dtype=Dictionary.STANET_nodes_allocation)
+
+    heatgrid_pipes = DataIO.importDBF(
+            'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
+
+    heatsink = DataIO.importDBF(
+            'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
+
+    heatsource = DataIO.importCSV(
+            'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
+            delimiter='\t', header=0)
+
 #
 #    dataIO = DataIO(
-#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog' ,
-#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vog')
-    dataIO= DataIO(
-            'D:\jpelda\Python Scripts\\vNetz\\v_klein',
-            'D:\jpelda\Python Scripts\\vNetz\\v_klein\\output')
+#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
+#            os.sep + 'v_klein',
+#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
+#            os.sep + 'v_klein' + os.sep + 'output')
+#    dataIO= DataIO(
+#            'D:\jpelda\Python Scripts\\vNetz\\v_klein',
+#            'D:\jpelda\Python Scripts\\vNetz\\v_klein\\output')
 #
-    heatgrid_nodes = dataIO.importDBF(
-            'K20170808_vKlein.DBF',
-            dtype=Dictionary.STANET_nodes_allocation)
-
-    heatgrid_pipes = dataIO.importDBF(
-            'S20170808_vKlein.DBF',
-            dtype=Dictionary.STANET_pipes_allocation)
-
-    heatsink = dataIO.importDBF(
-            'W20170808_vKlein.DBF',
-            dtype=Dictionary.STANET_consumer_allocation)
-
-    heatsource = dataIO.importCSV(
-            'W20170808_vKlein.csv',
-            dtype=Dictionary.STANET_vog_producer_allocation,
-            delimiter=';', header=0)
+#    heatgrid_nodes = dataIO.importDBF(
+#            'K20170808_vKlein.DBF',
+#            dtype=Dictionary.STANET_nodes_allocation)
+#
+#    heatgrid_pipes = dataIO.importDBF(
+#            'S20170808_vKlein.DBF',
+#            dtype=Dictionary.STANET_pipes_allocation)
+#
+#    heatsink = dataIO.importDBF(
+#            'W20170808_vKlein.DBF',
+#            dtype=Dictionary.STANET_consumer_allocation)
+#
+#    heatsource = dataIO.importCSV(
+#            'W20170808_vKlein.csv',
+#            dtype=Dictionary.STANET_vog_producer_allocation,
+#            delimiter=';', header=0)
 
 
     DHS1 = DistrictHeatingSystem(
@@ -177,6 +175,8 @@ if __name__ == "__main__":
             heatsource)
 
     DHS1_Plotter = Plotter()
+    DHS1_Plotter.plot_HeatGrid(DHS1.heatgrid)
+    fig = DHS1_Plotter.plot_DHS(DHS1.heatgrid, DHS1.heatsink, DHS1.heatsource)
 #    DHS1_Plotter.plot_graph(DHS1.heatgrid.v_nodes_name,
 #                            DHS1.heatgrid.v_pipes_esNode)
 

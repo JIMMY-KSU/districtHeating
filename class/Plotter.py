@@ -17,6 +17,7 @@ from shapely.geometry import MultiLineString
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib import dates as mdates
+from matplotlib import rc
 import pandas as pd
 import igraph
 
@@ -374,7 +375,7 @@ class Plotter():
         return fig
 
 
-    def plot_DHS(self,
+    def plot_DHS(self, 
                  v_pipes_start_x,
                  v_pipes_start_y,
                  v_pipes_end_x,
@@ -419,65 +420,59 @@ class Plotter():
         return fig
 
     def plot_HeatGrid(self,
-                      pipes_start_x, pipes_start_y, pipes_end_x, pipes_end_y,
-                      pipes_Q, nodes_x, nodes_y, title=None,
-                      fig=plt.figure(), ax=plt.subplot()):
+                      v_start_x, v_start_y, v_end_x, v_end_y, v_Q,
+                      v_nodes_x = None, v_nodes_y = None,
+                      title=None, marker=None,
+                      ax=plt.subplot()):
         '''Plots all pipes and nodes of Heatgrid.\n
         import heatgrid.getCalculations() or DataIO.importNumpyArr[i]'''
-        
-        pipes_sPoint = [Point(xy) for xy in zip(heatgrid.v_pipes_start_x,
-                                     heatgrid.v_pipes_start_y)]
-        pipes_ePoint = [Point(xy) for xy in zip(heatgrid.v_pipes_end_x,
-                                                 heatgrid.v_pipes_end_y)]
-                            
-        pipes_LineString = [LineString(xy) for xy in zip(
-                                                    pipes_sPoint,
-                                                    pipes_ePoint)]
+        fig = plt.figure()
+        sPoint = [Point(xy) for xy in zip(v_start_x, v_start_y)]
+        ePoint = [Point(xy) for xy in zip(v_end_x, v_end_y)]
 
-        df_pipes = gp.GeoDataFrame({'elements': pipes_LineString,
-                                    'Q': np.abs(heatgrid.v_pipes_Q)},
-                                   geometry='elements')
+        element_LineString = [LineString(xy) for xy in zip(sPoint, ePoint)]
 
-        
-        nodes_Point = [Point(xy) for xy in zip(
-                                                heatgrid.v_nodes_x,
-                                                heatgrid.v_nodes_y)]
-        df_nodes = gp.GeoDataFrame({'elements': nodes_Point},
-                                   geometry='elements')
+        gdf_elements = gp.GeoDataFrame({'elements': element_LineString,
+                                        'Q': np.abs(v_Q)},
+                                       geometry='elements')
 
-        df_pipes.plot(ax=ax, column='Q', k=3, legend=True,
-                      cmap='cool', scheme='quantiles')
-        df_nodes.plot(ax=ax, color='red', marker='o')
-
-        fig = df_pipes.plot()
-        fig = df_nodes.plot()
+        if v_nodes_x is not None:
+            nodes_Point = [Point(xy) for xy in zip(
+                                                v_nodes_x,
+                                                v_nodes_y)]
+            gdf_nodes = gp.GeoDataFrame({'elements': nodes_Point},
+                                        geometry='elements')
+            fig = gdf_nodes.plot(ax=ax, color='red', marker='o')
+        fig = gdf_elements.plot(ax=ax, column='Q', k=3, legend=True,
+                                cmap='cool', scheme='quantiles')
 
 #        fig.colorbar(ax)
         return fig
 
-    def plot_HeatSource(self, heatsource=None, title=None,
-                        fig=plt.figure(), ax=plt.subplot()):
-        '''Plots all sources of Heatsource.\n
-        import: heatsource.getCalculations() or DataIO.importNumpyArr[i]'''
-
-        sources_sPoint = [Point(xy) for xy in zip(
-                heatsource.v_producers_start_x,
-                heatsource.v_producers_start_y)]
-        sources_ePoint = [Point(xy) for xy in zip(
-                heatsource.v_producers_end_x,
-                heatsource.v_producers_end_y)]
-        sources_LineString = [LineString(xy) for xy in zip(
-                                                sources_sPoint,
-                                                sources_ePoint)]
-
-        gdf = gp.GeoDataFrame({
-                'sPoints': sources_sPoint,
-                'ePoints': sources_ePoint,
-                'elements': sources_LineString,
-                'Q': np.abs(heatsource.v_producers_Q)},
-                              geometry='elements')
-
-        fig = gdf.plot(marker='p', color='red', markersize=2)
+#    def plot_HeatSource(self, v_producers_start_x,
+#                        v_producers_start_y, v_producers_end_x,
+#                        v_producers_end_y,  title=None,
+#                        ax=plt.subplot()):
+#        '''Plots all sources of Heatsource.\n
+#        import: heatsource.getCalculations() or DataIO.importNumpyArr[i]'''
+#
+#        sources_sPoint = [Point(xy) for xy in zip(v_producers_start_x,
+#                                                  v_producers_start_y)]
+#        sources_ePoint = [Point(xy) for xy in zip(
+#                heatsource.v_producers_end_x,
+#                heatsource.v_producers_end_y)]
+#        sources_LineString = [LineString(xy) for xy in zip(
+#                                                sources_sPoint,
+#                                                sources_ePoint)]
+#
+#        gdf = gp.GeoDataFrame({
+#                'sPoints': sources_sPoint,
+#                'ePoints': sources_ePoint,
+#                'elements': sources_LineString,
+#                'Q': np.abs(heatsource.v_producers_Q)},
+#                              geometry='elements')
+#
+#        fig = gdf.plot(marker='p', color='red', markersize=2)
 #        lines_centroid = gdf.centroid
 #        lines_length = gdf.length
 #        for center, l, sPoints, ePoints, element in zip(
@@ -491,42 +486,42 @@ class Plotter():
 #            rotation = np.rad2deg(rotation)
 #            self.get_symbol(pointXY=center, scale=l/4, rotation=rotation,
 #                            fig=fig, ax=ax, element=element)
-        return fig
-
-    def plot_HeatSink(self, heatsink=None, title=None,
-                      fig=plt.figure(), ax=plt.subplot()):
-        '''Plots all sinks of Heatsink.\n
-        import: heatsink.getCalculations() or DataIO.importNumpyArr[i]'''
-
-        sinks_sPoint = [Point(xy) for xy in zip(
-                                                heatsink.v_consumers_start_x,
-                                                heatsink.v_consumers_start_y)]
-        sinks_ePoint = [Point(xy) for xy in zip(
-                                                heatsink.v_consumers_end_x,
-                                                heatsink.v_consumers_end_y)]
-        sinks_LineString = [LineString(xy) for xy in zip(
-                                                sinks_sPoint,
-                                                sinks_ePoint)]
-
-        gdf = gp.GeoDataFrame({'sPoints': sinks_sPoint,
-                               'ePoints': sinks_ePoint,
-                               'elements': sinks_LineString,
-                               'Q': np.abs(heatsink.v_consumers_Q)},
-                              geometry='elements')
-        fig = gdf.plot(marker='D', color='blue', markersize=2)
-#        lines_centroid = gdf.centroid
-#        lines_length = gdf.length
-#        for center, l, sPoints, ePoints, element in zip(
-#                lines_centroid,
-#                lines_length, gdf['sPoints'],
-#                gdf['ePoints'], heatsink.v_consumers_element):
-#            rotation = np.arcsin((sPoints.x-ePoints.x) / l)
-#            rotation = -np.rad2deg(rotation)
-#            self.get_symbol(pointXY=center, scale=l/4, rotation=rotation,
-#                            fig=fig, ax=ax, element=element)
-#        fig.plot()
-
-        return fig
+#        return fig
+#
+#    def plot_HeatSink(self, heatsink=None, title=None,
+#                      fig=plt.figure(), ax=plt.subplot()):
+#        '''Plots all sinks of Heatsink.\n
+#        import: heatsink.getCalculations() or DataIO.importNumpyArr[i]'''
+#
+#        sinks_sPoint = [Point(xy) for xy in zip(
+#                                                heatsink.v_consumers_start_x,
+#                                                heatsink.v_consumers_start_y)]
+#        sinks_ePoint = [Point(xy) for xy in zip(
+#                                                heatsink.v_consumers_end_x,
+#                                                heatsink.v_consumers_end_y)]
+#        sinks_LineString = [LineString(xy) for xy in zip(
+#                                                sinks_sPoint,
+#                                                sinks_ePoint)]
+#
+#        gdf = gp.GeoDataFrame({'sPoints': sinks_sPoint,
+#                               'ePoints': sinks_ePoint,
+#                               'elements': sinks_LineString,
+#                               'Q': np.abs(heatsink.v_consumers_Q)},
+#                              geometry='elements')
+#        fig = gdf.plot(marker='D', color='blue', markersize=2)
+##        lines_centroid = gdf.centroid
+##        lines_length = gdf.length
+##        for center, l, sPoints, ePoints, element in zip(
+##                lines_centroid,
+##                lines_length, gdf['sPoints'],
+##                gdf['ePoints'], heatsink.v_consumers_element):
+##            rotation = np.arcsin((sPoints.x-ePoints.x) / l)
+##            rotation = -np.rad2deg(rotation)
+##            self.get_symbol(pointXY=center, scale=l/4, rotation=rotation,
+##                            fig=fig, ax=ax, element=element)
+##        fig.plot()
+#
+#        return fig
 
     def get_symbol(self, pointXY=Point(0, 0), scale=1,
                    rotation=0, fig=plt.subplot(), ax=plt.subplot(),
@@ -655,31 +650,33 @@ class Plotter():
         return fig_size
 
     def _formate(self):
-        pgf_with_latex = {  # setup matplotlib to use latex for output
-            "pgf.texsystem": "pdflatex",
-            # change this if using xetex or lautex
-            "text.usetex": True,  # use LaTeX to write all text
-            "font.family": "serif",
-            "font.serif": [],
-            # blank entries should cause plots to inherit fonts from document
-            "font.sans-serif": [],
-            "font.monospace": [],
-            "axes.labelsize": 10,  # LaTeX default is 10pt font.
-            "font.size": 10,
-            "legend.fontsize": 8,
-            # Make the legend/label fonts a little smaller
-            "xtick.labelsize": 8,
-            "ytick.labelsize": 8,
-            "figure.figsize": self._figsize(0.9),
-            #  default fig size of 0.9 textwidth
-            "pgf.preamble": [
-                r"\usepackage[utf8x]{inputenc}",
-                #  use utf8 fonts becasue your computer can handle it :)
-                r"\usepackage[T1]{fontenc}",
-                #  plots will be generated using this preamble
-                ]
-                        }
-        mpl.rcParams.update(pgf_with_latex)
+        rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+        rc('text', usetex=True)
+#        pgf_with_latex = {  # setup matplotlib to use latex for output
+#            "pgf.texsystem": "pdflatex",
+#            # change this if using xetex or lautex
+#            "text.usetex": True,  # use LaTeX to write all text
+#            "font.family": "serif",
+#            "font.serif": [],
+#            # blank entries should cause plots to inherit fonts from document
+#            "font.sans-serif": [],
+#            "font.monospace": [],
+#            "axes.labelsize": 10,  # LaTeX default is 10pt font.
+#            "font.size": 10,
+#            "legend.fontsize": 8,
+#            # Make the legend/label fonts a little smaller
+#            "xtick.labelsize": 8,
+#            "ytick.labelsize": 8,
+#            "figure.figsize": self._figsize(0.9),
+#            #  default fig size of 0.9 textwidth
+#            "pgf.preamble": [
+#                r"\usepackage[utf8x]{inputenc}",
+#                #  use utf8 fonts becasue your computer can handle it :)
+#                r"\usepackage[T1]{fontenc}",
+#                #  plots will be generated using this preamble
+#                ]
+#                        }
+#        mpl.rcParams.update(pgf_with_latex)
 
     def _newfig(self, width):
         plt.clf()
@@ -718,10 +715,25 @@ if __name__ == "__main__":
 #    edges_esNode = np.array([['A', 'B'], ['A', 'C'],
 #                             ['C', 'B'],['B', 'C'],
 #                             ['C', 'A'], ['B', 'A']])
-    testPlotter.plot_HeatGrid()
-
-    testPlotter.plot_graph(nodes_name, edges_esNode, nodes_label=nodes_name,
-                           edges_label=elements_name,
-                           weight=weight)
+#    
+#    testPlotter.plot_graph(nodes_name, edges_esNode, nodes_label=nodes_name,
+#                           edges_label=elements_name,
+#                           weight=weight)
+    pipes_start_x = [1,3]
+    pipes_start_y = [1,3]
+    pipes_end_x = [2,4]
+    pipes_end_y = [2,4]
+    pipes_Q = [1000, 10]
+    nodes_x = [1, 3]
+    nodes_y = [1, 3]
+    args = (pipes_start_x, pipes_start_y, pipes_end_x, pipes_end_y, pipes_Q)
+    kwargs = {"v_nodes_x": nodes_x, "v_nodes_y": nodes_y}
+    fig = testPlotter.plot_HeatGrid(*args, **kwargs)
+    pipes_start_x = [5]
+    pipes_start_y = [5]
+    pipes_end_x = [5]
+    pipes_end_y = [5]
+    fig = testPlotter.plot_HeatGrid(*args, **kwargs)
+#    plt.show()
 else:
     print('Plotter \t\t was imported into another module')

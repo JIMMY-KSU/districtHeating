@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
 Created on Sat Jun 25 20:26:34 2016
@@ -419,35 +418,42 @@ class Plotter():
         # at last to overlay HeatSource and Heatsink
         return fig
 
-    def plot_HeatGrid(self,
-                      v_start_x, v_start_y, v_end_x, v_end_y, v_Q,
-                      v_nodes_x = None, v_nodes_y = None,
+    def plot_HeatGrid(self, v_start_x, v_start_y, v_end_x, v_end_y,
+                      v_nodes_x, v_nodes_y, v_element_Q = None,
                       title=None, marker=None,
-                      ax=plt.subplot()):
-        '''Plots all pipes and nodes of Heatgrid.\n
-        import heatgrid.getCalculations() or DataIO.importNumpyArr[i]'''
-        fig = plt.figure()
+                      ):
+        '''plots Heatgrid elements
+        input: v_start_x as []
+                v_start_y as []
+                v_end_x as []
+                v_end_y as []
+                v_Q as []
+                v_nodes_x as []
+                v_nodes_y as []
+        output: matplotlib.figure.Figure'''
+
+        ax = plt.subplot()
         sPoint = [Point(xy) for xy in zip(v_start_x, v_start_y)]
         ePoint = [Point(xy) for xy in zip(v_end_x, v_end_y)]
 
         element_LineString = [LineString(xy) for xy in zip(sPoint, ePoint)]
-
+        if v_element_Q is None:
+            v_element_Q = [0]*len(element_LineString)
         gdf_elements = gp.GeoDataFrame({'elements': element_LineString,
-                                        'Q': np.abs(v_Q)},
+                                        'Q': np.abs(v_element_Q)},
                                        geometry='elements')
 
-        if v_nodes_x is not None:
-            nodes_Point = [Point(xy) for xy in zip(
+        nodes_Point = [Point(xy) for xy in zip(
                                                 v_nodes_x,
                                                 v_nodes_y)]
-            gdf_nodes = gp.GeoDataFrame({'elements': nodes_Point},
+        gdf_nodes = gp.GeoDataFrame({'elements': nodes_Point},
                                         geometry='elements')
-            fig = gdf_nodes.plot(ax=ax, color='red', marker='o')
-        fig = gdf_elements.plot(ax=ax, column='Q', k=3, legend=True,
+        gdf_nodes.plot(ax= ax, color='red', marker='o')
+        gdf_elements.plot(ax=ax, column='Q', k=3, legend=True,
                                 cmap='cool', scheme='quantiles')
 
 #        fig.colorbar(ax)
-        return fig
+        return plt
 
 #    def plot_HeatSource(self, v_producers_start_x,
 #                        v_producers_start_y, v_producers_end_x,
@@ -726,14 +732,24 @@ if __name__ == "__main__":
     pipes_Q = [1000, 10]
     nodes_x = [1, 3]
     nodes_y = [1, 3]
-    args = (pipes_start_x, pipes_start_y, pipes_end_x, pipes_end_y, pipes_Q)
-    kwargs = {"v_nodes_x": nodes_x, "v_nodes_y": nodes_y}
+    args = (pipes_start_x, pipes_start_y, pipes_end_x, pipes_end_y, nodes_x,
+            nodes_y)
+    kwargs = {"v_element_Q": pipes_Q}
+
     fig = testPlotter.plot_HeatGrid(*args, **kwargs)
-    pipes_start_x = [5]
-    pipes_start_y = [5]
-    pipes_end_x = [5]
-    pipes_end_y = [5]
+    fig.savefig('test1')
+    pipes_start_x.append(5)
+    pipes_start_y.append(5)
+    pipes_end_x.append(7)
+    pipes_end_y.append(7)
+    pipes_Q.append(10)
+#    nodes_x.append(5)
+#    nodes_y.append(7)
+    args = (pipes_start_x, pipes_start_y, pipes_end_x, pipes_end_y,
+            nodes_x, nodes_y)
+    kwargs = {"v_element_Q": pipes_Q}
     fig = testPlotter.plot_HeatGrid(*args, **kwargs)
+    fig.savefig('test')
 #    plt.show()
 else:
     print('Plotter \t\t was imported into another module')

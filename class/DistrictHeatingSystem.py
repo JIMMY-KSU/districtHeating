@@ -121,51 +121,51 @@ if __name__ == "__main__":
     print('DistrictHeatingSystem \t run directly \n')
 
 
-    DataIO = DataIO(
-                os.path.dirname(os.getcwd()) + os.sep +
-                'input' + os.sep + 'TestNetz',
-                os.path.dirname(os.getcwd()) + os.sep +
-                'output' + os.sep + 'TestNetz')
-
-    heatgrid_nodes = DataIO.importDBF(
-            'KTestNetz.DBF', dtype=Dictionary.STANET_nodes_allocation)
-
-    heatgrid_pipes = DataIO.importDBF(
-            'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
-
-    heatsink = DataIO.importDBF(
-            'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
-
-    heatsource = DataIO.importCSV(
-            'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
-            delimiter='\t', header=0)
+#    DataIO = DataIO(
+#                os.path.dirname(os.getcwd()) + os.sep +
+#                'input' + os.sep + 'TestNetz',
+#                os.path.dirname(os.getcwd()) + os.sep +
+#                'output' + os.sep + 'TestNetz')
+#
+#    heatgrid_nodes = DataIO.importDBF(
+#            'KTestNetz.DBF', dtype=Dictionary.STANET_nodes_allocation)
+#
+#    heatgrid_pipes = DataIO.importDBF(
+#            'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
+#
+#    heatsink = DataIO.importDBF(
+#            'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
+#
+#    heatsource = DataIO.importCSV(
+#            'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
+#            delimiter='\t', header=0)
 
 #
-#    dataIO = DataIO(
-#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
-#            os.sep + 'v_klein',
-#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
-#            os.sep + 'v_klein' + os.sep + 'output')
+    DHS1_dataIO = DataIO(
+            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
+            os.sep + 'v_klein',
+            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
+            os.sep + 'v_klein' + os.sep + 'output')
 #    dataIO= DataIO(
 #            'D:\jpelda\Python Scripts\\vNetz\\v_klein',
 #            'D:\jpelda\Python Scripts\\vNetz\\v_klein\\output')
 #
-#    heatgrid_nodes = dataIO.importDBF(
-#            'K20170808_vKlein.DBF',
-#            dtype=Dictionary.STANET_nodes_allocation)
-#
-#    heatgrid_pipes = dataIO.importDBF(
-#            'S20170808_vKlein.DBF',
-#            dtype=Dictionary.STANET_pipes_allocation)
-#
-#    heatsink = dataIO.importDBF(
-#            'W20170808_vKlein.DBF',
-#            dtype=Dictionary.STANET_consumer_allocation)
-#
-#    heatsource = dataIO.importCSV(
-#            'W20170808_vKlein.csv',
-#            dtype=Dictionary.STANET_vog_producer_allocation,
-#            delimiter=';', header=0)
+    heatgrid_nodes = DHS1_dataIO.importDBF(
+            'K20170808_vKlein.DBF',
+            dtype=Dictionary.STANET_nodes_allocation)
+
+    heatgrid_pipes = DHS1_dataIO.importDBF(
+            'S20170808_vKlein.DBF',
+            dtype=Dictionary.STANET_pipes_allocation)
+
+    heatsink = DHS1_dataIO.importDBF(
+            'W20170808_vKlein.DBF',
+            dtype=Dictionary.STANET_consumer_allocation)
+
+    heatsource = DHS1_dataIO.importCSV(
+            'W20170808_vKlein.csv',
+            dtype=Dictionary.STANET_vog_producer_allocation,
+            delimiter=';', header=0)
 
 
     DHS1 = DistrictHeatingSystem(
@@ -175,27 +175,33 @@ if __name__ == "__main__":
             heatsource)
 
     DHS1_Plotter = Plotter()
-    DHS1_Plotter.plot_HeatGrid(DHS1.heatgrid)
-    fig = DHS1_Plotter.plot_DHS(DHS1.heatgrid, DHS1.heatsink, DHS1.heatsource)
+
+    args = DHS1.heatgrid.v_pipes_start_x, DHS1.heatgrid.v_pipes_start_y,\
+            DHS1.heatgrid.v_pipes_end_x, DHS1.heatgrid.v_pipes_end_y,\
+            DHS1.heatgrid.v_nodes_x, DHS1.heatgrid.v_nodes_y
+    fig = DHS1_Plotter.plot_HeatGrid(*args)
+    DHS1_dataIO.exportFig("v_klein", fig)
+    
+#    fig = DHS1_Plotter.plot_DHS(DHS1.heatgrid, DHS1.heatsink, DHS1.heatsource)
 #    DHS1_Plotter.plot_graph(DHS1.heatgrid.v_nodes_name,
 #                            DHS1.heatgrid.v_pipes_esNode)
 
     
-    i = 0
-    while i < 1:
-        print('#####\trun number %i\t#####' %i)
-        DHS1.calculateDHS()
-        endTime = time.time()
-#        DHS1.heatgrid.__str__()
-#        DHS1.heatsink.__str__()
-#        DHS1.heatsource.__str__()
-
-#        solver.print_x(guess, "guess")
-#        solver.print_x(solution, "solution")
-        DHS1.heatgrid.setCalculations()
-        DHS1.heatsink.setCalculations()
-        DHS1.heatsource.setCalculations()
-        i = i + 1
+#    i = 0
+#    while i < 1:
+#        print('#####\trun number %i\t#####' %i)
+#        DHS1.calculateDHS()
+#        endTime = time.time()
+##        DHS1.heatgrid.__str__()
+##        DHS1.heatsink.__str__()
+##        DHS1.heatsource.__str__()
+#
+##        solver.print_x(guess, "guess")
+##        solver.print_x(solution, "solution")
+#        DHS1.heatgrid.setCalculations()
+#        DHS1.heatsink.setCalculations()
+#        DHS1.heatsource.setCalculations()
+#        i = i + 1
 #
 #    dataIO.exportNumpyArr("HeatGrid", DHS1.heatgrid.getCalculations())
 #    dataIO.exportNumpyArr("HeatSink", DHS1.heatsink.getCalculations())

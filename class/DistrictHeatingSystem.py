@@ -86,14 +86,14 @@ if __name__ == "__main__":
 #            delimiter='\t', header=0)
 
 #
-#    DHS1_dataIO = DataIO(
-#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
-#            os.sep + 'v_klein',
-#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
-#            os.sep + 'v_klein' + os.sep + 'output')
-    DHS1_dataIO= DataIO(
-            'D:\jpelda\Python Scripts\\vNetz\\v_klein',
-            'D:\jpelda\Python Scripts\\vNetz\\v_klein\\output')
+    DHS1_dataIO = DataIO(
+            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
+            os.sep + 'v_klein',
+            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
+            os.sep + 'v_klein' + os.sep + 'output')
+#    DHS1_dataIO= DataIO(
+#            'D:\jpelda\Python Scripts\\vNetz\\v_klein',
+#            'D:\jpelda\Python Scripts\\vNetz\\v_klein\\output')
 #
     heatgrid_nodes = DHS1_dataIO.importDBF(
             'K20170808_vKlein.DBF',

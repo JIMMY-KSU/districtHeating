@@ -36,7 +36,7 @@ class Pipe():
         self.length = float(pipeValues['length'])  # [mm]
         self.start_height = float(pipeValues['start_height'])
         self.end_height = float(pipeValues['end_height'])
-        self.sprp = int(pipeValues['sprp'])
+        self.sprp = float(pipeValues['sprp'])
         self.element = "pipe"
         self.roughness = float(self.__set_roughness(pipeValues))
         self.diameter_inner = float(pipeValues['diameter_0'])

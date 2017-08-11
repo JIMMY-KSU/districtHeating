@@ -33,7 +33,7 @@ class HeatGrid():
 
         self._instancesPipe = self.__importPipes(tableOfPipes)
         self._instancesNode = self.__importNodes(tableOfNodes)
-
+        print(tableOfPipes)
 
         self.lengthPipes = len(tableOfPipes)
         self.v_pipes_index = np.arange(self.lengthPipes)
@@ -133,14 +133,31 @@ class HeatGrid():
         '''
         returns thermal resistivity
         '''
-        if self.v_pipes_diameter_0.all() is None or\
-           self.v_pipes_diameter_1.all() is None or\
-           self.v_pipes_diameter_2.all() is None or\
-           self.v_pipes_diameter_3.all() is None or\
-           self.v_pipes_conductivity_0.all() is None or\
-           self.v_pipes_conductivity_1.all() is None or\
-           self.v_pipes_conductivity_2.all() is None:
+        if self.v_pipes_diameter_0.all() is None and\
+           self.v_pipes_diameter_1.all() is None and\
+           self.v_pipes_diameter_2.all() is None and\
+           self.v_pipes_diameter_3.all() is None and\
+           self.v_pipes_conductivity_0.all() is None and\
+           self.v_pipes_conductivity_1.all() is None and\
+           self.v_pipes_conductivity_2.all() is None and\
+           self.v_pipes_length.all() is None:
             thRes = tableOfPipes['resistivity']
+        if self.v_pipes_diameter_0.all() is not None and\
+           self.v_pipes_diameter_1.all() is None and\
+           self.v_pipes_diameter_2.all() is None and\
+           self.v_pipes_diameter_3.all() is not None and\
+           self.v_pipes_conductivity_0.all() is not None or\
+           self.v_pipes_conductivity_1.all() is not None or\
+           self.v_pipes_conductivity_2.all() is not None and\
+           self.v_pipes_length.all() is not None:
+            print(self.v_pipes_diameter_0, self.v_pipes_diameter_1,
+                  self.v_pipes_diameter_2, self.v_pipes_diameter_3)
+            conductivity = self.v_pipes_conductivity_0 +\
+                            self.v_pipes_conductivity_1 +\
+                            self.v_pipes_conductivity_2
+            thRes = (1 / (2 * math.pi * self.v_pipes_length)) * (
+                (1 / conductivity) *
+                np.log(self.v_pipes_diameter_3 / self.v_pipes_diameter_0))
         else:
             thRes = (1 / (2 * math.pi * self.v_pipes_length)) * (
                 (1 / self.v_pipes_conductivity_0) *

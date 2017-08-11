@@ -145,7 +145,7 @@ class DataIO():
                 df_length = len(df)
                 for item in dtype[None]:
                     arr = np.empty(df_length)
-                    arr[:] = False
+                    arr[:] = np.NAN
                     df[item] = pd.Series(arr, index=df.index)
                 # adds columns that are probably not given in dtype
                 # but are used add instances of class

@@ -61,8 +61,7 @@ class Solver():
 
         self.Tamb = 5+273.15  # [K]
         self.cp = 4182  # J/(kg*K)
-        self.v_k = 1
-        self.v_A = 1
+        self.v_pipes_resistivity = self.heatgrid.v_pipes_resistivity
         self.v_Zeta = 0.2
         self.rho = 1000
         self.g = 9.81
@@ -233,7 +232,7 @@ class Solver():
         massflows = v_m * self.cp * (v_Tb - v_Ta) - v_Q
 
         # heatflow
-        pipeQ = (self.v_k * self.v_A) * (self.Tamb - (
+        pipeQ = self.v_pipes_resistivity * (self.Tamb - (
             v_Ta[self.__I_grid_slice] + v_Tb[self.__I_grid_slice]) / 2)\
             - v_Q[self.__I_grid_slice]
 

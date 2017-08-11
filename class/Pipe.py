@@ -39,22 +39,22 @@ class Pipe():
         self.sprp = int(pipeValues['sprp'])
         self.element = "pipe"
         self.roughness = float(self.__set_roughness(pipeValues))
-        self.diameter_inner = float(pipeValues['diameter_inner'])
-        self.diameter_middleinner = float(pipeValues['diameter_middleinner'])
-        self.diameter_middleouter = float(pipeValues['diameter_middleouter'])
-        self.diameter_outer = float(pipeValues['diameter_outer'])
+        self.diameter_inner = float(pipeValues['diameter_0'])
+        self.diameter_middleinner = float(pipeValues['diameter_1'])
+        self.diameter_middleouter = float(pipeValues['diameter_2'])
+        self.diameter_outer = float(pipeValues['diameter_3'])
 
         self.heatflow = float(0)
         self.m_max_set = float(pipeValues['m_max'])
         
-        self.conductivity_inner = float(pipeValues['conductivity_inner'])
-        self.conductivity_middle = float(pipeValues['conductivity_middle'])
-        self.conductivity_outer = float(pipeValues['conductivity_outer'])
+        self.conductivity_inner = float(pipeValues['conductivity_0'])
+        self.conductivity_middle = float(pipeValues['conductivity_1'])
+        self.conductivity_outer = float(pipeValues['conductivity_2'])
 
         self.transferCoefficient_inner =\
-                    float(pipeValues['transferCoefficient_inner'])
+                    float(pipeValues['transferCoefficient_0'])
         self.transferCoefficient_outer =\
-                    float(pipeValues['transferCoefficient_outer'])
+                    float(pipeValues['transferCoefficient_1'])
 
         self.transitionCoefficient =\
                     self.__set_transitionCoefficient(pipeValues)
@@ -114,7 +114,7 @@ class Pipe():
 #                                         1 / self.transferCoefficient_outer
 #                                         
 #                val = 1 / heatTransferResistance
-#            else:
+#         else:
 #                print('There are missing values'
 #                      'for heat transfer or conductivity or pipe diameter')
 #        return val

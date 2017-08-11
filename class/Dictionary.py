@@ -23,19 +23,20 @@ STANET_pipes_allocation = {
         'RORL': 'length',
         'WDZAHL': 'transitionCoefficient',
         'RAU': 'roughness',
-        'DM': 'diameter_inner',
+        'DM': 'diameter_0',
         'DP': 'm_max',  # for testing, is not the correct key
         None: ['start_height', 'end_height',
-               'transferCoefficient_inner',
-               'transferCoefficient_outer',
-               'conductivity_inner',
-               'conductivity_middle',
-               'conductivity_outer',
-               'diameter_middleinner',
-               'diameter_middleouter',
-               'diameter_outer',
+               'transferCoefficient_0',
+               'transferCoefficient_1',
+               'conductivity_0',
+               'conductivity_1',
+               'conductivity_2',
+               'diameter_1',
+               'diameter_2',
+               'diameter_3',
                'sprp',
-               'index'
+               'index',
+               'resistivity'
                ]}
 
 STANET_consumer_allocation = {

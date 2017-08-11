@@ -11,6 +11,7 @@ from Pipe import Pipe
 from Node import Node
 import time
 import numpy as np
+import math
 
 
 class HeatGrid():
@@ -34,19 +35,36 @@ class HeatGrid():
         self._instancesNode = self.__importNodes(tableOfNodes)
 
 
-        length = len(tableOfPipes)
-        self.v_pipes_index = np.arange(length)
+        self.lengthPipes = len(tableOfPipes)
+        self.v_pipes_index = np.arange(self.lengthPipes)
         self.v_pipes_start_x = np.array(tableOfPipes['start_x'])
         self.v_pipes_start_y = np.array(tableOfPipes['start_y'])
         self.v_pipes_end_x = np.array(tableOfPipes['end_x'])
         self.v_pipes_end_y = np.array(tableOfPipes['end_y'])
         self.v_pipes_sNode = np.array(tableOfPipes['sNode'])
         self.v_pipes_eNode = np.array(tableOfPipes['eNode'])
-        self.v_pipes_length = np.array(tableOfPipes['length'])
-        self.v_pipes_diameter_inner = np.array(tableOfPipes['diameter_inner'])
-#        self.v_pipes_diameter_middleinner = tableOfPipes['diameter_middleinner']
-#        self.v_pipes_diameter_middleouter = tableOfPipes['diameter_middleouter']
-        self.v_pipes_diamter_outer = np.array(tableOfPipes['diameter_outer'])
+
+        self.transferCoefficient_inner = np.array(
+                [46.5] * self.lengthPipes)  # [W/mK] fluid pipe
+        self.transferCoefficient_outer = np.array([1] * self.lengthPipes)  # [W/mK] pipe ground
+
+
+
+        self.v_pipes_length = np.array(tableOfPipes['length'])  # m
+
+        self.v_pipes_diameter_0,\
+        self.v_pipes_diameter_1,\
+        self.v_pipes_diameter_2,\
+        self.v_pipes_diameter_3 = self.__set_pipes_diameter(tableOfPipes)
+
+        self.v_pipes_conductivity_0,\
+        self.v_pipes_conductivity_1,\
+        self.v_pipes_conductivity_2 = self.__set_pipes_conductivity(tableOfPipes)
+
+        self.v_pipes_resistivity = self.__calc_resistivity(tableOfPipes)
+
+
+
         self.v_pipes_sHeight = np.array(tableOfPipes['start_height'])
         self.v_pipes_eHeight = np.array(tableOfPipes['end_height'])
         self.v_pipes_roughness = np.array(tableOfPipes['roughness'])
@@ -55,14 +73,13 @@ class HeatGrid():
 #        self.v_pipes_conductivity_middle = tableOfPipes['conductivity_middle']
 #        self.v_pipes_conductivity_outer = tableOfPipes['conductivity_outer']
 
-        self.v_pipes_element = ['pipe'] * length
-        self.v_pipes_Q = np.array([0.0] * length)
-        self.v_pipes_m = np.array([0.0] * length)
-        self.v_pipes_Ta = np.array([0.0] * length)
-        self.v_pipes_Tb = np.array([0.0] * length)
-        self.v_pipes_Pa = np.array([0.0] * length)
-        self.v_pipes_Pb = np.array([0.0] * length)
-        self.v_pipes_m_max = np.array(tableOfPipes['m_max'])
+        self.v_pipes_element = ['pipe'] * self.lengthPipes
+        self.v_pipes_Q = np.array([0.0] * self.lengthPipes)
+        self.v_pipes_m = np.array([0.0] * self.lengthPipes)
+        self.v_pipes_Ta = np.array([0.0] * self.lengthPipes)
+        self.v_pipes_Tb = np.array([0.0] * self.lengthPipes)
+        self.v_pipes_Pa = np.array([0.0] * self.lengthPipes)
+        self.v_pipes_Pb = np.array([0.0] * self.lengthPipes)
 
         length = len(tableOfNodes)
         self.v_nodes_index = np.arange(length)
@@ -81,8 +98,6 @@ class HeatGrid():
         
         self.v_nodes_T = 0
         self.v_nodes_P = 0
-
-
 
         self.__str__(nodes=0)
         print("%i pipes \t----> OK" % (len(self.v_pipes_index)))
@@ -113,6 +128,28 @@ class HeatGrid():
         v_pipes = self.subdict_v_Pipes()
         for item in v_pipes:
             item.values = np.delete(item.values(), arr)
+
+    def __calc_resistivity(self, tableOfPipes):
+        '''
+        returns thermal resistivity
+        '''
+        if self.v_pipes_diameter_0.all() is None or\
+           self.v_pipes_diameter_1.all() is None or\
+           self.v_pipes_diameter_2.all() is None or\
+           self.v_pipes_diameter_3.all() is None or\
+           self.v_pipes_conductivity_0.all() is None or\
+           self.v_pipes_conductivity_1.all() is None or\
+           self.v_pipes_conductivity_2.all() is None:
+            thRes = tableOfPipes['resistivity']
+        else:
+            thRes = (1 / (2 * math.pi * self.v_pipes_length)) * (
+                (1 / self.v_pipes_conductivity_0) *
+                np.log(self.v_pipes_diameter_1 / self.v_pipes_diameter_0) +
+                (1 / self.v_pipes_conductivity_1) *
+                np.log(self.v_pipes_diameter_2 / self.v_pipes_diameter_1) +
+                (1 / self.v_pipes_conductivity_2) *
+                np.log(self.v_pipes_diameter_3 / self.v_pipes_diameter_2))
+        return thRes
 
     def __get_pipes_sprp(self, nodeSupply = None, tableOfNodes = None):
         '''
@@ -151,6 +188,35 @@ class HeatGrid():
             retarr_sprp[index] = item.sprp
 
         return retarr_sprp
+
+    def __set_pipes_conductivity(self, tableOfPipes):
+        '''
+        Sets the conductivity [W/mK] of Pipes.
+        conductivity_0 [W/mK] pipe material
+        conductivity_1 [W/mK] isolation material
+        conductivity_2 [W/mK] pipe coat
+        returns tuple of 3 np.arrays
+        '''
+        tupVal = 0
+        tupVal = np.array(tableOfPipes['conductivity_0']),\
+            np.array(tableOfPipes['conductivity_1']),\
+            np.array(tableOfPipes['conductivity_2'])
+
+        return tupVal
+
+    def __set_pipes_diameter(self, tableOfPipes):
+        '''
+        Sets the diameters of pipes in [m]
+        diameter_0 is the inner diameter, diameter_3 is the outer diamter
+        returns tuple of 4 np.arrays
+        '''
+        tupVal = 0
+        tupVal = np.array(tableOfPipes['diameter_0']),\
+            np.array(tableOfPipes['diameter_1']),\
+            np.array(tableOfPipes['diameter_2']),\
+            np.array(tableOfPipes['diameter_3'])
+
+        return tupVal
 
     def __set_nodes_sprp(self, arr):
         '''
@@ -199,12 +265,6 @@ class HeatGrid():
         self._calcVals.append(attr)
 
 
-
-    def pipes_operatingLoad(self):
-        arr = self.v_pipes_m_max / 100
-        arr = self.v_pipes_m / arr
-        return arr
-
     def __str__(self, pipes=1, nodes=1):
         if pipes is 1:
             index = 0
@@ -213,8 +273,8 @@ class HeatGrid():
                         self.v_pipes_element, self.v_pipes_sprp,
                         self.v_pipes_sNode, self.v_pipes_eNode,
                         self.v_pipes_length,
-                        self.v_pipes_diameter_inner,
-                        self.v_pipes_diamter_outer,
+                        self.v_pipes_diameter_0,
+                        self.v_pipes_diameter_3,
                         self.v_pipes_sprp):
                 if index < 1:
                     print("%s: sprp %i length %4.1f [m] "

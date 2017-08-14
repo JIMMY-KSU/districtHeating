@@ -39,17 +39,17 @@ class Pipe():
         self.sprp = float(pipeValues['sprp'])
         self.element = "pipe"
         self.roughness = float(self.__set_roughness(pipeValues))
-        self.diameter_inner = float(pipeValues['diameter_0'])
-        self.diameter_middleinner = float(pipeValues['diameter_1'])
-        self.diameter_middleouter = float(pipeValues['diameter_2'])
-        self.diameter_outer = float(pipeValues['diameter_3'])
+        self.diameter_0 = float(pipeValues['diameter_0'])
+        self.diameter_1 = float(pipeValues['diameter_1'])
+        self.diameter_2 = float(pipeValues['diameter_2'])
+        self.diameter_3 = float(pipeValues['diameter_3'])
 
         self.heatflow = float(0)
         self.m_max_set = float(pipeValues['m_max'])
         
-        self.conductivity_inner = float(pipeValues['conductivity_0'])
-        self.conductivity_middle = float(pipeValues['conductivity_1'])
-        self.conductivity_outer = float(pipeValues['conductivity_2'])
+        self.conductivity_0 = float(pipeValues['conductivity_0'])  # [W/mK]
+        self.conductivity_1 = float(pipeValues['conductivity_1'])
+        self.conductivity_2 = float(pipeValues['conductivity_2'])
 
         self.transferCoefficient_inner =\
                     float(pipeValues['transferCoefficient_0'])

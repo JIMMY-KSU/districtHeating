@@ -21,7 +21,7 @@ STANET_pipes_allocation = {
         'ANFNAM': 'sNode',
         'ENDNAM': 'eNode',
         'RORL': 'length',
-        'WDZAHL': 'transitionCoefficient',
+        'WDZAHL': 'thermalTransmissionCoefficient',  # W/m²K
         'RAU': 'roughness',
         'DM': 'diameter_0',
         'DP': 'm_max',  # for testing, is not the correct key
@@ -36,7 +36,7 @@ STANET_pipes_allocation = {
                'diameter_3',
                'sprp',
                'index',
-               'resistivity'
+               'resistivity'  # W/mK
                ]}
 
 STANET_consumer_allocation = {

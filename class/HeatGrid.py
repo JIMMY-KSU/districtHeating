@@ -33,7 +33,7 @@ class HeatGrid():
 
         self._instancesPipe = self.__importPipes(tableOfPipes)
         self._instancesNode = self.__importNodes(tableOfNodes)
-        print(tableOfPipes)
+#        print(tableOfPipes)
 
         self.lengthPipes = len(tableOfPipes)
         self.v_pipes_index = np.arange(self.lengthPipes)
@@ -46,7 +46,8 @@ class HeatGrid():
 
         self.transferCoefficient_inner = np.array(
                 [46.5] * self.lengthPipes)  # [W/mK] fluid pipe
-        self.transferCoefficient_outer = np.array([1] * self.lengthPipes)  # [W/mK] pipe ground
+        self.transferCoefficient_outer = np.array(
+                [1] * self.lengthPipes)  # [W/mK] pipe ground
 
 
 
@@ -59,7 +60,8 @@ class HeatGrid():
 
         self.v_pipes_conductivity_0,\
         self.v_pipes_conductivity_1,\
-        self.v_pipes_conductivity_2 = self.__set_pipes_conductivity(tableOfPipes)
+        self.v_pipes_conductivity_2 = self.__set_pipes_conductivity(
+                tableOfPipes)
 
         self.v_pipes_resistivity = self.__calc_resistivity(tableOfPipes)
 
@@ -68,7 +70,7 @@ class HeatGrid():
         self.v_pipes_sHeight = np.array(tableOfPipes['start_height'])
         self.v_pipes_eHeight = np.array(tableOfPipes['end_height'])
         self.v_pipes_roughness = np.array(tableOfPipes['roughness'])
-#        
+
 #        self.v_pipes_conductivity_inner = tableOfPipes['conductivity_inner']
 #        self.v_pipes_conductivity_middle = tableOfPipes['conductivity_middle']
 #        self.v_pipes_conductivity_outer = tableOfPipes['conductivity_outer']
@@ -133,42 +135,50 @@ class HeatGrid():
         '''
         returns thermal resistivity
         '''
-        if self.v_pipes_diameter_0.all() is None and\
-           self.v_pipes_diameter_1.all() is None and\
-           self.v_pipes_diameter_2.all() is None and\
-           self.v_pipes_diameter_3.all() is None and\
-           self.v_pipes_conductivity_0.all() is None and\
-           self.v_pipes_conductivity_1.all() is None and\
-           self.v_pipes_conductivity_2.all() is None and\
-           self.v_pipes_length.all() is None:
-            thRes = tableOfPipes['resistivity']
-        if self.v_pipes_diameter_0.all() is not None and\
-           self.v_pipes_diameter_1.all() is None and\
-           self.v_pipes_diameter_2.all() is None and\
-           self.v_pipes_diameter_3.all() is not None and\
-           self.v_pipes_conductivity_0.all() is not None or\
-           self.v_pipes_conductivity_1.all() is not None or\
-           self.v_pipes_conductivity_2.all() is not None and\
-           self.v_pipes_length.all() is not None:
-            print(self.v_pipes_diameter_0, self.v_pipes_diameter_1,
-                  self.v_pipes_diameter_2, self.v_pipes_diameter_3)
-            conductivity = self.v_pipes_conductivity_0 +\
-                            self.v_pipes_conductivity_1 +\
-                            self.v_pipes_conductivity_2
-            thRes = (1 / (2 * math.pi * self.v_pipes_length)) * (
-                (1 / conductivity) *
-                np.log(self.v_pipes_diameter_3 / self.v_pipes_diameter_0))
+        if tableOfPipes['resistivity'] is not 0:
+            thRes = tableOfPipes['resistivity'] * self.v_pipes_length  # [W/K]
+        elif tableOfPipes['thermalTransmissionCoefficient'] is not 0:
+            thRes = tableOfPipes['thermalTransmissionCoefficient']  # [W/m²K]
+            thRes = thRes * self.v_pipes_length * self.v_pipes_diameter_3 *\
+                math.pi  # [W/K]
         else:
-            thRes = (1 / (2 * math.pi * self.v_pipes_length)) * (
-                (1 / self.v_pipes_conductivity_0) *
-                np.log(self.v_pipes_diameter_1 / self.v_pipes_diameter_0) +
-                (1 / self.v_pipes_conductivity_1) *
-                np.log(self.v_pipes_diameter_2 / self.v_pipes_diameter_1) +
-                (1 / self.v_pipes_conductivity_2) *
-                np.log(self.v_pipes_diameter_3 / self.v_pipes_diameter_2))
+#            if self.v_pipes_diameter_0.all() is None and\
+#               self.v_pipes_diameter_1.all() is None and\
+#               self.v_pipes_diameter_2.all() is None and\
+#               self.v_pipes_diameter_3.all() is None and\
+#               self.v_pipes_conductivity_0.all() is None and\
+#               self.v_pipes_conductivity_1.all() is None and\
+#               self.v_pipes_conductivity_2.all() is None and\
+#               self.v_pipes_length.all() is None:
+#                thRes = tableOfPipes['resistivity']
+            if self.v_pipes_diameter_0.all() is not None and\
+               self.v_pipes_diameter_1.all() is None and\
+               self.v_pipes_diameter_2.all() is None and\
+               self.v_pipes_diameter_3.all() is not None and\
+               self.v_pipes_conductivity_0.all() is not None or\
+               self.v_pipes_conductivity_1.all() is not None or\
+               self.v_pipes_conductivity_2.all() is not None and\
+               self.v_pipes_length.all() is not None:
+                conductivity = self.v_pipes_conductivity_0 +\
+                                self.v_pipes_conductivity_1 +\
+                                self.v_pipes_conductivity_2
+                thRes = (2 * math.pi * self.v_pipes_length) / (
+                    (1 / conductivity) *
+                    np.log(self.v_pipes_diameter_3 / self.v_pipes_diameter_0)
+                    )  # [W/K]
+            else:
+                thRes = (2 * math.pi * self.v_pipes_length) * (
+                    (1 / self.v_pipes_conductivity_0) *
+                    np.log(self.v_pipes_diameter_1 / self.v_pipes_diameter_0) +
+                    (1 / self.v_pipes_conductivity_1) *
+                    np.log(self.v_pipes_diameter_2 / self.v_pipes_diameter_1) +
+                    (1 / self.v_pipes_conductivity_2) *
+                    np.log(self.v_pipes_diameter_3 / self.v_pipes_diameter_2)
+                    )  # [W/K]
+        thRes = thRes
         return thRes
 
-    def __get_pipes_sprp(self, nodeSupply = None, tableOfNodes = None):
+    def __get_pipes_sprp(self, nodeSupply=None, tableOfNodes=None):
         '''
         gets an arr of all supply pipes,
         find by class Finder method findAllItems

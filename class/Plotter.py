@@ -407,6 +407,9 @@ class Plotter():
                                v_pipes_end_x,
                                v_pipes_end_y,
                                v_pipes_Q, ax=ax)
+        if v_nodes_x is not None and v_nodes_y is not None:
+            self.plot_nodes(v_nodes_x, v_nodes_y, ax=ax,
+                            marker='o', marker_color='grey')
         if (v_consumers_start_x is not None and
                 v_consumers_start_y is not None and
                 v_consumers_end_x is not None and
@@ -427,9 +430,6 @@ class Plotter():
                                v_producers_end_y,
                                v_producers_Q, ax=ax,
                                marker='^', marker_color='red')
-        if v_nodes_x is not None and v_nodes_y is not None:
-            self.plot_nodes(v_nodes_x, v_nodes_y, ax=ax,
-                            marker='o', marker_color='grey')
 
         return fig
 
@@ -470,7 +470,7 @@ class Plotter():
                                 )
         if marker is not None:
             gdf_elements_centroid = gdf_elements.centroid
-            gdf_elements_centroid.plot(ax=ax,  marker=marker,
+            gdf_elements_centroid.plot(ax=ax, marker=marker,
                                        color=marker_color)
 #        fig.colorbar(ax)
         return plt

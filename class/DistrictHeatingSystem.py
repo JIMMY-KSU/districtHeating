@@ -86,14 +86,14 @@ if __name__ == "__main__":
 #            delimiter='\t', header=0)
 
 #
-#    DHS1_dataIO = DataIO(
-#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
-#            os.sep + 'v_klein',
-#            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
-#            os.sep + 'v_klein' + os.sep + 'output')
-    DHS1_dataIO= DataIO(
-            'D:\jpelda\Python Scripts\\vNetz\\v_klein',
-            'D:\jpelda\Python Scripts\\vNetz\\v_klein\\output')
+    DHS1_dataIO = DataIO(
+            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
+            os.sep + 'v_klein',
+            os.path.dirname(os.path.dirname(os.getcwd())) + os.sep + 'vNetz' +
+            os.sep + 'v_klein' + os.sep + 'output')
+#    DHS1_dataIO= DataIO(
+#            'D:\jpelda\Python Scripts\\vNetz\\v_klein',
+#            'D:\jpelda\Python Scripts\\vNetz\\v_klein\\output')
 ##
     heatgrid_nodes = DHS1_dataIO.importDBF(
             'K20170808_vKlein.DBF',
@@ -139,7 +139,25 @@ if __name__ == "__main__":
 #    dataIO.exportNumpyArr("HeatSouce", DHS1.heatsource.getCalculations())
 
     DHS1_Plotter = Plotter()
-    
+    #  look that v_producers_sNode is not empty
+    for index_c, item_c in enumerate(DHS1.heatgrid.v_nodes_name):
+        for index_p, item_ps in enumerate(DHS1.heatsource.v_producers_sNode):
+            if item_c is item_ps:
+                DHS1.heatsource.v_producers_start_x[index_p] =\
+                DHS1.heatgrid.v_nodes_x[index_c]
+                DHS1.heatsource.v_producers_start_y[index_p] =\
+                DHS1.heatgrid.v_nodes_y[index_c]
+        for index_p, item_pe in enumerate(DHS1.heatsource.v_producers_eNode):
+            if item_c is item_pe:
+                DHS1.heatsource.v_producers_end_x[index_p] =\
+                DHS1.heatgrid.v_nodes_x[index_c]
+                DHS1.heatsource.v_producers_end_y[index_p] =\
+                DHS1.heatgrid.v_nodes_y[index_c]
+    print(DHS1.heatsource.v_producers_start_x,
+           DHS1.heatsource.v_producers_start_y,
+           DHS1.heatsource.v_producers_end_x,
+           DHS1.heatsource.v_producers_end_y,
+           DHS1.heatsource.v_producers_Q)
     fig = DHS1_Plotter.plot_DHS(
             v_pipes_start_x=DHS1.heatgrid.v_pipes_start_x,
             v_pipes_start_y=DHS1.heatgrid.v_pipes_start_y,
@@ -157,7 +175,8 @@ if __name__ == "__main__":
             v_producers_start_y=DHS1.heatsource.v_producers_start_y,
             v_producers_end_x=DHS1.heatsource.v_producers_end_x,
             v_producers_end_y=DHS1.heatsource.v_producers_end_y,
-            v_producers_Q=DHS1.heatsource.v_producers_Q)
+            v_producers_Q=DHS1.heatsource.v_producers_Q
+            )
 
     DHS1_dataIO.exportFig("v_klein", fig)
 

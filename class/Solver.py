@@ -67,7 +67,8 @@ class Solver():
         self.g = 9.81
         self.v_producer_Pa_set = self.heatsource.v_producers_Pa
         self.v_producer_Pb_set = self.heatsource.v_producers_Pb
-        self.run = 0
+#        self.run = 0
+        self.solver_i = 0
 
         self.getGuessFirstRun = 1  # if this value is 1, then the guess is
 # calculated, otherwise guess comes from the former calculated values
@@ -136,8 +137,10 @@ class Solver():
         return inzMatrix
 
     def gridCalculation(self, x):
-        item = '.'
-        print(item, sep=' ', end='', flush=True)
+        
+        print('\r' + str(self.solver_i), end='')
+        self.solver_i = self.solver_i + 1
+
 #        if self.run == 20:
 #            sec = 30
 #            while sec > 0:
@@ -361,7 +364,7 @@ class Solver():
             '''
             v_Q = np.zeros(self._elements)
             # heatflows
-            v_Q[self.__I_grid_slice] = self.v_k * self.v_A * (
+            v_Q[self.__I_grid_slice] = self.v_pipes_resistivity * (
                     self.Tamb - v_Ta[self.__I_grid_slice])
             v_Q[self.__I_sink_slice] = self.heatsink.v_consumers_Q
             v_Q[self.__I_source_slice] = np.abs(

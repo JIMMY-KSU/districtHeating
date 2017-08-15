@@ -63,7 +63,10 @@ class HeatGrid():
         self.v_pipes_conductivity_2 = self.__set_pipes_conductivity(
                 tableOfPipes)
 
-        self.v_pipes_resistivity = self.__calc_resistivity(tableOfPipes)
+        self.__v_pipes_thermalTransmissionCoefficient = tableOfPipes[
+                'thermalTransmissionCoefficient']  # [W/m²K]
+        self.__v_pipes_resistivity = tableOfPipes['resistivity']  # [W/K]
+        self.v_pipes_resistivity = self.__calc_resistivity()
 
 
 
@@ -131,17 +134,18 @@ class HeatGrid():
         for item in v_pipes:
             item.values = np.delete(item.values(), arr)
 
-    def __calc_resistivity(self, tableOfPipes):
+    def __calc_resistivity(self):
         '''
         returns thermal resistivity
         '''
-        if tableOfPipes['resistivity'] is not 0:
-            thRes = tableOfPipes['resistivity'] * self.v_pipes_length  # [W/K]
-        elif tableOfPipes['thermalTransmissionCoefficient'] is not 0:
-            thRes = tableOfPipes['thermalTransmissionCoefficient']  # [W/m²K]
-            thRes = thRes * self.v_pipes_length * self.v_pipes_diameter_3 *\
-                math.pi  # [W/K]
+        if not np.isnan(self.__v_pipes_resistivity).all():
+            thRes = self.__v_pipes_resistivity * self.v_pipes_length  # [W/K]
+        elif not np.isnan(self.__v_pipes_thermalTransmissionCoefficient).all():
+            thRes = self.__v_pipes_thermalTransmissionCoefficient *\
+                    self.v_pipes_length * self.v_pipes_diameter_3 *\
+                    math.pi  # [W/K]
         else:
+            print('huhu')
 #            if self.v_pipes_diameter_0.all() is None and\
 #               self.v_pipes_diameter_1.all() is None and\
 #               self.v_pipes_diameter_2.all() is None and\
@@ -175,7 +179,7 @@ class HeatGrid():
                     (1 / self.v_pipes_conductivity_2) *
                     np.log(self.v_pipes_diameter_3 / self.v_pipes_diameter_2)
                     )  # [W/K]
-        thRes = thRes
+        print(thRes)
         return thRes
 
     def __get_pipes_sprp(self, nodeSupply=None, tableOfNodes=None):
@@ -296,19 +300,20 @@ class HeatGrid():
         if pipes is 1:
             index = 0
             for element, sprp, sNode, eNode, length,\
-                diameter_inner, diameter_outer, sprp in zip(
+                diameter_inner, diameter_outer, sprp, resistivity in zip(
                         self.v_pipes_element, self.v_pipes_sprp,
                         self.v_pipes_sNode, self.v_pipes_eNode,
                         self.v_pipes_length,
                         self.v_pipes_diameter_0,
                         self.v_pipes_diameter_3,
-                        self.v_pipes_sprp):
+                        self.v_pipes_sprp,
+                        self.v_pipes_resistivity):
                 if index < 1:
                     print("%s: sprp %i length %4.1f [m] "
-                      "d_i %4.2f [m] d_o %4.2f [m] sNode %s "
-                      "eNode %s" % (element, sprp, length,
-                                    diameter_inner, diameter_outer,
-                                    sNode, eNode))
+                      "d_0 %4.2f [m] d_3 %4.2f [m] resistivity %2.2f [W/K] "
+                      "sNode %s eNode %s" % (element, sprp, length,
+                                             diameter_inner, diameter_outer,
+                                             resistivity, sNode, eNode))
                     index = index + 1
                 else:
                     break

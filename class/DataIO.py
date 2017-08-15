@@ -67,8 +67,13 @@ class DataIO():
                     df[item] = pd.Series(arr, index=df.index)
                 # adds columns that are probably not given in dtype
                 # but are used add instances of class
-            df = df.rename(columns=dtype)
+            df = df.rename(columns=dtype)#
 
+        # Scales values, any additional function is set here.
+#        for key, value in zip(dtype.keys(), dtype.values()):
+#            if len(value) > 1 and isinstance(value[1], (float, int)):
+#                    df[key] = df.multiply(value[1], key)
+        df = df.rename(columns=dtype)
         print('loading %s \t----> OK ' %filename)
 
         return df
@@ -149,8 +154,14 @@ class DataIO():
                     df[item] = pd.Series(arr, index=df.index)
                 # adds columns that are probably not given in dtype
                 # but are used add instances of class
-        df = df.rename(columns=dtype)
 
+        # Scales values, any additional function is set here.
+#        for key, value in zip(dtype.keys(), dtype.values()):
+#            if len(value) > 1 and isinstance(value[1], (float, int)):
+#                    print(df[key])
+#                    df[key] = df.multiply(1000, key)
+#                    print(df[key])
+        df = df.rename(columns=dtype)
         print('loading %s \t----> OK ' %filename)
 
         return df

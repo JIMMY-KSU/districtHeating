@@ -24,6 +24,7 @@ STANET_pipes_allocation = {
         'WDZAHL': 'thermalTransmissionCoefficient',  # W/m²K
         'RAU': 'roughness',
         'DM': 'diameter_0',
+        'OUTERDM': 'diameter_3',
         'DP': 'm_max',  # for testing, is not the correct key
         None: ['start_height', 'end_height',
                'transferCoefficient_0',
@@ -33,7 +34,6 @@ STANET_pipes_allocation = {
                'conductivity_2',
                'diameter_1',
                'diameter_2',
-               'diameter_3',
                'sprp',
                'index',
                'resistivity'  # W/mK

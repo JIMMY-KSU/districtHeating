@@ -23,8 +23,8 @@ STANET_pipes_allocation = {
         'RORL': 'length',
         'WDZAHL': 'thermalTransmissionCoefficient',  # W/m²K
         'RAU': 'roughness',
-        'DM': 'diameter_0',
-        'OUTERDM': 'diameter_3',
+        'DM': ['diameter_0', 0.001],
+        'OUTERDM': ['diameter_3', 0.001],
         'DP': 'm_max',  # for testing, is not the correct key
         None: ['start_height', 'end_height',
                'transferCoefficient_0',
@@ -60,14 +60,13 @@ STANET_pump_allocation = {
 
 STANET_producer_allocation = {
                              'NAME': 'name',
-                             'POWER': 'power',
                              'ANFNAM': 'sNode',
                              'ENDNAM': 'eNode',
                              'XRA': 'start_x',
                              'YHA': 'start_y',
                              'XRB': 'end_x',
                              'YHB': 'end_y',
-                             None:[1,2,3]
+                             None:['power']
                              }
 
 STANET_vog_producer_allocation = {

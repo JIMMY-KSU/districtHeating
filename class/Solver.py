@@ -62,6 +62,7 @@ class Solver():
         self.Tamb = 5+273.15  # [K]
         self.cp = 4182  # J/(kg*K)
         self.v_pipes_resistivity = self.heatgrid.v_pipes_resistivity
+
         self.v_Zeta = 0.2
         self.rho = 1000
         self.g = 9.81
@@ -565,7 +566,8 @@ class Solver():
         self.getGuessFirstRun = 0
 #   TODO save_x for pipes, plus how to print pretty.
 
-    def print_x(self, x, name):
+    def print_x(self, x, name, amount_pipes=1, amount_nodes=1,
+                amount_consumer=1, amount_producer=1):
         '''
         prints x from Solver
         input: arr = x
@@ -579,7 +581,7 @@ class Solver():
             producer_Ta, producer_Tb, v_P, v_T =\
             self.__xToSingleVectorsAndVectorsToElementtypes(x)
 
-        index = 1
+        index = amount_pipes
         i = 0
         for element, sNode, eNode, sprp, m, Pa, Pb, Q, Ta, Tb in zip(
                                 self.heatgrid.v_pipes_element,
@@ -599,6 +601,7 @@ class Solver():
                 i = i + 1
             else:
                 break
+        index = amount_consumer
         i = 0
         for element, sNode, eNode, m, Pa, Pb, Q, Ta, Tb in zip(
                                 self.heatsink.v_consumers_element,
@@ -618,6 +621,7 @@ class Solver():
                 i = i + 1
             else:
                 break
+        index = amount_producer
         i = 0
         for element, sNode, eNode, m, Pa, Pb, Q, Ta, Tb in zip(
                                 self.heatsource.v_producers_element,
@@ -639,7 +643,7 @@ class Solver():
             else:
                 break
 
-        index = 1
+        index = amount_nodes
         i = 0
         for element, name_nodes, sprp, P, T in zip(
                                        self.heatgrid.v_nodes_element,
@@ -683,7 +687,7 @@ if __name__ == "__main__":
 
     heatsource = DataIO.importCSV(
             'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
-            delimiter='\t', header=0)
+            delimiter=';', header=0)
 
     heatsink = HeatSink(heatsink)
     heatsource = HeatSource(heatsource)
@@ -698,7 +702,11 @@ if __name__ == "__main__":
     print('----> Get guess for equations.')
     guess = solver.getGuess()
 
-    solver.print_x(guess, "guess")
+    solver.print_x(guess, "guess",
+                   amount_pipes=len(heatgrid.pipes()),
+                   amount_nodes=len(heatgrid.nodes()),
+                   amount_producer=len(heatsource.producers()),
+                   amount_consumer=len(heatsink.consumer()))
     print('----> Solve equations.')
     startTime = time.clock()
 #    solution = fsolve(solver.gridCalculation, guess)
@@ -706,14 +714,33 @@ if __name__ == "__main__":
 
     solution = solution_root.x
     print(time.clock() - startTime)
-    print(solution)
+
     solver.print_x(solution, "solution")
     solver.save_x(solution)
     print(solution_root.success)
     print(solution_root.message)
     Solver_plotter = Plotter()
-    Solver_plotter.plot_graph(solver.heatgrid.v_nodes_name,
-                              solver.heatgrid.v_pipes_esNode)
+#    Solver_plotter.plot_graph(solver.heatgrid.v_nodes_name,
+#                              solver.heatgrid.v_pipes_esNode)
+    fig = Solver_plotter.plot_DHS(
+            v_pipes_start_x=solver.heatgrid.v_pipes_start_x,
+            v_pipes_start_y=solver.heatgrid.v_pipes_start_y,
+            v_pipes_end_x=solver.heatgrid.v_pipes_end_x,
+            v_pipes_end_y=solver.heatgrid.v_pipes_end_y,
+            v_pipes_Q=np.abs(solver.heatgrid.v_pipes_m),
+            v_nodes_x=solver.heatgrid.v_nodes_x,
+            v_nodes_y=solver.heatgrid.v_nodes_y,
+            v_consumers_start_x=solver.heatsink.v_consumers_start_x,
+            v_consumers_start_y=solver.heatsink.v_consumers_start_y,
+            v_consumers_end_x=solver.heatsink.v_consumers_end_x,
+            v_consumers_end_y=solver.heatsink.v_consumers_end_y,
+            v_consumers_Q=np.abs(solver.heatsink.v_consumers_m),
+            v_producers_start_x=solver.heatsource.v_producers_start_x,
+            v_producers_start_y=solver.heatsource.v_producers_start_y,
+            v_producers_end_x=solver.heatsource.v_producers_end_x,
+            v_producers_end_y=solver.heatsource.v_producers_end_y,
+            v_producers_Q=np.abs(solver.heatsource.v_producers_m))
+    DataIO.exportFig('test_solver', fig)
 else:
     print("Solver \t\t\t was imported into another module")
 

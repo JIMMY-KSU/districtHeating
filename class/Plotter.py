@@ -402,43 +402,44 @@ class Plotter():
                 v_pipes_start_y is not None and
                 v_pipes_end_x is not None and
                 v_pipes_end_y is not None):
-            self.plot_elements(v_pipes_start_x,
-                               v_pipes_start_y,
-                               v_pipes_end_x,
-                               v_pipes_end_y,
-                               v_pipes_Q, ax=ax)
+            fig = self.plot_elements(v_pipes_start_x,
+                                       v_pipes_start_y,
+                                       v_pipes_end_x,
+                                       v_pipes_end_y,
+                                       v_pipes_Q, fig=fig, ax=ax)
         if v_nodes_x is not None and v_nodes_y is not None:
-            self.plot_nodes(v_nodes_x, v_nodes_y, ax=ax,
+             fig = self.plot_nodes(v_nodes_x, v_nodes_y, ax=ax,
                             marker='o', marker_color='grey')
         if (v_consumers_start_x is not None and
                 v_consumers_start_y is not None and
                 v_consumers_end_x is not None and
                 v_consumers_end_y is not None):
-            self.plot_elements(v_consumers_start_x,
+             fig = self.plot_elements(v_consumers_start_x,
                                v_consumers_start_y,
                                v_consumers_end_x,
                                v_consumers_end_y,
-                               v_consumers_Q, ax=ax,
+                               v_consumers_Q, fig=fig, ax=ax,
                                marker='v', marker_color='blue')
         if (v_producers_start_x is not None and
                 v_producers_start_y is not None and
                 v_producers_end_x is not None and
                 v_producers_end_y is not None):
-            self.plot_elements(v_producers_start_x,
+             fig = self.plot_elements(v_producers_start_x,
                                v_producers_start_y,
                                v_producers_end_x,
                                v_producers_end_y,
-                               v_producers_Q, ax=ax,
+                               v_producers_Q, fig=fig, ax=ax,
                                marker='^', marker_color='red')
 
         return fig
 
     def plot_elements(self, v_start_x, v_start_y,
                       v_end_x, v_end_y,
-                      v_element_Q = None,
+                      v_element_Q=None,
                       title=None,
                       marker=None, marker_color=None,
                       line_style='-', line_color=None,
+                      fig=plt.subplot(),
                       ax=plt.subplot()
                       ):
         '''plots Heatgrid elements
@@ -464,7 +465,7 @@ class Plotter():
                                         'Q': np.abs(v_element_Q)},
                                        geometry='elements')
 
-        gdf_elements.plot(ax=ax, column='Q', k=3, legend=True,
+        fig = gdf_elements.plot(ax=ax, column='Q', k=3, legend=True,
                                 cmap='cool', scheme='quantiles',
                                 linestyle=line_style,
                                 )
@@ -473,7 +474,7 @@ class Plotter():
             gdf_elements_centroid.plot(ax=ax, marker=marker,
                                        color=marker_color)
 #        fig.colorbar(ax)
-        return plt
+        return fig
 
     def plot_nodes(self, v_nodes_x, v_nodes_y,
                    marker='o', marker_color='grey', ax=plt.subplot()):
@@ -497,121 +498,7 @@ class Plotter():
             right='off')
 
 
-    def get_symbol(self, pointXY=Point(0, 0), scale=1,
-                   rotation=0, fig=plt.subplot(), ax=plt.subplot(),
-                   element=''):
-        # TODO implement plt.collection to speed up
-        # TODO use scale from gepandas to scale all lines
-        # TODO use translate to shift all lines
-        x = pointXY.x
-        y = pointXY.y
-        middle = (x, y)
-        radius = 0.5 * scale
-        if element is 'consumer':
-            leftdown = (-0.2 * scale + x, -0.25 * scale + y)
-            leftup = (leftdown[0], 0.25 * scale + y)
-            middle_lines = (0.2 * scale + x, 0 * scale + y)
-            middleup = (x, y + radius)
-            middledown = (x, y - radius)
-            top = (middleup[0], y + scale * 2)
-            down = (middledown[0], y - 1 * scale * 2)
-            rightup = (0.8 * scale + x, 0.25 * scale + y)
-            rightdown = (0.8 * scale + x, -0.25 * scale + y)
 
-            #  reads in coords into geopandas Geodataframe to rotate coords
-            coords = [(leftdown, rightdown),  # 0
-                      (leftdown, middle),  # 1
-                      (middle_lines, leftup),  # 2
-                      (leftup, rightup),  # 3
-                      (middleup, top),  # 4
-                      (middledown, down)]  # 5
-
-            lines = MultiLineString(coords)
-            gdf = gp.GeoDataFrame({'lines': lines}, geometry='lines')
-            gdf = gdf.rotate(rotation, origin=middle)
-
-            #  reads coords back into tuples
-            leftdown, rightdown = gdf.get_values()[0].coords
-            middle_lines, leftup = gdf.get_values()[2].coords
-            rightup = gdf.get_values()[3].coords[1]
-            middleup, top = gdf.get_values()[4].coords
-            middledown, down = gdf.get_values()[5].coords
-
-            circle = plt.Circle(middle, radius, linewidth=1.5,
-                                color='black', fill=False)
-            lines_x = [rightdown[0], leftdown[0],
-                       middle_lines[0], leftup[0], rightup[0]]
-            lines_y = [rightdown[1], leftdown[1],
-                       middle_lines[1], leftup[1], rightup[1]]
-
-            #  plot symbol
-            plt.plot(lines_x, lines_y, color='black')
-            ax.add_artist(circle)
-            #  plot line up
-            plt.plot([down[0], middledown[0]], [down[1],
-                     middledown[1]], color='black')
-            #  plot line down
-            plt.plot([top[0], middleup[0]], [top[1],
-                     middleup[1]], color='black')
-
-    #
-    #        fig.show()
-            '''####################'''
-        if element is 'producer':
-
-            leftdown = (x - 0.2 * scale , y - 0.3 * scale)
-            leftup = (leftdown[0] , y)
-            chimneyleft = (x + 0.1 * scale , leftup[1])
-            chimneyleftup = (chimneyleft[0], chimneyleft[1] + 0.3 * scale)
-            chimneyrightup = (chimneyleft[0] + 0.1 * scale, chimneyleftup[1])
-            chimneyrightdown = (chimneyrightup[0], leftdown[1])
-            middleup = (x, y + radius)
-            middledown = (x, y - radius)
-            top = (middleup[0], y + scale * 2)
-            down = (middledown[0], y - 1 * scale * 2)
-            
-            
-            coords = [(leftdown, leftup),
-                      (leftup, chimneyleft),
-                      (chimneyleft, chimneyleftup),
-                      (chimneyleftup, chimneyrightup),
-                      (chimneyrightup, chimneyrightdown),
-                      (chimneyrightdown, leftdown),
-                      (middleup, top),
-                      (middledown, down)]
-            lines = MultiLineString(coords)
-            gdf = gp.GeoDataFrame({'lines': lines}, geometry='lines')
-            gdf = gdf.rotate(rotation, origin=middle)
-            
-            # reads coords back into tuples
-            leftdown, leftup = gdf.get_values()[0].coords
-            chimneyleft, chimneyleftup = gdf.get_values()[2].coords
-            chimneyrightup, chimneyrightdown = gdf.get_values()[4].coords
-            leftdown = gdf.get_values()[5].coords[1]
-            middleup, top = gdf.get_values()[6].coords
-            middledown, down = gdf.get_values()[7].coords
-            
-            lines_x = [leftdown[0], leftup[0],
-                       chimneyleft[0], chimneyleftup[0],
-                       chimneyrightup[0], chimneyrightdown[0], leftdown[0]]
-            lines_y = [leftdown[1], leftup[1],
-                       chimneyleft[1], chimneyleftup[1],
-                       chimneyrightup[1], chimneyrightdown[1], leftdown[1]]
-            # plot symbol
-            plt.plot(lines_x, lines_y, color='red')
-            # plot line up
-            plt.plot([middleup[0], top[0]],
-                     [middleup[1], top[1]], color='black')
-            # plot line down
-            plt.plot([middledown[0], down[0]],
-                     [middledown[1], down[1]], color='black')
-            
-            circle = plt.Circle(middle, radius, linewidth=1.5,
-                                color='black', fill=False)
-            ax.add_artist(circle)
-        plt.axis('equal')
-
-        return fig
 
     def _figsize(self, scale):
         fig_width_pt = 469.755  # Get this from LaTeX using \the\textwidth
@@ -805,5 +692,121 @@ else:
 ##            self.get_symbol(pointXY=center, scale=l/4, rotation=rotation,
 ##                            fig=fig, ax=ax, element=element)
 ##        fig.plot()
+#
+##        return fig
+#    
+#        def get_symbol(self, pointXY=Point(0, 0), scale=1,
+#                   rotation=0, fig=plt.subplot(), ax=plt.subplot(),
+#                   element=''):
+#        # TODO implement plt.collection to speed up
+#        # TODO use scale from gepandas to scale all lines
+#        # TODO use translate to shift all lines
+#        x = pointXY.x
+#        y = pointXY.y
+#        middle = (x, y)
+#        radius = 0.5 * scale
+#        if element is 'consumer':
+#            leftdown = (-0.2 * scale + x, -0.25 * scale + y)
+#            leftup = (leftdown[0], 0.25 * scale + y)
+#            middle_lines = (0.2 * scale + x, 0 * scale + y)
+#            middleup = (x, y + radius)
+#            middledown = (x, y - radius)
+#            top = (middleup[0], y + scale * 2)
+#            down = (middledown[0], y - 1 * scale * 2)
+#            rightup = (0.8 * scale + x, 0.25 * scale + y)
+#            rightdown = (0.8 * scale + x, -0.25 * scale + y)
+#
+#            #  reads in coords into geopandas Geodataframe to rotate coords
+#            coords = [(leftdown, rightdown),  # 0
+#                      (leftdown, middle),  # 1
+#                      (middle_lines, leftup),  # 2
+#                      (leftup, rightup),  # 3
+#                      (middleup, top),  # 4
+#                      (middledown, down)]  # 5
+#
+#            lines = MultiLineString(coords)
+#            gdf = gp.GeoDataFrame({'lines': lines}, geometry='lines')
+#            gdf = gdf.rotate(rotation, origin=middle)
+#
+#            #  reads coords back into tuples
+#            leftdown, rightdown = gdf.get_values()[0].coords
+#            middle_lines, leftup = gdf.get_values()[2].coords
+#            rightup = gdf.get_values()[3].coords[1]
+#            middleup, top = gdf.get_values()[4].coords
+#            middledown, down = gdf.get_values()[5].coords
+#
+#            circle = plt.Circle(middle, radius, linewidth=1.5,
+#                                color='black', fill=False)
+#            lines_x = [rightdown[0], leftdown[0],
+#                       middle_lines[0], leftup[0], rightup[0]]
+#            lines_y = [rightdown[1], leftdown[1],
+#                       middle_lines[1], leftup[1], rightup[1]]
+#
+#            #  plot symbol
+#            plt.plot(lines_x, lines_y, color='black')
+#            ax.add_artist(circle)
+#            #  plot line up
+#            plt.plot([down[0], middledown[0]], [down[1],
+#                     middledown[1]], color='black')
+#            #  plot line down
+#            plt.plot([top[0], middleup[0]], [top[1],
+#                     middleup[1]], color='black')
+#
+#    #
+#    #        fig.show()
+#            '''####################'''
+#        if element is 'producer':
+#
+#            leftdown = (x - 0.2 * scale , y - 0.3 * scale)
+#            leftup = (leftdown[0] , y)
+#            chimneyleft = (x + 0.1 * scale , leftup[1])
+#            chimneyleftup = (chimneyleft[0], chimneyleft[1] + 0.3 * scale)
+#            chimneyrightup = (chimneyleft[0] + 0.1 * scale, chimneyleftup[1])
+#            chimneyrightdown = (chimneyrightup[0], leftdown[1])
+#            middleup = (x, y + radius)
+#            middledown = (x, y - radius)
+#            top = (middleup[0], y + scale * 2)
+#            down = (middledown[0], y - 1 * scale * 2)
+#            
+#            
+#            coords = [(leftdown, leftup),
+#                      (leftup, chimneyleft),
+#                      (chimneyleft, chimneyleftup),
+#                      (chimneyleftup, chimneyrightup),
+#                      (chimneyrightup, chimneyrightdown),
+#                      (chimneyrightdown, leftdown),
+#                      (middleup, top),
+#                      (middledown, down)]
+#            lines = MultiLineString(coords)
+#            gdf = gp.GeoDataFrame({'lines': lines}, geometry='lines')
+#            gdf = gdf.rotate(rotation, origin=middle)
+#            
+#            # reads coords back into tuples
+#            leftdown, leftup = gdf.get_values()[0].coords
+#            chimneyleft, chimneyleftup = gdf.get_values()[2].coords
+#            chimneyrightup, chimneyrightdown = gdf.get_values()[4].coords
+#            leftdown = gdf.get_values()[5].coords[1]
+#            middleup, top = gdf.get_values()[6].coords
+#            middledown, down = gdf.get_values()[7].coords
+#            
+#            lines_x = [leftdown[0], leftup[0],
+#                       chimneyleft[0], chimneyleftup[0],
+#                       chimneyrightup[0], chimneyrightdown[0], leftdown[0]]
+#            lines_y = [leftdown[1], leftup[1],
+#                       chimneyleft[1], chimneyleftup[1],
+#                       chimneyrightup[1], chimneyrightdown[1], leftdown[1]]
+#            # plot symbol
+#            plt.plot(lines_x, lines_y, color='red')
+#            # plot line up
+#            plt.plot([middleup[0], top[0]],
+#                     [middleup[1], top[1]], color='black')
+#            # plot line down
+#            plt.plot([middledown[0], down[0]],
+#                     [middledown[1], down[1]], color='black')
+#            
+#            circle = plt.Circle(middle, radius, linewidth=1.5,
+#                                color='black', fill=False)
+#            ax.add_artist(circle)
+#        plt.axis('equal')
 #
 #        return fig

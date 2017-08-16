@@ -68,8 +68,6 @@ class HeatGrid():
         self.__v_pipes_resistivity = tableOfPipes['resistivity']  # [W/K]
         self.v_pipes_resistivity = self.__calc_resistivity()
 
-
-
         self.v_pipes_sHeight = np.array(tableOfPipes['start_height'])
         self.v_pipes_eHeight = np.array(tableOfPipes['end_height'])
         self.v_pipes_roughness = np.array(tableOfPipes['roughness'])
@@ -145,7 +143,6 @@ class HeatGrid():
                     self.v_pipes_length * self.v_pipes_diameter_3 *\
                     math.pi  # [W/K]
         else:
-            print('huhu')
 #            if self.v_pipes_diameter_0.all() is None and\
 #               self.v_pipes_diameter_1.all() is None and\
 #               self.v_pipes_diameter_2.all() is None and\
@@ -179,7 +176,6 @@ class HeatGrid():
                     (1 / self.v_pipes_conductivity_2) *
                     np.log(self.v_pipes_diameter_3 / self.v_pipes_diameter_2)
                     )  # [W/K]
-        print(thRes)
         return thRes
 
     def __get_pipes_sprp(self, nodeSupply=None, tableOfNodes=None):

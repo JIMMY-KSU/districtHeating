@@ -50,9 +50,10 @@ class DataIO():
             
         if dtype is not None:
             usecols = []
-            for value, key in zip(dtype.keys(), dtype.values()):
-                if value is not None:
-                    usecols.append(value)
+            for key, value in zip(dtype.keys(), dtype.values()):
+                if key is not None:
+                    usecols.append(key)
+
         df = pd.read_csv(file, delimiter=delimiter, header=header,
                           encoding=encoding, decimal=decimal, usecols=usecols,
                           lineterminator=lineterminator, thousands=thousands,
@@ -63,17 +64,24 @@ class DataIO():
                 df_length = len(df)
                 for item in dtype[None]:
                     arr = np.empty(df_length)
-                    arr[:] = False
+                    arr[:] = 0
                     df[item] = pd.Series(arr, index=df.index)
                 # adds columns that are probably not given in dtype
                 # but are used add instances of class
-            df = df.rename(columns=dtype)#
 
-        # Scales values, any additional function is set here.
-#        for key, value in zip(dtype.keys(), dtype.values()):
-#            if len(value) > 1 and isinstance(value[1], (float, int)):
-#                    df[key] = df.multiply(value[1], key)
-        df = df.rename(columns=dtype)
+            # Scales values, any additional functions are set here.
+            # Renaming must be adjusted too.
+            for key, value in zip(dtype.keys(), dtype.values()):
+                if isinstance(value, list) and key is not None:
+                    df[key] = df[key] * value[1]
+
+            # Rename columns so they fit the column names in class.
+            for key, value in zip(dtype.keys(), dtype.values()):
+                if isinstance(value, list):
+                    df = df.rename(columns={key:value[0]})
+                else:
+                    df = df.rename(columns={key:value})
+
         print('loading %s \t----> OK ' %filename)
 
         return df
@@ -137,9 +145,9 @@ class DataIO():
 
         if dtype is not None:
             usecols = []
-            for value, key in zip(dtype.keys(), dtype.values()):
-                if value is not None:
-                    usecols.append(value)
+            for key, value in zip(dtype.keys(), dtype.values()):
+                if key is not None:
+                    usecols.append(key)
         else:
             usecols = dbf.header
         d = {col: dbf.by_col(col) for col in usecols}
@@ -150,18 +158,25 @@ class DataIO():
                 df_length = len(df)
                 for item in dtype[None]:
                     arr = np.empty(df_length)
-                    arr[:] = np.NAN
+                    arr[:] = 0
                     df[item] = pd.Series(arr, index=df.index)
                 # adds columns that are probably not given in dtype
                 # but are used add instances of class
 
-        # Scales values, any additional function is set here.
-#        for key, value in zip(dtype.keys(), dtype.values()):
-#            if len(value) > 1 and isinstance(value[1], (float, int)):
-#                    print(df[key])
-#                    df[key] = df.multiply(1000, key)
-#                    print(df[key])
-        df = df.rename(columns=dtype)
+            # Scales values, any additional functions are set here.
+            # Renaming must be adjusted too.
+            for key, value in zip(dtype.keys(), dtype.values()):
+                if isinstance(value, list) and key is not None:
+                    df[key] = df[key] * value[1]
+
+
+            # Rename columns so they fit the column names in class.
+            for key, value in zip(dtype.keys(), dtype.values()):
+                if isinstance(value, list):
+                    df = df.rename(columns={key:value[0]})
+                else:
+                    df = df.rename(columns={key:value})
+
         print('loading %s \t----> OK ' %filename)
 
         return df
@@ -243,8 +258,8 @@ if __name__ == "__main__":
 
     heatsource = DataIO.importCSV(
             'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
-            delimiter='\t', header=0)
-    print(heatsource)
+            delimiter=';', header=0)
+
 
 else:
     import os

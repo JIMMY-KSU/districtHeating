@@ -23,6 +23,7 @@ import igraph
 import datetime
 
 
+
 class Plotter():
 
     def __init__(self, title='', figsize=0.6):
@@ -402,36 +403,75 @@ class Plotter():
                 v_pipes_start_y is not None and
                 v_pipes_end_x is not None and
                 v_pipes_end_y is not None):
-            fig = self.plot_elements(v_pipes_start_x,
+            self.plot_elements(v_pipes_start_x,
                                        v_pipes_start_y,
                                        v_pipes_end_x,
                                        v_pipes_end_y,
-                                       v_pipes_Q, fig=fig, ax=ax)
+                                       v_element_Q=v_pipes_Q, fig=fig, ax=ax)
         if v_nodes_x is not None and v_nodes_y is not None:
-             fig = self.plot_nodes(v_nodes_x, v_nodes_y, ax=ax,
+             self.plot_nodes(v_nodes_x, v_nodes_y, ax=ax,
                             marker='o', marker_color='grey')
         if (v_consumers_start_x is not None and
                 v_consumers_start_y is not None and
                 v_consumers_end_x is not None and
                 v_consumers_end_y is not None):
-             fig = self.plot_elements(v_consumers_start_x,
+             self.plot_elements(v_consumers_start_x,
                                v_consumers_start_y,
                                v_consumers_end_x,
                                v_consumers_end_y,
-                               v_consumers_Q, fig=fig, ax=ax,
+                               v_element_Q=v_consumers_Q, fig=fig, ax=ax,
                                marker='v', marker_color='blue')
+        print(v_producers_end_x, v_producers_end_y, v_producers_Q, v_producers_start_x,
+              v_producers_start_y)
         if (v_producers_start_x is not None and
                 v_producers_start_y is not None and
                 v_producers_end_x is not None and
                 v_producers_end_y is not None):
-             fig = self.plot_elements(v_producers_start_x,
+             self.plot_elements(v_producers_start_x,
                                v_producers_start_y,
                                v_producers_end_x,
                                v_producers_end_y,
-                               v_producers_Q, fig=fig, ax=ax,
+                               v_element_Q=v_producers_Q, fig=fig, ax=ax,
                                marker='^', marker_color='red')
 
         return fig
+    
+    def plot_DHS2(self, 
+                 v_pipes_start_x=None,
+                 v_pipes_start_y=None,
+                 v_pipes_end_x=None,
+                 v_pipes_end_y=None,
+                 v_pipes_Q=None,
+                 v_nodes_x=None,
+                 v_nodes_y=None,
+                 v_consumers_start_x=None,
+                 v_consumers_start_y=None,
+                 v_consumers_end_x=None,
+                 v_consumers_end_y=None,
+                 v_consumers_Q=None,
+                 v_producers_start_x=None,
+                 v_producers_start_y=None,
+                 v_producers_end_x=None,
+                 v_producers_end_y=None,
+                 v_producers_Q=None,
+                 title=''):
+        from matplotlib.collections import LineCollection
+        
+        xy = (np.random.random((1000, 2)) - 0.5).cumsum(axis=0)
+        
+        # Reshape things so that we have a sequence of:
+        # [[(x0,y0),(x1,y1)],[(x0,y0),(x1,y1)],...]
+        xy = xy.reshape(-1, 1, 2)
+        segments = np.hstack([xy[:-1], xy[1:]])
+        
+        fig, ax = plt.subplots()
+        coll = LineCollection(segments, cmap=plt.cm.gist_ncar)
+        coll.set_array(np.random.random(xy.shape[0]))
+        
+        ax.add_collection(coll)
+        ax.autoscale_view()
+        
+        plt.show()
 
     def plot_elements(self, v_start_x, v_start_y,
                       v_end_x, v_end_y,
@@ -460,7 +500,7 @@ class Plotter():
         element_LineString = [LineString(xy) for xy in zip(sPoint, ePoint)]
 
         if v_element_Q is None:
-            v_element_Q = [0]*len(element_LineString)
+            v_element_Q = np.zeros(len(element_LineString))
         gdf_elements = gp.GeoDataFrame({'elements': element_LineString,
                                         'Q': np.abs(v_element_Q)},
                                        geometry='elements')
@@ -469,11 +509,13 @@ class Plotter():
                                 cmap='cool', scheme='quantiles',
                                 linestyle=line_style,
                                 )
+
         if marker is not None:
             gdf_elements_centroid = gdf_elements.centroid
             gdf_elements_centroid.plot(ax=ax, marker=marker,
                                        color=marker_color)
 #        fig.colorbar(ax)
+
         return fig
 
     def plot_nodes(self, v_nodes_x, v_nodes_y,
@@ -511,8 +553,8 @@ class Plotter():
         return fig_size
 
     def _formate(self):
-        rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
-        rc('text', usetex=True)
+        rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman']})
+        rc('text', usetex=False)
 #        pgf_with_latex = {  # setup matplotlib to use latex for output
 #            "pgf.texsystem": "pdflatex",
 #            # change this if using xetex or lautex
@@ -616,6 +658,7 @@ if __name__ == "__main__":
     pipes_Q.append(10)
 
     fig.savefig('test')
+    testPlotter.plot_DHS2()
 #    plt.show()
 else:
     print('Plotter \t\t was imported into another module')

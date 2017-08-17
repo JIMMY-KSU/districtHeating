@@ -54,7 +54,7 @@ class DistrictHeatingSystem():
         guess = solver.getGuess()
         solver.print_x(guess, 'guess')
         print("Getting solution\n")
-        solution = root(solver.gridCalculation, guess)
+        solution = root(solver.gridCalculation, guess, method='hybr')
         solver.print_x(solution, 'solution')
         solver.save_x(solution)
         return None
@@ -105,7 +105,7 @@ if __name__ == "__main__":
 
     heatsink = DHS1_dataIO.importDBF(
             'W20170808_vKlein.DBF',
-            dtype=Dictionary.STANET_consumer_allocation)
+            dtype=Dictionary.STANET_vKlein_consumer_allocation)
 
     heatsource = DHS1_dataIO.importCSV(
             'W20170808_vKlein.csv',
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     i = 0
     while i < 1:
         print('#####\trun number %i\t#####' %i)
-        DHS1.calculateDHS()
+#        DHS1.calculateDHS()
         endTime = time.time()
 #        DHS1.heatgrid.__str__()
 #        DHS1.heatsink.__str__()

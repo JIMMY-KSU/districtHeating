@@ -18,7 +18,7 @@ from Consumer import Consumer
 
 
 class HeatSink():
-    def __init__(self, tableOfConsumer):
+    def __init__(self, tableOfConsumer, tableOfProfiles=None):
         '''
         input:
             tabelOfConsumer = [] # contains all Consumer of network, \
@@ -41,8 +41,11 @@ class HeatSink():
         self.v_consumers_esNode = np.column_stack((self.v_consumers_eNode,
                                                    self.v_consumers_sNode))
         self.v_consumers_profile = np.array(tableOfConsumer['profile'])
+        self.v_profiles_Q = tableOfProfiles
         self.v_consumers_average = np.array(tableOfConsumer['average'])
         self.v_consumers_Q = np.array(tableOfConsumer['Q'])
+        self.v_consumers_Q = self.set_consumers_Q()
+
         self.v_consumers_cp = np.array([cp] * length)  # J/(kg*K)
         self.v_consumers_Ta = np.array([Ta] * length)  # Kelvin
         self.v_consumers_Tb = np.array([Tb] * length)  # Kelvin
@@ -69,6 +72,16 @@ class HeatSink():
             sumQT += i.heat_demand * i.return_temperature
             sumQ += i.heat_demand
         return sumQT / sumQ
+    def set_consumers_Q(self, i=0):
+        if np.sum(self.v_consumers_Q) is not 0:
+            v_Q = self.v_consumers_Q
+        if self.v_consumers_profile.all():
+            v_Q = np.zeros(len(self.v_consumers_profile))
+            for index, item in enumerate(self.v_consumers_profile):
+#                print(item)
+                v_Q[index] = self.v_profiles_Q[item][i]
+        self.v_consumers_Q = v_Q
+        return v_Q
 
     def __calc_consumers_m(self, Q, cp, Ta, Tb):
         arr = Q / (cp * (Tb - Ta))
@@ -127,12 +140,18 @@ if __name__ == "__main__":
                 'input' + os.sep + 'TestNetz',
                 os.path.dirname(os.getcwd()) + os.sep +
                 'output' + os.sep + 'TestNetz')
-    heatsink = DataIO.importDBF(
-            'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
-
-    testSink = HeatSink(heatsink)
+    heatsink = DataIO.importCSV(
+            'TestNetz_consumer.csv', dtype=Dictionary.STANET_consumer_allocation)
+    heatsink_profiles_Q = DataIO.importCSV(
+            'consumers_profile_Q.csv')
+    testSink = HeatSink(heatsink, tableOfProfiles=heatsink_profiles_Q)
     testSink.setCalculations()
     testSink.setCalculations()
+    i = 0
+    while i < 96:
+        testSink.set_consumers_Q(i)
+        print(testSink.v_consumers_Q)
+        i = i + 1
     DataIO.exportNumpyArr('Heatsink', testSink.getCalculations())
 #    print(calcedValuesArr[0][0][1])
 #    print(testSink.saveCalculation())

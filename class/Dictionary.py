@@ -48,9 +48,21 @@ STANET_consumer_allocation = {
         'YHOCH': 'start_y',
         'XRECHTS2': 'end_x',
         'YHOCH2': 'end_y',
-        None:['index', 'profile', 'average']
+        'PROFIL':'profile',
+        None:['index', 'average']
         }
 
+STANET_vKlein_consumer_allocation = {
+        'ANFNAM': 'sNode',
+        'ENDNAM': 'eNode',
+        'WAERMEMENG': 'Q',
+        'FLUSS': 'flow',
+        'XRECHTS': 'start_x',
+        'YHOCH': 'start_y',
+        'XRECHTS2': 'end_x',
+        'YHOCH2': 'end_y',
+        None:['index', 'profile', 'average']
+        }
 
 STANET_pump_allocation = {
                             'PUMPENTYP': 'profil',

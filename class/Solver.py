@@ -682,14 +682,15 @@ if __name__ == "__main__":
     heatgrid_pipes = DataIO.importDBF(
             'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
 
-    heatsink = DataIO.importDBF(
-            'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
-
+    heatsink = DataIO.importCSV(
+            'TestNetz_consumer.csv', dtype=Dictionary.STANET_consumer_allocation)
+    heatsink_profiles_Q = DataIO.importCSV(
+            'consumers_profile_Q.csv')
     heatsource = DataIO.importCSV(
             'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
             delimiter=';', header=0)
 
-    heatsink = HeatSink(heatsink)
+    heatsink = HeatSink(heatsink, tableOfProfiles=heatsink_profiles_Q)
     heatsource = HeatSource(heatsource)
     heatgrid = HeatGrid(heatgrid_pipes,
                         heatgrid_nodes,
@@ -722,6 +723,9 @@ if __name__ == "__main__":
     Solver_plotter = Plotter()
 #    Solver_plotter.plot_graph(solver.heatgrid.v_nodes_name,
 #                              solver.heatgrid.v_pipes_esNode)
+    print(solver.heatsource.v_producers_end_x, solver.heatsource.v_producers_end_y,
+          solver.heatsource.v_producers_start_x, solver.heatsource.v_producers_start_y,
+          solver.heatsource.v_producers_m)
     fig = Solver_plotter.plot_DHS(
             v_pipes_start_x=solver.heatgrid.v_pipes_start_x,
             v_pipes_start_y=solver.heatgrid.v_pipes_start_y,

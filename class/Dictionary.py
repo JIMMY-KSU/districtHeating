@@ -48,8 +48,8 @@ STANET_consumer_allocation = {
         'YHOCH': 'start_y',
         'XRECHTS2': 'end_x',
         'YHOCH2': 'end_y',
-#        'PROFIL':'profile',
-        None:['index', 'average', 'profile']
+        'PROFIL':'profile',
+        None:['index', 'average']
         }
 
 STANET_vKlein_consumer_allocation = {

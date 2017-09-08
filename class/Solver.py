@@ -292,23 +292,24 @@ class Solver():
             '''
             v_m = np.zeros(self._elements)
             # massflow
-#            val = np.sum(-self.__I_sink *
-#                                  self.heatsink.v_consumers_m, axis=1)
-#            print(val)
-#            iMatrix = iMatrix[:, [self.__I_grid_slice, self.__I_source_slice]]
+
 #            ''' The pseudo-inverse of a matrix A, denoted A^+, is defined as:
 #            “the matrix that ‘solves’ [the least-squares problem] Ax = b,”
 #            i.e., if \bar{x} is said solution, then A^+ is that matrix such
 #            that \bar{x} = A^+b.'''
-            iMatrix_pseudo = np.linalg.pinv(np.hstack((self.__I_grid,
-                                                       self.__I_source)))
-            v_m_guess = v_m
-            v_m_guess[self.__I_sink_slice] = self.heatsink.v_consumers_m
+            v_m = np.zeros(self._elements)
+             # massflow
+            iMatrix = self.__I
+            v_m_guess = np.sum(-iMatrix[:,(self.__I_sink_slice)] *
+                  self.heatsink.v_consumers_m, axis=1)
+            iMatrix[:, self.__I_sink_slice] = 0
+            iMatrix_pseudo = np.linalg.pinv(iMatrix)
+
             v_m = np.dot(iMatrix_pseudo, v_m_guess)
 
-#            print(val)
+#            print(v_m_guess)
 #            print(iMatrix_pseudo)
-            print(v_m)
+#            print(v_m)
 #            v_m = np.hstack((v_m[self.__I_grid_slice], v_))
 #            print('Matrix:')
 #            print(iMatrix_pseudo)
@@ -696,15 +697,11 @@ if __name__ == "__main__":
     heatgrid_pipes = DataIO.importDBF(
             'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
     
-    heatsink = DataIO.importDBF(
-            'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
-    
-    heatsink_profiles_Q = None
-#    heatsink = DataIO.importCSV(
-#            'TestNetz_consumer.csv', dtype=Dictionary.STANET_consumer_allocation)
-
-#    heatsink_profiles_Q = DataIO.importCSV(
-#            'consumers_profile_Q.csv')
+    heatsink = DataIO.importCSV(
+            'TestNetz_consumer.csv', dtype=Dictionary.STANET_consumer_allocation)
+    heatsink_profiles_Q = DataIO.importCSV(
+            'consumers_profile_Q.csv')
+    testSink = HeatSink(heatsink, tableOfProfiles=heatsink_profiles_Q)
     heatsource = DataIO.importCSV(
             'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
             delimiter=';', header=0)

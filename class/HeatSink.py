@@ -43,8 +43,10 @@ class HeatSink():
         self.v_consumers_profile = np.array(tableOfConsumer['profile'])
         self.v_profiles_Q = tableOfProfiles
         self.v_consumers_average = np.array(tableOfConsumer['average'])
-        self.v_consumers_Q = np.array(tableOfConsumer['Q'])
-        self.v_consumers_Q = self.set_consumers_Q()
+
+        self.__Q = np.array(tableOfConsumer['Q'])
+        self.__profiles = tableOfProfiles
+        self.set_consumers_Q()
 
         self.v_consumers_cp = np.array([cp] * length)  # J/(kg*K)
         self.v_consumers_Ta = np.array([Ta] * length)  # Kelvin
@@ -72,16 +74,18 @@ class HeatSink():
             sumQT += i.heat_demand * i.return_temperature
             sumQ += i.heat_demand
         return sumQT / sumQ
+
     def set_consumers_Q(self, i=0):
-        if np.sum(self.v_consumers_Q) is not 0:
-            v_Q = self.v_consumers_Q
-        if self.v_consumers_profile.all():
-            v_Q = np.zeros(len(self.v_consumers_profile))
+        if self.__profiles is not None:
+            arr = np.zeros(len(self.v_consumers_index))
             for index, item in enumerate(self.v_consumers_profile):
 #                print(item)
-                v_Q[index] = self.v_profiles_Q[item][i]
-        self.v_consumers_Q = v_Q
-        return v_Q
+                arr[index] = self.v_profiles_Q[item][i]
+        else:
+            arr = self.__Q
+#        print(arr)
+        self.v_consumers_Q = arr
+
 
     def __calc_consumers_m(self, Q, cp, Ta, Tb):
         arr = Q / (cp * (Tb - Ta))
@@ -109,9 +113,10 @@ class HeatSink():
 
     def __str__(self):
         index = 0
-        for element, i, Q, m, Ta, Tb, Pa, Pb, sNode, eNode in zip(
+        for element, i, profil, Q, m, Ta, Tb, Pa, Pb, sNode, eNode in zip(
                 self.v_consumers_element,
                 self.v_consumers_index,
+                self.v_consumers_profile,
                 self.v_consumers_Q,
                 self.v_consumers_m,
                 self.v_consumers_Ta,
@@ -121,9 +126,9 @@ class HeatSink():
                 self.v_consumers_sNode,
                 self.v_consumers_eNode):
             if index < 1:
-                print("%s: i %i Q %10.f [W] m %7.3f [m/s] Ta %3.2f [K] "
+                print("%s: i %i profil %s Q %10.f [W] m %7.3f [m/s] Ta %3.2f [K] "
                       "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa] sNode %s"
-                      "eNode %s" % (element, i, Q, m, Ta, Tb, Pa, Pb,
+                      "eNode %s" % (element, i, profil, Q, m, Ta, Tb, Pa, Pb,
                                     sNode, eNode))
                 index = index + 1
             else:
@@ -137,9 +142,9 @@ if __name__ == "__main__":
     
     DataIO = DataIO(
                 os.path.dirname(os.getcwd()) + os.sep +
-                'input' + os.sep + 'TestNetz',
+                'input' + os.sep + 'TestNetze' + os.sep + "TestNetz_einEinspeiser",
                 os.path.dirname(os.getcwd()) + os.sep +
-                'output' + os.sep + 'TestNetz')
+                'output' + os.sep + 'TestNetze' + os.sep + "TestNetz_einEinspeiser")
     heatsink = DataIO.importCSV(
             'TestNetz_consumer.csv', dtype=Dictionary.STANET_consumer_allocation)
     heatsink_profiles_Q = DataIO.importCSV(
@@ -148,9 +153,9 @@ if __name__ == "__main__":
     testSink.setCalculations()
     testSink.setCalculations()
     i = 0
-    while i < 96:
+    while i < 1:
         testSink.set_consumers_Q(i)
-        print(testSink.v_consumers_Q)
+#        print(testSink.v_consumers_Q)
         i = i + 1
     DataIO.exportNumpyArr('Heatsink', testSink.getCalculations())
 #    print(calcedValuesArr[0][0][1])

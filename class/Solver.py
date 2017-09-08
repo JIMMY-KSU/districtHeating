@@ -12,6 +12,7 @@ import numpy as np
 from inzidenzmatrix import inzidenzmatrix
 import time
 from scipy.optimize import root
+from scipy.linalg import solve
 
 class Solver():
     def __init__(self, heatgrid, heatsink, heatsource):
@@ -22,14 +23,11 @@ class Solver():
         self._inzidenzmatrix_HeatGrid = self.__inzidenzmatrix_HeatGrid()
         self._inzidenzmatrix_HeatSink = self.__inzidenzmatrix_HeatSink()
         self._inzidenzmatrix_HeatSource = self.__inzidenzmatrix_HeatSource()
+        #TODO calculate inzidenzmatrix outof previous inzidenzmatrizen with np.hstack
         self._inzidenzmatrix = self.__inzidenzmatrix()
         self._elements = np.shape(self._inzidenzmatrix)[1]
         self._nodes = np.shape(self._inzidenzmatrix)[0]
-#        print(self._inzidenzmatrix)
-#        print(self._inzidenzmatrix_HeatGrid)
-#        print(self._inzidenzmatrix_HeatSink)
-#        print(self._inzidenzmatrix_HeatSource)
-#        self.__del_DeadEnds()
+
         '''
         sets up all necessary inzmatrices
         '''
@@ -138,7 +136,11 @@ class Solver():
         return inzMatrix
 
     def gridCalculation(self, x):
-        
+        '''
+        alternative for np.dot(a,b) whould be a@b but it is not faster:
+            10000000 iterations with np.dot(a,b) = 8.7978 sec
+            10000000 iterations with a@b = 13.8919 sec
+        '''
         print('\r' + str(self.solver_i), end='')
         self.solver_i = self.solver_i + 1
 
@@ -290,20 +292,31 @@ class Solver():
             '''
             v_m = np.zeros(self._elements)
             # massflow
-            iMatrix = self.__I
-            val = np.sum(-iMatrix[:,(self.__I_sink_slice)] *
-                self.heatsink.v_consumers_m, axis=1)
-            iMatrix[:, self.__I_sink_slice] = 0
-            iMatrix_pseudo = np.linalg.pinv(iMatrix)
+#            val = np.sum(-self.__I_sink *
+#                                  self.heatsink.v_consumers_m, axis=1)
+#            print(val)
+#            iMatrix = iMatrix[:, [self.__I_grid_slice, self.__I_source_slice]]
+#            ''' The pseudo-inverse of a matrix A, denoted A^+, is defined as:
+#            “the matrix that ‘solves’ [the least-squares problem] Ax = b,”
+#            i.e., if \bar{x} is said solution, then A^+ is that matrix such
+#            that \bar{x} = A^+b.'''
+            iMatrix_pseudo = np.linalg.pinv(np.hstack((self.__I_grid,
+                                                       self.__I_source)))
+            v_m_guess = v_m
+            v_m_guess[self.__I_sink_slice] = self.heatsink.v_consumers_m
+            v_m = np.dot(iMatrix_pseudo, v_m_guess)
 
-            v_m = np.dot(iMatrix_pseudo, val)
+#            print(val)
+#            print(iMatrix_pseudo)
+            print(v_m)
+#            v_m = np.hstack((v_m[self.__I_grid_slice], v_))
 #            print('Matrix:')
 #            print(iMatrix_pseudo)
 #            print('val')
 #            print(val)
 #            print('v_m')
 #            print(v_m)
-            
+
 #            v_m[self.__I_grid_slice] = np.average(self.heatsink.v_consumers_m)
 #            v_m[self.__I_sink_slice] = self.heatsink.v_consumers_m
 #            v_m[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_m) /
@@ -415,6 +428,7 @@ class Solver():
                                         self.heatsource.v_producers_Pa)
             v_Pb[self.__I_source_slice] = np.average(
                     self.heatsource.v_producers_Pb)
+
         elif self.getGuessFirstRun is 0:
             v_m = self.heatgrid.v_pipes_m +\
                 self.heatsink.v_consumers_m +\
@@ -492,7 +506,6 @@ class Solver():
         output: v_m, v_P, v_Pa, v_Pb, v_Q, v_T, v_Ta, v_Tb
         '''
         v_m = x[self.slice_v_m]
-
         v_P = x[self.slice_v_P]
         v_Pa = x[self.slice_v_Pa]
         v_Pb = x[self.slice_v_Pb]
@@ -672,20 +685,26 @@ if __name__ == "__main__":
 
     DataIO = DataIO(
                 os.path.dirname(os.getcwd()) + os.sep +
-                'input' + os.sep + 'TestNetz',
+                'input' + os.sep + 'TestNetze' + os.sep + 'TestNetz_einEinspeiser',
                 os.path.dirname(os.getcwd()) + os.sep +
-                'output' + os.sep + 'TestNetz')
+                'output' + os.sep + 'TestNetze' + os.sep +
+                'TestNetz_einEinspeiser')
 
     heatgrid_nodes = DataIO.importDBF(
             'KTestNetz.DBF', dtype=Dictionary.STANET_nodes_allocation)
 
     heatgrid_pipes = DataIO.importDBF(
             'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
+    
+    heatsink = DataIO.importDBF(
+            'WTestNetz.DBF', dtype=Dictionary.STANET_consumer_allocation)
+    
+    heatsink_profiles_Q = None
+#    heatsink = DataIO.importCSV(
+#            'TestNetz_consumer.csv', dtype=Dictionary.STANET_consumer_allocation)
 
-    heatsink = DataIO.importCSV(
-            'TestNetz_consumer.csv', dtype=Dictionary.STANET_consumer_allocation)
-    heatsink_profiles_Q = DataIO.importCSV(
-            'consumers_profile_Q.csv')
+#    heatsink_profiles_Q = DataIO.importCSV(
+#            'consumers_profile_Q.csv')
     heatsource = DataIO.importCSV(
             'WTestNetz.csv', dtype=Dictionary.STANET_producer_allocation,
             delimiter=';', header=0)
@@ -716,7 +735,9 @@ if __name__ == "__main__":
     solution = solution_root.x
     print(time.clock() - startTime)
 
-    solver.print_x(solution, "solution")
+#    solver.print_x(solution, "solution")
+    solver.print_x(solution, "solution", amount_pipes=18, amount_nodes=18,
+                   amount_consumer=4, amount_producer=2)
     solver.save_x(solution)
     print(solution_root.success)
     print(solution_root.message)
@@ -745,6 +766,8 @@ if __name__ == "__main__":
             v_producers_end_y=solver.heatsource.v_producers_end_y,
             v_producers_Q=np.abs(solver.heatsource.v_producers_m))
     DataIO.exportFig('test_solver', fig)
+    DataIO.exportNumpyArr('test_einEinspeiser_heatgrid',
+                          solver.heatgrid.getCalculations)
 else:
     print("Solver \t\t\t was imported into another module")
 

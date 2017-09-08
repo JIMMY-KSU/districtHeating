@@ -33,6 +33,8 @@ class DataIO():
         '''
         self.__filepath_import = filepath_import
         self.__filepath_export = filepath_export
+        print('input filepath: ' + str(self.__filepath_import))
+        print('output filepath: ' + str(self.__filepath_export))
 
 #    def import CSV(self):
 

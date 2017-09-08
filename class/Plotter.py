@@ -404,10 +404,10 @@ class Plotter():
                 v_pipes_end_x is not None and
                 v_pipes_end_y is not None):
             self.plot_elements(v_pipes_start_x,
-                                       v_pipes_start_y,
-                                       v_pipes_end_x,
-                                       v_pipes_end_y,
-                                       v_element_Q=v_pipes_Q, fig=fig, ax=ax)
+                               v_pipes_start_y,
+                               v_pipes_end_x,
+                               v_pipes_end_y,
+                               v_element_Q=v_pipes_Q, fig=fig, ax=ax)
         if v_nodes_x is not None and v_nodes_y is not None:
              self.plot_nodes(v_nodes_x, v_nodes_y, ax=ax,
                             marker='o', marker_color='grey')
@@ -416,11 +416,11 @@ class Plotter():
                 v_consumers_end_x is not None and
                 v_consumers_end_y is not None):
              self.plot_elements(v_consumers_start_x,
-                               v_consumers_start_y,
-                               v_consumers_end_x,
-                               v_consumers_end_y,
-                               v_element_Q=v_consumers_Q, fig=fig, ax=ax,
-                               marker='v', marker_color='blue')
+                                v_consumers_start_y,
+                                v_consumers_end_x,
+                                v_consumers_end_y,
+                                v_element_Q=v_consumers_Q, fig=fig, ax=ax,
+                                marker='v', marker_color='blue')
         print(v_producers_end_x, v_producers_end_y, v_producers_Q, v_producers_start_x,
               v_producers_start_y)
         if (v_producers_start_x is not None and
@@ -428,39 +428,52 @@ class Plotter():
                 v_producers_end_x is not None and
                 v_producers_end_y is not None):
              self.plot_elements(v_producers_start_x,
-                               v_producers_start_y,
-                               v_producers_end_x,
-                               v_producers_end_y,
-                               v_element_Q=v_producers_Q, fig=fig, ax=ax,
-                               marker='^', marker_color='red')
+                                v_producers_start_y,
+                                v_producers_end_x,
+                                v_producers_end_y,
+                                v_element_Q=v_producers_Q, fig=fig, ax=ax,
+                                marker='^', marker_color='red')
 
         return fig
     
     def plot_DHS2(self, 
-                 v_pipes_start_x=None,
-                 v_pipes_start_y=None,
-                 v_pipes_end_x=None,
-                 v_pipes_end_y=None,
-                 v_pipes_Q=None,
-                 v_nodes_x=None,
-                 v_nodes_y=None,
-                 v_consumers_start_x=None,
-                 v_consumers_start_y=None,
-                 v_consumers_end_x=None,
-                 v_consumers_end_y=None,
-                 v_consumers_Q=None,
-                 v_producers_start_x=None,
-                 v_producers_start_y=None,
-                 v_producers_end_x=None,
-                 v_producers_end_y=None,
-                 v_producers_Q=None,
-                 title=''):
+                  v_pipes_start_x=None,
+                  v_pipes_start_y=None,
+                  v_pipes_end_x=None,
+                  v_pipes_end_y=None,
+                  v_pipes_Q=None,
+                  v_nodes_x=None,
+                  v_nodes_y=None,
+                  v_consumers_start_x=None,
+                  v_consumers_start_y=None,
+                  v_consumers_end_x=None,
+                  v_consumers_end_y=None,
+                  v_consumers_Q=None,
+                  v_producers_start_x=None,
+                  v_producers_start_y=None,
+                  v_producers_end_x=None,
+                  v_producers_end_y=None,
+                  v_producers_Q=None,
+                  title=''):
         from matplotlib.collections import LineCollection
         
         xy = (np.random.random((1000, 2)) - 0.5).cumsum(axis=0)
         
         # Reshape things so that we have a sequence of:
         # [[(x0,y0),(x1,y1)],[(x0,y0),(x1,y1)],...]
+#        x = np.stack([np.concatenate((v_pipes_start_x,
+#                            v_consumers_start_x,
+#                            v_producers_start_x)),
+#                       np.concatenate((v_pipes_end_x,
+#                                        v_consumers_end_x,
+#                                        v_producers_end_x))],axis=0)
+#        y = np.stack([np.concatenate((v_pipes_start_y,
+#                       v_consumers_start_y,
+#                       v_producers_start_y)),
+#                        np.concatenate((v_pipes_end_y,
+#                       v_consumers_end_y,
+#                       v_producers_end_y))], axis=0)
+#        xy = np.stack([x,y], axis=1)
         xy = xy.reshape(-1, 1, 2)
         segments = np.hstack([xy[:-1], xy[1:]])
         

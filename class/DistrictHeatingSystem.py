@@ -121,7 +121,7 @@ if __name__ == "__main__":
     i = 0
     while i < 1:
         print('#####\trun number %i\t#####' %i)
-#        DHS1.calculateDHS()
+        DHS1.calculateDHS()
         endTime = time.time()
 #        DHS1.heatgrid.__str__()
 #        DHS1.heatsink.__str__()

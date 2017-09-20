@@ -33,15 +33,16 @@ class DataIO():
         '''
         self.__filepath_import = filepath_import
         self.__filepath_export = filepath_export
-        print('input filepath: ' + str(self.__filepath_import))
-        print('output filepath: ' + str(self.__filepath_export))
+        print('input filepath: \n' + str(self.__filepath_import))
+        print('output filepath: \n' + str(self.__filepath_export) + '\n')
 
 #    def import CSV(self):
 
     def importCSV(self, filename, delimiter=';', dtype=None,
                   header=0, encoding='utf-8-sig', decimal=',', usecols=None,
                   lineterminator='\n', thousands='.', names=None,
-                  infer_datetime_format=False):
+                  infer_datetime_format=False, skiprows=None, nrows=None,
+                   index_col=None):
         '''
         str, for more inputparameter see pandas read_csv
         output
@@ -59,7 +60,8 @@ class DataIO():
         df = pd.read_csv(file, delimiter=delimiter, header=header,
                           encoding=encoding, decimal=decimal, usecols=usecols,
                           lineterminator=lineterminator, thousands=thousands,
-                          names=names, infer_datetime_format=False)
+                          names=names, infer_datetime_format=False,
+                          skiprows=skiprows, nrows=nrows,  index_col=index_col)
 
         if dtype is not None:
             if None in dtype.keys():
@@ -85,6 +87,7 @@ class DataIO():
                     df = df.rename(columns={key:value})
 
         print('loading %s \t----> OK ' %filename)
+
 
         return df
 
@@ -208,8 +211,8 @@ class DataIO():
     def exportNumpyArr(self, filename, arr):
         np.save(self.__filepath_export + os.sep + filename, arr)
 
-    def importNumpyArr(self, filename, arr):
-        np.load(self.__filepath_import + os.sep + filename, arr)
+    def importNumpyArr(self, filename):
+        arr = np.load(self.__filepath_import + os.sep + filename)
         return arr
 
     def exportFig(self, filename, fig):

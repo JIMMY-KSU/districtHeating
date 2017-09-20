@@ -290,22 +290,21 @@ class Solver():
             '''
             vector of massflows by guess in the first run
             '''
-            v_m = np.zeros(self._elements)
-            # massflow
 
 #            ''' The pseudo-inverse of a matrix A, denoted A^+, is defined as:
 #            “the matrix that ‘solves’ [the least-squares problem] Ax = b,”
 #            i.e., if \bar{x} is said solution, then A^+ is that matrix such
 #            that \bar{x} = A^+b.'''
             v_m = np.zeros(self._elements)
-             # massflow
-            iMatrix = self.__I
-            v_m_guess = np.sum(-iMatrix[:,(self.__I_sink_slice)] *
-                  self.heatsink.v_consumers_m, axis=1)
-            iMatrix[:, self.__I_sink_slice] = 0
-            iMatrix_pseudo = np.linalg.pinv(iMatrix)
-
-            v_m = np.dot(iMatrix_pseudo, v_m_guess)
+#             # massflow
+#            iMatrix = self.__I
+#            v_m_guess = np.sum(-iMatrix[:,(self.__I_sink_slice)] *
+#                  self.heatsink.v_consumers_m, axis=1)
+#            print(v_m_guess)
+#            iMatrix[:, self.__I_sink_slice] = 0
+#            iMatrix_pseudo = np.linalg.pinv(iMatrix)
+#
+#            v_m = np.dot(iMatrix_pseudo, v_m_guess)
 
 #            print(v_m_guess)
 #            print(iMatrix_pseudo)
@@ -318,10 +317,10 @@ class Solver():
 #            print('v_m')
 #            print(v_m)
 
-#            v_m[self.__I_grid_slice] = np.average(self.heatsink.v_consumers_m)
-#            v_m[self.__I_sink_slice] = self.heatsink.v_consumers_m
-#            v_m[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_m) /
-#                                          len(self.heatsource.producers()))
+            v_m[self.__I_grid_slice] = np.average(self.heatsink.v_consumers_m)
+            v_m[self.__I_sink_slice] = self.heatsink.v_consumers_m
+            v_m[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_m) /
+                                          len(self.heatsource.producers()))
 
             '''
             vector of temperatures by guess
@@ -765,6 +764,7 @@ if __name__ == "__main__":
     DataIO.exportFig('test_solver', fig)
     DataIO.exportNumpyArr('test_einEinspeiser_heatgrid',
                           solver.heatgrid.getCalculations)
+    
 else:
     print("Solver \t\t\t was imported into another module")
 

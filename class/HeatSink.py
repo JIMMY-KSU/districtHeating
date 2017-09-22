@@ -84,7 +84,7 @@ class HeatSink():
         else:
             arr = self.__Q
 #        print(arr)
-        self.v_consumers_Q = arr
+        self.v_consumers_Q = -(abs(arr))
 
 
     def __calc_consumers_m(self, Q, cp, Ta, Tb):

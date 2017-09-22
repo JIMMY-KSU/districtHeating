@@ -42,7 +42,7 @@ class DataIO():
                   header=0, encoding='utf-8-sig', decimal=',', usecols=None,
                   lineterminator='\n', thousands='.', names=None,
                   infer_datetime_format=False, skiprows=None, nrows=None,
-                   index_col=None):
+                  index_col=None):
         '''
         str, for more inputparameter see pandas read_csv
         output
@@ -271,4 +271,4 @@ else:
     import sys
     sys.path.append(os.getcwd() + os.sep + 'function')
     print(sys.path.append(os.getcwd() + os.sep + 'function'))
-    print('DistrictHeatingSystem \t was imported into another module')
+    print('DataIO \t was imported into another module')

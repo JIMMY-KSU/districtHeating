@@ -160,7 +160,7 @@ if __name__ == "__main__":
             v_producers_end_y=DHS1.heatsource.v_producers_end_y,
             v_producers_Q=DHS1.heatsource.v_producers_Q
             )
-
+    DHS1_dataIO.exportNumpyArr("heatgrid", DHS1.heatgrid.getCalculations(0))
     DHS1_dataIO.exportFig("v_klein", fig)
 
 

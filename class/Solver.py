@@ -32,7 +32,7 @@ class Solver():
         sets up all necessary inzmatrices
         '''
         self.myslice = slice(1,1000)
-        self.__I = np.asarray(self._inzidenzmatrix)
+        self.__I = np.array(self._inzidenzmatrix)
         self.__I_minus = self.__I.clip(max=0)
         self.__I_minus_T = self.__I_minus.T
         self.__I_plus = self.__I.clip(min=0)
@@ -297,6 +297,30 @@ class Solver():
 #            that \bar{x} = A^+b.'''
             v_m = np.zeros(self._elements)
 #             # massflow
+
+#            b_consumers = np.sum(-self.__I[:,(self.__I_sink_slice)] *
+#                                self.heatsink.v_consumers_m, axis=1)
+            v_producers_m = -np.sum(self.heatsink.v_consumers_m)
+#
+#            b_producers = np.sum(-self.__I[:,(self.__I_source_slice)] *
+#                                v_producers_m, axis=1)
+            v_m = np.hstack((np.zeros_like(self.heatgrid.v_pipes_m),
+                           self.heatsink.v_consumers_m,
+                           v_producers_m))
+            print(v_m)
+            b = np.dot(self.__I, -v_m)
+
+            A_pseudo = np.array(self.__I)
+            A_pseudo[:,self.__I_sink_slice] = np.zeros_like(self._nodes)
+            A_pseudo[:,self.__I_source_slice] = np.zeros_like(self._nodes)
+            print("A_pseudeo")
+            print(A_pseudo)
+            print("__self.I")
+            print(self.__I)
+            A_pseudo = np.linalg.pinv(A_pseudo)
+            #print(A_pseudo)
+            v_m = np.dot(A_pseudo, b) + v_m
+            print(v_m)
 #            iMatrix = self.__I
 #            v_m_guess = np.sum(-iMatrix[:,(self.__I_sink_slice)] *
 #                  self.heatsink.v_consumers_m, axis=1)
@@ -317,10 +341,11 @@ class Solver():
 #            print('v_m')
 #            print(v_m)
 
-            v_m[self.__I_grid_slice] = np.average(self.heatsink.v_consumers_m)
-            v_m[self.__I_sink_slice] = self.heatsink.v_consumers_m
-            v_m[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_m) /
-                                          len(self.heatsource.producers()))
+
+#            v_m[self.__I_grid_slice] = np.average(self.heatsink.v_consumers_m)
+#            v_m[self.__I_sink_slice] = self.heatsink.v_consumers_m
+#            v_m[self.__I_source_slice] = (np.sum(self.heatsink.v_consumers_m) /
+#                                          len(self.heatsource.producers()))
 
             '''
             vector of temperatures by guess
@@ -563,6 +588,8 @@ class Solver():
         self.heatgrid.v_nodes_P = v_P
         self.heatgrid.v_nodes_T = v_T
 
+        self.heatgrid.setCalculations()
+
         self.heatsink.v_consumers_m = consumer_m
         self.heatsink.v_consumers_Q = consumer_Q
         self.heatsink.v_consumers_Ta = consumer_Ta
@@ -570,12 +597,17 @@ class Solver():
         self.heatsink.v_consumers_Pa = consumer_Pa
         self.heatsink.v_consumers_Pb = consumer_Pb
 
+        self.heatsink.setCalculations()
+
         self.heatsource.v_producers_m = producer_m
         self.heatsource.v_producers_Q = producer_Q
         self.heatsource.v_producers_Ta = producer_Ta
         self.heatsource.v_producers_Tb = producer_Tb
         self.heatsource.v_producers_Pa = producer_Pa
         self.heatsource.v_producers_Pb = producer_Pb
+
+        self.heatsource.setCalculations()
+
         self.getGuessFirstRun = 0
 #   TODO save_x for pipes, plus how to print pretty.
 
@@ -604,7 +636,7 @@ class Solver():
                                 pipe_m, pipe_Pa, pipe_Pb, pipe_Q,
                                 pipe_Ta, pipe_Tb):
             if i < index:
-                print("%s \t %s --> %s\t: sprp %i Q %11.3f [W] m %7.3f [m/s] Ta %3.2f [K] "
+                print("%s \t %s --> %s\t: sprp %i Q %11.3f [W] m %7.3f [kg/s] Ta %3.2f [K] "
                       "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa]" % (
                                                   element, sNode, eNode,
                                                   sprp,
@@ -623,7 +655,7 @@ class Solver():
                                 consumer_m, consumer_Pa, consumer_Pb,
                                 consumer_Q, consumer_Ta, consumer_Tb):
             if i < index:
-                print("%s %s --> %s\t: \t Q %11.3f [W] m %7.3f [m/s] Ta %3.2f [K] "
+                print("%s %s --> %s\t: \t Q %11.3f [W] m %7.3f [kg/s] Ta %3.2f [K] "
                       "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa]" % (
                                                   element,
                                                   sNode,
@@ -644,7 +676,7 @@ class Solver():
                                 producer_Q, producer_Ta, producer_Tb):
 
             if i < index:
-                print("%s %s --> %s\t: \t Q %11.3f [W] m %7.3f [m/s] Ta %3.2f [K] "
+                print("%s %s --> %s\t: \t Q %11.3f [W] m %7.3f [kg/s] Ta %3.2f [K] "
                       "Tb %3.2f [K] Pa %6.f [Pa] Pb %6.f [Pa]" % (
                                                   element,
                                                   sNode,
@@ -691,10 +723,10 @@ if __name__ == "__main__":
                 'TestNetz_einEinspeiser')
 
     heatgrid_nodes = DataIO.importDBF(
-            'KTestNetz.DBF', dtype=Dictionary.STANET_nodes_allocation)
+            'KTestNetz_einEinspeiser.DBF', dtype=Dictionary.STANET_nodes_allocation)
 
     heatgrid_pipes = DataIO.importDBF(
-            'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
+            'STestNetz_einEinspeiser.DBF', dtype=Dictionary.STANET_pipes_allocation)
     
     heatsink = DataIO.importCSV(
             'TestNetz_consumer.csv', dtype=Dictionary.STANET_consumer_allocation)
@@ -763,7 +795,7 @@ if __name__ == "__main__":
             v_producers_Q=np.abs(solver.heatsource.v_producers_m))
     DataIO.exportFig('test_solver', fig)
     DataIO.exportNumpyArr('test_einEinspeiser_heatgrid',
-                          solver.heatgrid.getCalculations)
+                          solver.heatgrid.getCalculations())
     
 else:
     print("Solver \t\t\t was imported into another module")

@@ -335,15 +335,17 @@ if __name__ == "__main__":
 
     DataIO = DataIO(
                 os.path.dirname(os.getcwd()) + os.sep +
-                'input' + os.sep + 'TestNetz',
+                'input' + os.sep + 'TestNetze' + os.sep +
+                'TestNetz_einEinspeiser',
                 os.path.dirname(os.getcwd()) + os.sep +
-                'output' + os.sep + 'TestNetz')
+                'output' + os.sep + 'TestNetze' + os.sep +
+                'TestNetz_einEinspeiser')
 
     heatgrid_nodes = DataIO.importDBF(
-            'KTestNetz.DBF', dtype=Dictionary.STANET_nodes_allocation)
+            'KTestNetz_einEinspeiser.DBF', dtype=Dictionary.STANET_nodes_allocation)
 
     heatgrid_pipes = DataIO.importDBF(
-            'STestNetz.DBF', dtype=Dictionary.STANET_pipes_allocation)
+            'STestNetz_einEinspeiser.DBF', dtype=Dictionary.STANET_pipes_allocation)
 
     testGrid = HeatGrid(heatgrid_pipes, heatgrid_nodes, [["K1017", None]])
     testGrid.subdict_v_Pipes()
